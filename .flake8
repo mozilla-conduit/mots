@@ -1,0 +1,14 @@
+[flake8]
+# Matching black's default
+max-line-length = 88
+
+extend-ignore =
+    D107,  # Missing docstring in __init__
+
+per-file-ignores = 
+    # D100 Missing docstring in public module
+    # D101 Missing docstring in public class
+    # D102 Missing docstring in public method
+    # D103 Missing docstring in public function
+    # D104 Missing docstring in public package
+    tests/*: D100,D101,D102,D103,D104

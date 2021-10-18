@@ -6,7 +6,11 @@
 
 from __future__ import annotations
 from collections import defaultdict
+from dataclasses import asdict
+from dataclasses import dataclass
+from dataclasses import InitVar
 import logging
+from mots.bmo import BMOClient
 from mots.module import Module
 from mots.config import FileConfig
 
@@ -31,8 +35,9 @@ class Directory:
             self.modules_by_machine_name[module.machine_name] = module
 
         self.index = None
+        self.people = None
 
-    def load(self, full_paths: bool = False):
+    def load(self, full_paths: bool = False, query_bmo=True):
         """Load all paths in each module and put them in index."""
         self.index = defaultdict(list)
 
@@ -64,6 +69,12 @@ class Directory:
                 self.index[path] = [m for m in modules if not m.exclude_module_paths]
         self.index = dict(self.index)
 
+        # Load people directory
+        self.people = People(self.config_handle.config["people"], query_bmo=query_bmo)
+        if self.people.serialized != list(self.config_handle.config["people"]):
+            logger.debug("People directory modified, updating configuration...")
+            self.config_handle.config["people"] = self.people.serialized
+
     def query(self, *paths: str) -> tuple[list[Module], list[str]]:
         """Query given paths and return a list of corresponding modules."""
         result = {}
@@ -79,3 +90,53 @@ class Directory:
         # NOTE: for new files, we need to use the old config against the new file
         # structure.
         return result, rejected
+
+
+@dataclass
+class Person:
+    """A class representing a person."""
+
+    name: str = ""
+    bmo_id: int = None
+    real_name: str = ""
+    nick: str = ""
+    bmo_data: InitVar[dict] = None
+
+    def __post_init__(self, bmo_data):
+        """Refresh BMO data from BMO API."""
+        if bmo_data:
+            self.nick = bmo_data.get("nick", "")
+            self.real_name = bmo_data.get("real_name", "")
+
+
+class People:
+    """A people directory searchable by name, email, or BMO ID."""
+
+    by_bmo_id: dict = None
+    people: list = None
+    serialized: list = None
+
+    def __init__(self, people, query_bmo: bool = True):
+        logger.debug(f"Initializing people directory with {len(people)} people...")
+        if query_bmo:
+            bmo_client = BMOClient()
+            bmo_data = bmo_client.get_users_by_ids([p["bmo_id"] for p in people])
+        else:
+            bmo_data = {}
+        people = list(people)
+        self.people = []
+        self.by_bmo_id = {}
+        for i in range(len(people)):
+            p = people[i]
+            logger.debug(f"Adding person {p} to roster...")
+            self.people.append(
+                Person(
+                    name=p["name"],
+                    real_name=p["real_name"],
+                    bmo_id=p["bmo_id"],
+                    bmo_data=bmo_data.get(p["bmo_id"]),
+                )
+            )
+            self.by_bmo_id[p["bmo_id"]] = i
+            logger.debug(f"Person {p} added to position {i}.")
+        self.serialized = [asdict(p) for p in self.people]

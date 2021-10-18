@@ -33,6 +33,7 @@ def init_logging(
                 "console": {
                     "class": "logging.StreamHandler",
                     "formatter": "standard",
+                    "level": logging.DEBUG if debug else logging.WARNING,
                 },
                 "file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -41,12 +42,13 @@ def init_logging(
                     "maxBytes": log_max_size,
                     "backupCount": log_backups,
                     "encoding": "utf8",
+                    "level": logging.DEBUG,
                 },
             },
             "loggers": {
                 "mots": {
-                    "level": logging.DEBUG if debug else logging.WARNING,
                     "handlers": ["console", "file"],
+                    "level": logging.DEBUG,
                 },
             },
         }

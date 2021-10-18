@@ -8,6 +8,7 @@ from __future__ import annotations
 import pytest
 
 from mots.config import FileConfig
+from mots.module import add
 from mots.module import Module
 from mots.module import ValidationError
 from mots.module import validate
@@ -92,6 +93,10 @@ def test_module__Module__validate__invalid_machine_name(repo):
     assert errors == ["Module has a blank machine_name."]
 
 
+def test_module__Module__serialize(repo):
+    assert True
+
+
 def test_module__validate(repo, config):
     validate(config, str(repo))
 
@@ -135,3 +140,32 @@ def test_module__validate__error_duplicate_machine_names(repo):
         validate(config, repo)
 
     assert e.value.args[0] == "Duplicate machine name(s) found: m1, m3"
+
+
+def test_module__add(repo):
+    file_config = FileConfig(repo / "mots.yml")
+    file_config.load()
+
+    module = {
+        "machine_name": "reptiles",
+        "includes": ["reptiles/**/*"],
+        "owners": ["angel"],
+    }
+
+    add(module, file_config, parent="pets", write=True)
+    file_config.load()
+    # NOTE should we be storing machine names as keys in a dict, instead of a list?
+    # even an ordered dict? This might make some things a little easier.
+    assert (
+        file_config.config["modules"][1]["submodules"][0]["machine_name"] == "reptiles"
+    )
+    assert file_config.config["modules"][1]["submodules"][0]["includes"] == [
+        "reptiles/**/*"
+    ]
+    assert file_config.config["modules"][1]["submodules"][0]["owners"] == ["angel"]
+
+    # TODO: validate that includes, excludes, and owners are lists...
+
+
+def test_module__clean(repo):
+    pass

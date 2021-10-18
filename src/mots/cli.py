@@ -31,6 +31,8 @@ from mots.directory import Directory
 from mots.logging import init_logging
 from mots.config import DEFAULT_CONFIG_FILEPATH
 
+from mots.utils import get_list_input
+
 logger = logging.getLogger(__name__)
 
 
@@ -78,12 +80,31 @@ class CLI:
         file_config.load()
         directory = Directory(file_config)
         directory.load()
-        result = directory.query(*args.paths)
+        result, rejected = directory.query(*args.paths)
         for path in result:
             modules = result[path]
             module_names = ",".join([m.machine_name for m in modules])
             owners = ",".join([",".join(m.owners) for m in modules])
             sys.stdout.write(f"{path}:{module_names}:{owners}\n")
+
+    @staticmethod
+    def add(args):
+        """Prompt user to add a new module."""
+        params = {
+            "machine_name": input("Enter machine name of new module: "),
+            "name": input("Enter a human readable name: "),
+            "owners": get_list_input("Enter a comma separated list of owners"),
+            "peers": get_list_input("Enter a comma separated list of owners"),
+            "includes": get_list_input(
+                "Enter a comma separated list of paths to include"
+            ),
+            "excludes": get_list_input(
+                "Enter a comma separated list of paths to exclude"
+            ),
+        }
+        parent = input("Enter a machine name of the parent module (optional): ") or None
+        file_config = FileConfig(Path(args.path))
+        module.add(params, file_config, parent=parent, write=True)
 
 
 def main():
@@ -132,6 +153,9 @@ def create_parser():
 
     list_parser = module_parsers.add_parser("list", help="list all modules")
     list_parser.set_defaults(func=CLI.ls)
+
+    add_parser = module_parsers.add_parser("add", help="add a new module")
+    add_parser.set_defaults(func=CLI.add)
 
     show_parser = module_parsers.add_parser("show", help="show a module")
     show_parser.add_argument("module", help="name of the module to show")

@@ -56,10 +56,16 @@ def repo(tmp_path, config):
 
 @pytest.fixture
 def config():
+    people = [
+        {"real_name": "jane", "nick": "jane", "name": "jane", "bmo_id": 0},
+        {"real_name": "jill", "nick": "jill", "name": "jill", "bmo_id": 1},
+        {"real_name": "otis", "nick": "otis", "name": "otis", "bmo_id": 2},
+    ]
     return {
         "repo": "test_repo",
         "created_at": "2021-09-10 12:53:22.383393",
         "updated_at": "2021-09-10 12:53:22.383393",
+        "people": people,
         "modules": [
             {
                 "machine_name": "domesticated_animals",
@@ -73,7 +79,7 @@ def config():
                     "pigs/**/*",
                 ],
                 "excludes": ["canines/red_fox"],
-                "owners": ["jane"],
+                "owners": [people[0]],
                 "submodules": [
                     {
                         "machine_name": "predators",
@@ -86,7 +92,7 @@ def config():
                         "excludes": [
                             "birds/parrot",
                         ],
-                        "owners": ["jill"],
+                        "owners": [people[1]],
                     }
                 ],
             },
@@ -103,7 +109,7 @@ def config():
                     "felines/cheetah",
                     "birds/eagle",
                 ],
-                "owners": ["otis"],
+                "owners": [people[2]],
             },
         ],
     }

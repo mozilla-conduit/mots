@@ -12,6 +12,7 @@ from ruamel.yaml import YAML
 logger = logging.getLogger(__name__)
 
 yaml = YAML()
+yaml.indent(mapping=2, sequence=4, offset=2)
 
 DEFAULT_CONFIG_FILEPATH = "./mots.yaml"
 
@@ -33,7 +34,7 @@ class FileConfig:
             # File does not exist, create it.
             now = datetime.now()
             self.config = {
-                "repo": str(Path(self.path).resolve().parts[-1]),
+                "repo": str(Path(self.path).resolve().parts[-2]),
                 "created_at": now,
                 "updated_at": None,
                 "modules": None,

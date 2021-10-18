@@ -8,3 +8,9 @@ documentation/_build
 htmlcov/
 mots.log
 notes
+# should be removed later
+dump
+parse_wiki.py
+wiki
+wiki.yaml
+src/mots/parking_lot.py

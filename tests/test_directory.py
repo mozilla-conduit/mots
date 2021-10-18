@@ -11,7 +11,7 @@ from mots.config import FileConfig
 def test_directory__Directory(repo):
     file_config = FileConfig(repo / "mots.yml")
     directory = Directory(file_config)
-    directory.load(full_paths=True)
+    directory.load(full_paths=True, query_bmo=False)
 
     rp = directory.repo_path
     di = directory.index
@@ -54,11 +54,11 @@ def test_directory__Directory(repo):
 def test_directory__Directory_new_path(repo):
     file_config = FileConfig(repo / "mots.yml")
     directory = Directory(file_config)
-    directory.load()
+    directory.load(query_bmo=False)
     new_file_path = directory.repo_path / "canines/chihuahuas/deer_head"
     new_file_path.touch()
     assert new_file_path not in directory.index
-    directory.load()
+    directory.load(query_bmo=False)
     assert new_file_path in directory.index
     assert len(directory.index[new_file_path]) == 1
     assert directory.index[new_file_path][0].machine_name == "pets"
@@ -67,20 +67,20 @@ def test_directory__Directory_new_path(repo):
 def test_directory__Directory_deleted_path(repo):
     file_config = FileConfig(repo / "mots.yml")
     directory = Directory(file_config)
-    directory.load()
+    directory.load(query_bmo=False)
     existing_path = directory.repo_path / "canines/chihuahuas/apple_head"
     assert len(directory.index[existing_path]) == 1
     assert directory.index[existing_path][0].machine_name == "pets"
     assert existing_path in directory.index
     existing_path.unlink()
-    directory.load()
+    directory.load(query_bmo=False)
     assert existing_path not in directory.index
 
 
 def test_directory__Directory__query(repo):
     file_config = FileConfig(repo / "mots.yml")
     directory = Directory(file_config)
-    directory.load()
+    directory.load(query_bmo=False)
 
     paths_to_check = [
         "canines/chihuahuas/apple_head",

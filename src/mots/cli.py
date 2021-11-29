@@ -94,7 +94,7 @@ class CLI:
             "machine_name": input("Enter machine name of new module: "),
             "name": input("Enter a human readable name: "),
             "owners": get_list_input("Enter a comma separated list of owners"),
-            "peers": get_list_input("Enter a comma separated list of owners"),
+            "peers": get_list_input("Enter a comma separated list of peers"),
             "includes": get_list_input(
                 "Enter a comma separated list of paths to include"
             ),

@@ -23,7 +23,9 @@ class BMOClient:
 
     def __init__(self, token: str = None, base_url: str = DEFAULT_BASE_URL):
         if not token:
-            token = os.getenv("BUGZILLA_API_KEY", input("Enter BMO Token: "))
+            token = os.getenv("BUGZILLA_API_KEY", "")
+            if not token:
+                token = input("Enter BMO Token: ")
             if not token:
                 raise Exception()
         self.headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": USER_AGENT}

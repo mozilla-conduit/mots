@@ -96,7 +96,6 @@ class Directory:
 class Person:
     """A class representing a person."""
 
-    name: str = ""
     bmo_id: int = None
     real_name: str = ""
     nick: str = ""
@@ -131,7 +130,6 @@ class People:
             logger.debug(f"Adding person {p} to roster...")
             self.people.append(
                 Person(
-                    name=p["name"],
                     real_name=p["real_name"],
                     bmo_id=p["bmo_id"],
                     bmo_data=bmo_data.get(p["bmo_id"]),

@@ -57,9 +57,9 @@ def repo(tmp_path, config):
 @pytest.fixture
 def config():
     people = [
-        {"real_name": "jane", "nick": "jane", "name": "jane", "bmo_id": 0},
-        {"real_name": "jill", "nick": "jill", "name": "jill", "bmo_id": 1},
-        {"real_name": "otis", "nick": "otis", "name": "otis", "bmo_id": 2},
+        {"real_name": "jane", "nick": "jane", "bmo_id": 0},
+        {"real_name": "jill", "nick": "jill", "bmo_id": 1},
+        {"real_name": "otis", "nick": "otis", "bmo_id": 2},
     ]
     return {
         "repo": "test_repo",

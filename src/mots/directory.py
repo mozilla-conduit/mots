@@ -75,7 +75,7 @@ class Directory:
             logger.debug("People directory modified, updating configuration...")
             self.config_handle.config["people"] = self.people.serialized
 
-    def query(self, *paths: str) -> tuple[list[Module], list[str]]:
+    def query(self, *paths: str) -> QueryResult:
         """Query given paths and return a list of corresponding modules."""
         result = {}
         rejected = []
@@ -85,11 +85,54 @@ class Directory:
                 rejected.append(path)
                 continue
             result[path] = self.index.get(self.repo_path / path, list())
-        logger.info(f"Query {paths} resolved to {result}.")
+        logger.debug(f"Query {paths} resolved to {result}.")
 
-        # NOTE: for new files, we need to use the old config against the new file
-        # structure.
-        return result, rejected
+        return QueryResult(result, rejected)
+
+
+class QueryResult:
+    """Helper class to simplify query result interpretation."""
+
+    paths: list = None
+    path_map: dict = None
+    rejected_paths: list = None
+    modules: list = None
+    owners: list = None
+    peers: list = None
+
+    data_keys = {
+        "paths",
+        "rejected_paths",
+        "modules",
+        "owners",
+        "peers",
+    }
+
+    def __init__(self, result, rejected):
+        data = {k: list() for k in self.data_keys}
+        self.path_map = result
+
+        for path in self.path_map:
+            data["paths"].append(path)
+            data["modules"] += self.path_map[path]
+
+        for module in data["modules"]:
+            # TODO: this conversion should happen elsewhere.
+            data["owners"] += [Person(**o) for o in module.owners]
+            data["peers"] += [Person(**p) for p in module.peers]
+
+        data["rejected_paths"] = rejected
+
+        for key in data:
+            setattr(self, key, list(set(data[key])))
+
+    def __add__(self, query_result):
+        """Merge the data from both QueryResult objects."""
+        return {k: getattr(self, k) + getattr(query_result, k) for k in self.data_keys}
+
+    def __radd__(self, query_result):
+        """Call self.__add__ since the order of addition does not matter."""
+        return self.__add__(query_result)
 
 
 @dataclass
@@ -106,6 +149,11 @@ class Person:
         if bmo_data:
             self.nick = bmo_data.get("nick", "")
             self.real_name = bmo_data.get("real_name", "")
+            self.bmo_id = bmo_data.get("id") or self.bmo_id
+
+    def __hash__(self):
+        """Return a unique identifier for this person."""
+        return int(self.bmo_id)
 
 
 class People:

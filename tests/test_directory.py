@@ -5,6 +5,7 @@
 """Tests for directory module."""
 
 from mots.directory import Directory
+from mots.directory import Person
 from mots.config import FileConfig
 
 
@@ -89,10 +90,17 @@ def test_directory__Directory__query(repo):
         "felines/maine_coon",
     ]
 
-    result, rejected = directory.query(*paths_to_check)
-    assert result == {
+    result = directory.query(*paths_to_check)
+    assert result.path_map == {
         "canines/chihuahuas/apple_head": [directory.modules_by_machine_name["pets"]],
         "birds/parrot": [directory.modules_by_machine_name["pets"]],
         "felines/persian": [directory.modules_by_machine_name["pets"]],
     }
-    assert rejected == ["felines/maine_coon"]
+    assert set(result.paths) == {
+        "canines/chihuahuas/apple_head",
+        "birds/parrot",
+        "felines/persian",
+    }
+    assert set(result.owners) == {Person(bmo_id=2, real_name='otis', nick='otis')}
+    assert set(result.peers) == {Person(bmo_id=2, real_name='otis', nick='otis')}
+    assert result.rejected_paths == ["felines/maine_coon"]

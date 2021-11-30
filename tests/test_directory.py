@@ -101,6 +101,40 @@ def test_directory__Directory__query(repo):
         "birds/parrot",
         "felines/persian",
     }
-    assert set(result.owners) == {Person(bmo_id=2, real_name='otis', nick='otis')}
-    assert set(result.peers) == {Person(bmo_id=2, real_name='otis', nick='otis')}
+    assert set(result.owners) == {Person(bmo_id=2, real_name="otis", nick="otis")}
+    assert set(result.peers) == {Person(bmo_id=2, real_name="otis", nick="otis")}
+    assert result.rejected_paths == ["felines/maine_coon"]
+
+
+def test_directory__Directory__query_merging(repo):
+    file_config = FileConfig(repo / "mots.yml")
+    directory = Directory(file_config)
+    directory.load(query_bmo=False)
+
+    paths_to_check_1 = [
+        "canines/chihuahuas/apple_head",
+        "birds/parrot",
+    ]
+    paths_to_check_2 = [
+        "felines/persian",
+        "felines/maine_coon",
+    ]
+
+    result_1 = directory.query(*paths_to_check_1)
+    result_2 = directory.query(*paths_to_check_2)
+
+    result = result_1 + result_2
+
+    assert result.path_map == {
+        "canines/chihuahuas/apple_head": [directory.modules_by_machine_name["pets"]],
+        "birds/parrot": [directory.modules_by_machine_name["pets"]],
+        "felines/persian": [directory.modules_by_machine_name["pets"]],
+    }
+    assert set(result.paths) == {
+        "canines/chihuahuas/apple_head",
+        "birds/parrot",
+        "felines/persian",
+    }
+    assert set(result.owners) == {Person(bmo_id=2, real_name="otis", nick="otis")}
+    assert set(result.peers) == {Person(bmo_id=2, real_name="otis", nick="otis")}
     assert result.rejected_paths == ["felines/maine_coon"]

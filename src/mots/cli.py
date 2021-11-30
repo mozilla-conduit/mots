@@ -109,7 +109,7 @@ class CLI:
 
 def main():
     """Redirect to appropriate function."""
-    parser = create_parser()
+    parser, subparsers = create_parser()
     args = parser.parse_args()
 
     init_logging(debug=args.debug)
@@ -121,6 +121,9 @@ def main():
         logger.debug(f"{args.func} took {(et - st).total_seconds()} seconds.")
     else:
         parser.print_help()
+        for name, subparser in subparsers.choices.items():
+            print()
+            subparser.print_help()
 
 
 def create_parser():
@@ -210,4 +213,4 @@ def create_parser():
     query_parser.add_argument("paths", nargs="+", help="a list of paths to query")
     query_parser.set_defaults(func=CLI.query)
 
-    return parser
+    return parser, subparsers

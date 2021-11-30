@@ -226,7 +226,7 @@ def clean(file_config: FileConfig, write: bool = True):
     there is no valid `machine_name`, generate one. Write changes to disk.
 
     :param file_config: an instance of :class:`FileConfig`
-    :param bool: if set to `True`, writes changes to disk.
+    :param write: if set to `True`, writes changes to disk.
     """
     from mots.directory import Directory
 
@@ -336,7 +336,7 @@ def add(
     :param module: a dictionary containing module parameters
     :param file_config: an instance of :class:`FileConfig`
     :param parent: the machine name of the parent module if applicable
-    :param bool: if set to `True`, writes changes to disk
+    :param write: if set to `True`, writes changes to disk
     """
     file_config.load()
     modules = file_config.config["modules"]

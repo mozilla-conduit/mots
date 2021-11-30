@@ -123,12 +123,17 @@ class QueryResult:
 
         data["rejected_paths"] = rejected
 
+        # Remove duplicate entries in all data attributes.
         for key in data:
             setattr(self, key, list(set(data[key])))
 
     def __add__(self, query_result):
         """Merge the data from both QueryResult objects."""
-        return {k: getattr(self, k) + getattr(query_result, k) for k in self.data_keys}
+        path_map = self.path_map.copy()
+        path_map.update(query_result.path_map)
+        rejected_paths = self.rejected_paths.copy()
+        rejected_paths += query_result.rejected_paths
+        return QueryResult(path_map, rejected_paths)
 
     def __radd__(self, query_result):
         """Call self.__add__ since the order of addition does not matter."""

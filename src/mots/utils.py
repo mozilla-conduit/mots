@@ -34,9 +34,9 @@ def parse_user_string(string):
     """Return user data based on provided string.
 
     Example:
-    >>> test = parse_user_string("charlie jones (cj) <cjones@example.org>")
-    >>> print(test)
-    >>> {"meta": "cj", "email": "cjones@example.org", "name": "charlie jones"}
+        >>> test = parse_user_string("charlie jones (cj) <cjones@example.org>")
+        >>> print(test)
+        >>> {"meta": "cj", "email": "cjones@example.org", "name": "charlie jones"}
     """
     logger.debug(f"Parsing provided string {string}...")
     pattern = re.compile(

@@ -16,6 +16,45 @@ from mots.config import FileConfig
 
 logger = logging.getLogger(__name__)
 
+WIKI_TMPL = """
+{% macro people_entry(people) %}
+{%- for p in people %}{{ p.nick }}{% if not loop.last %}, {% endif %}{% endfor %}
+{% endmacro %}
+
+{%- macro module_entry(module) -%}
+{% raw %}{{Module{% endraw %}
+|name={{ module.name }}
+|description={{ module.description }}
+|owner(s)={{ people_entry(module.owners) -}}
+|peer(s)={{ people_entry(module.peers) -}}
+|includes={{ module.includes|join(", ") }}
+|excludes={{ module.excludes|join(", ") }}
+{%- if module.meta.group -%}
+|group={{ module.meta.group }}
+{% endif %}
+{%- if module.meta.url -%}
+|url={{ module.meta.group }}
+{% endif %}
+{%- if module.meta.components -%}
+|url={{ module.meta.components }}
+{% endif %}
+{% raw %}}}{% endraw %}
+{% endmacro %}
+
+
+{{ directory.description or "No directory description provided." }}
+
+{%- for module in directory.modules -%}
+{{ module_entry(module) }}
+{% if module.submodules %}
+== Submodules ==
+{% for submodule in module.submodules %}
+{{ module_entry(submodule) }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+"""
+
 
 class Directory:
     """Mots directory and path index."""
@@ -89,6 +128,21 @@ class Directory:
 
         return QueryResult(result, rejected)
 
+    def _export_wiki(self):
+        from jinja2 import Template
+
+        template = Template(WIKI_TMPL)
+        out = template.render(directory=self)
+        return out
+
+    def export(self, frmt="wiki"):
+        """Export directory in a specified format."""
+        supported_formats = ["wiki"]
+        if frmt not in supported_formats:
+            raise ValueError(f"{frmt} not one of {supported_formats}.")
+
+        return getattr(self, f"_export_{frmt}")()
+
 
 class QueryResult:
     """Helper class to simplify query result interpretation."""
@@ -131,8 +185,10 @@ class QueryResult:
         """Merge the data from both QueryResult objects."""
         path_map = self.path_map.copy()
         path_map.update(query_result.path_map)
-        rejected_paths = self.rejected_paths.copy()
-        rejected_paths += query_result.rejected_paths
+        rejected_paths = set.intersection(
+            set(self.rejected_paths),
+            set(query_result.rejected_paths),
+        )
         return QueryResult(path_map, rejected_paths)
 
     def __radd__(self, query_result):

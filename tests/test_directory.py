@@ -114,6 +114,7 @@ def test_directory__Directory__query_merging(repo):
     paths_to_check_1 = [
         "canines/chihuahuas/apple_head",
         "birds/parrot",
+        "felines/maine_coon",
     ]
     paths_to_check_2 = [
         "felines/persian",

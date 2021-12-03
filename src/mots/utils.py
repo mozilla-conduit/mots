@@ -27,7 +27,8 @@ def get_list_input(text: str):
 
     :param test: the text to prompt the user with
     """
-    return [o.strip() for o in input(f"{text}: ").split(",") if o]
+    user_input = input(f"{text}: ").split(",")
+    return [e.strip() for e in user_input if e]
 
 
 def parse_user_string(string):

@@ -106,6 +106,16 @@ class CLI:
         file_config = FileConfig(Path(args.path))
         module.add(params, file_config, parent=parent, write=True)
 
+    @staticmethod
+    def export(args):
+        """Call `directory.export` with relevant parameters."""
+        file_config = FileConfig(Path(args.path))
+        file_config.load()
+        directory = Directory(file_config)
+        directory.load()
+        output = directory.export(args.format)
+        print(output)
+
 
 def main():
     """Redirect to appropriate function."""
@@ -115,6 +125,7 @@ def main():
     init_logging(debug=args.debug)
 
     if hasattr(args, "func"):
+        logger.debug(f"Calling {args.func} with {args}...")
         st = datetime.now()
         args.func(args)
         et = datetime.now()
@@ -212,5 +223,18 @@ def create_parser():
     )
     query_parser.add_argument("paths", nargs="+", help="a list of paths to query")
     query_parser.set_defaults(func=CLI.query)
+
+    export_parser = subparsers.add_parser("export", help="export the module directory")
+    export_parser.add_argument(
+        "--path",
+        "-p",
+        type=str,
+        help="the path of the repo config file",
+        default=DEFAULT_CONFIG_FILEPATH,
+    )
+    export_parser.add_argument(
+        "--format", "-f", type=str, default="wiki", help="a list of paths to export"
+    )
+    export_parser.set_defaults(func=CLI.export)
 
     return parser, subparsers

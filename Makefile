@@ -61,7 +61,7 @@ format:
 .PHONY: requirements
 requirements:
 	$ rm requirements.txt
-	$(PYTHON) -m piptools compile
+	$(PYTHON) -m piptools compile --generate-hashes
 
 .ONESHELL:
 .PHONY: dev-env

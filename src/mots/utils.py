@@ -47,3 +47,13 @@ def parse_user_string(string):
     match = pattern.match(string)
     if match:
         return match.groupdict()
+
+
+def parse_real_name(real_name):
+    """Parse real_name into name and info."""
+    pattern = re.compile(r"^(?P<name>[\w\ ]+?)?\ ?(?P<info>[\(\[\|\:].*)?$")
+    match = pattern.match(real_name)
+    if match:
+        return match.groupdict()
+    else:
+        return {"name": None, "info": None}

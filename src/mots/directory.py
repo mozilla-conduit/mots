@@ -13,6 +13,7 @@ import logging
 from mots.bmo import BMOClient
 from mots.module import Module
 from mots.config import FileConfig
+from mots.utils import parse_real_name
 
 logger = logging.getLogger(__name__)
 
@@ -201,7 +202,8 @@ class Person:
     """A class representing a person."""
 
     bmo_id: int = None
-    real_name: str = ""
+    name: str = ""
+    info: str = ""
     nick: str = ""
     bmo_data: InitVar[dict] = None
 
@@ -209,8 +211,12 @@ class Person:
         """Refresh BMO data from BMO API."""
         if bmo_data:
             self.nick = bmo_data.get("nick", "")
-            self.real_name = bmo_data.get("real_name", "")
             self.bmo_id = bmo_data.get("id") or self.bmo_id
+            real_name = bmo_data.get("real_name", "")
+
+            parsed_real_name = parse_real_name(real_name)
+            self.name = parsed_real_name["name"]
+            self.info = parsed_real_name["info"]
 
     def __hash__(self):
         """Return a unique identifier for this person."""
@@ -239,7 +245,6 @@ class People:
             logger.debug(f"Adding person {p} to roster...")
             self.people.append(
                 Person(
-                    real_name=p["real_name"],
                     bmo_id=p["bmo_id"],
                     bmo_data=bmo_data.get(p["bmo_id"]),
                 )

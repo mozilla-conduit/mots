@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 yaml = YAML()
 yaml.indent(mapping=2, sequence=4, offset=2)
-yaml.default_style = '""'
 
 DEFAULT_CONFIG_FILEPATH = "./mots.yaml"
 
@@ -33,7 +32,7 @@ class FileConfig:
         """Initialize a repo with a config file, if it does not contain it."""
         if not self.path.is_file():
             # File does not exist, create it.
-            now = datetime.now()
+            now = datetime.now().isoformat()
             self.config = {
                 "repo": str(Path(self.path).resolve().parts[-2]),
                 "created_at": now,
@@ -52,6 +51,6 @@ class FileConfig:
 
     def write(self):
         """Write configuration to file, and update the timestamp."""
-        self.config["updated_at"] = datetime.now()
+        self.config["updated_at"] = datetime.now().isoformat()
         with open(self.path, "w") as f:
             yaml.dump(self.config, f)

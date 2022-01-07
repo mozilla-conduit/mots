@@ -4,7 +4,11 @@
 
 """Tests for utils module."""
 
-from mots.utils import generate_machine_readable_name, parse_user_string
+from mots.utils import (
+    generate_machine_readable_name,
+    parse_user_string,
+    parse_real_name,
+)
 
 
 def test_generate_machine_readable_name():
@@ -48,3 +52,65 @@ def test_parse_user_string():
 
     test = parse_user_string("")
     assert test is None
+
+
+def test_parse_real_name():
+    assert parse_real_name("tëstér testerson (:test) [te/st]") == {
+        "name": "tëstér testerson",
+        "info": "(:test) [te/st]",
+    }
+
+    assert parse_real_name("tester testerson [:test] (te/st)") == {
+        "name": "tester testerson",
+        "info": "[:test] (te/st)",
+    }
+
+    assert parse_real_name("tester testerson (te/st)") == {
+        "name": "tester testerson",
+        "info": "(te/st)",
+    }
+
+    assert parse_real_name("tester testerson :test") == {
+        "name": "tester testerson",
+        "info": ":test",
+    }
+
+    assert parse_real_name("tester testerson | TEST | te/st") == {
+        "name": "tester testerson",
+        "info": "| TEST | te/st",
+    }
+
+    assert parse_real_name("tester testerson") == {
+        "name": "tester testerson",
+        "info": None,
+    }
+
+    assert parse_real_name("tester") == {
+        "name": "tester",
+        "info": None,
+    }
+
+    assert parse_real_name("(:bees)") == {
+        "name": None,
+        "info": "(:bees)",
+    }
+
+    assert parse_real_name("[:bees]") == {
+        "name": None,
+        "info": "[:bees]",
+    }
+
+    assert parse_real_name("[bees]") == {
+        "name": None,
+        "info": "[bees]",
+    }
+
+    assert parse_real_name("(bees)") == {
+        "name": None,
+        "info": "(bees)",
+    }
+
+    assert parse_real_name("") == {
+        "name": None,
+        "info": None,
+    }

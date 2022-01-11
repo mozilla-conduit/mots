@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 yaml = YAML()
 yaml.indent(mapping=2, sequence=4, offset=2)
 
-DEFAULT_CONFIG_FILEPATH = "./mots.yaml"
+DEFAULT_CONFIG_FILEPATH = Path("./mots.yaml")
 
 
 class FileConfig:

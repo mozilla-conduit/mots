@@ -80,12 +80,11 @@ class CLI:
         file_config.load()
         directory = Directory(file_config)
         directory.load()
-        result, rejected = directory.query(*args.paths)
-        for path in result:
-            modules = result[path]
+        result = directory.query(*args.paths)
+        for path in result.path_map:
+            modules = result.path_map[path]
             module_names = ",".join([m.machine_name for m in modules])
-            owners = ",".join([",".join(m.owners) for m in modules])
-            sys.stdout.write(f"{path}:{module_names}:{owners}\n")
+            sys.stdout.write(f"{path}:{module_names}\n")
 
     @staticmethod
     def add(args):
@@ -233,7 +232,7 @@ def create_parser():
         default=DEFAULT_CONFIG_FILEPATH,
     )
     export_parser.add_argument(
-        "--format", "-f", type=str, default="wiki", help="a list of paths to export"
+        "--format", "-f", type=str, default="wiki", help="the format of exported data"
     )
     export_parser.set_defaults(func=CLI.export)
 

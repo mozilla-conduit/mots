@@ -105,7 +105,7 @@ def test_directory__Directory__query(repo):
         Person(bmo_id=2, name="otis", info="testing", nick="otis")
     }
     assert set(result.peers) == {
-        Person(bmo_id=2, name="otis", info="testing", nick="otis")
+        Person(bmo_id=1, name="jill", info="testing", nick="jill")
     }
     assert result.rejected_paths == ["felines/maine_coon"]
 
@@ -144,6 +144,6 @@ def test_directory__Directory__query_merging(repo):
         Person(bmo_id=2, name="otis", info="testing", nick="otis")
     }
     assert set(result.peers) == {
-        Person(bmo_id=2, name="otis", info="testing", nick="otis")
+        Person(bmo_id=1, name="jill", info="testing", nick="jill")
     }
     assert result.rejected_paths == ["felines/maine_coon"]

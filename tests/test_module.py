@@ -66,12 +66,20 @@ def test_module__Module__validate__error_no_paths_in_submodule(repo):
                 name="Submodule",
                 machine_name="submodule",
                 excludes="*",
-            )
+            ),
+            dict(
+                name="Submodule2",
+                machine_name="submodule2",
+                excludes="*",
+            ),
         ],
     )
     m = Module(**m, repo_path=str(repo))
     errors = m.validate()
-    assert errors == ["No valid paths were found in submodule."]
+    assert errors == [
+        "No valid paths were found in submodule.",
+        "No valid paths were found in submodule2.",
+    ]
 
 
 def test_module__Module__validate__invalid_machine_name(repo):

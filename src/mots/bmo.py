@@ -1,7 +1,8 @@
-"""Module that provides helpers to interact with the Bugzilla API."""
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-# TODO: this should be abstracted so that it can be hot-swappable with any API that can
-# be searched.
+"""Module that provides helpers to interact with the Bugzilla API."""
 
 from __future__ import annotations
 import requests
@@ -14,8 +15,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://bugzilla.mozilla.org/rest"
 USER_AGENT = "mots"  # TODO: improve this and include version.
-
-# TODO set NO_INPUT var to prevent prompt.
+BUGZILLA_API_KEY_ENV_VAR = "BUGZILLA_API_KEY"
 
 
 class BMOClient:
@@ -23,11 +23,12 @@ class BMOClient:
 
     def __init__(self, token: str = None, base_url: str = DEFAULT_BASE_URL):
         if not token:
-            token = os.getenv("BUGZILLA_API_KEY", "")
+            token = os.getenv(BUGZILLA_API_KEY_ENV_VAR, "")
             if not token:
-                token = input("Enter BMO Token: ")
-            if not token:
-                raise Exception()
+                raise ValueError(
+                    f"{BUGZILLA_API_KEY_ENV_VAR} environment variable missing,"
+                    " and no other token was explicitly provided"
+                )
         self.headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": USER_AGENT}
         self.base_url = base_url
 
@@ -39,40 +40,8 @@ class BMOClient:
         )
         return response
 
-    def get_user(self, email: str, rate_limit_delay: float = 0.3):
-        """Get user data based on provided email address."""
-        time.sleep(rate_limit_delay)
-        fields = ["real_name", "nick", "email", "name", "id"]
-        response = self._get(
-            "user", {"names": email, "include_fields": ",".join(fields)}
-        )
-        if response.status_code != 200:
-            logger.error(f"Error searching {email}: {response.status_code}")
-            return
-
-        # TODO: handle case when there is more than one match.
-        # Since possibly users can sneak in their email address in another field?
-        # Although we should validate the "email" field in BMO response + check for
-        # verification.
-
-        result = response.json()
-        return result["users"][0]
-
-    def get_user_by_id(self, id_: str = "", rate_limit_delay: float = 0.3):
-        """Get user data by BMO ID."""
-        time.sleep(rate_limit_delay)
-        fields = ["real_name", "nick", "name", "id"]
-        response = self._get("user", {"ids": id_, "include_fields": ",".join(fields)})
-        if response.status_code != 200:
-            logger.error(f"Error searching {id_}: {response.status_code}")
-            return
-
-        result = response.json()
-        return result["users"][0]
-
-    def get_users_by_ids(self, ids: list[str], rate_limit_delay: float = 0.3):
-        """Get user data by BMO ID."""
-        time.sleep(rate_limit_delay)
+    def get_users_by_ids(self, ids: list[str]):
+        """Get user data by BMO IDs."""
         fields = ["real_name", "nick", "name", "id", "email"]
         response = self._get("user", {"ids": ids, "include_fields": ",".join(fields)})
         if response.status_code != 200:
@@ -99,10 +68,3 @@ class BMOClient:
         else:
             return None
         return result["users"][0]
-
-    # NOTES:
-    # How to store people?
-    # 64523: glob  -> if nick is available
-    # 65182: Jane Smith  -> if nick is not available, use provided name.
-    # OR
-    # - Masayuki Nakano bmo:19563

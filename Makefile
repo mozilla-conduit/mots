@@ -57,6 +57,7 @@ serve-cov:
 format:
 	$(PYTHON) -m black src/mots
 	$(PYTHON) -m black tests
+	$(PYTHON) -m black documentation
 
 .PHONY: requirements
 requirements:
@@ -66,13 +67,14 @@ requirements:
 .ONESHELL:
 .PHONY: dev-env
 dev-env:
-# TODO Make this better.
 ifdef PY
 	@echo "Creating virtual env in .mots-env using provided Python ($(PY))..."
 	-@(/usr/bin/$(PY) -m venv .mots-env && ([ $$? -eq 0 ] && echo "$(PY) found.")) 2>/dev/null||
 	-@(/usr/local/bin/$(PY) -m venv .mots-env && ([ $$? -eq 0 ] && echo "$(PY) found.")) 2>/dev/null
 else
-	@echo "PY variable not defined, please pass a python version (e.g. PY=python3.8)"
+	@echo "PY variable not defined, using python3 if available..."
+	@echo "Creating virtual env in .mots-env using python3..."
+	-@(python3 -m venv .mots-env && ([ $$? -eq 0 ] && echo "Found $(shell python3 --version)")) 2>/dev/null
 endif
 
 .PHONY: dev

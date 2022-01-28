@@ -80,6 +80,7 @@ def config():
                 ],
                 "excludes": ["canines/red_fox"],
                 "owners": [people[0]],
+                "peers": [people[1]],
                 "submodules": [
                     {
                         "machine_name": "predators",
@@ -110,6 +111,7 @@ def config():
                     "birds/eagle",
                 ],
                 "owners": [people[2]],
+                "peers": [people[1]],
             },
         ],
     }

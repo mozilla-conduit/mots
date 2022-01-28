@@ -240,8 +240,7 @@ class People:
         people = list(people)
         self.people = []
         self.by_bmo_id = {}
-        for i in range(len(people)):
-            p = people[i]
+        for i, p in enumerate(people):
             logger.debug(f"Adding person {p} to roster...")
             self.people.append(
                 Person(

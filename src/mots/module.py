@@ -8,8 +8,8 @@ from __future__ import annotations
 from collections import defaultdict
 import logging
 from pathlib import Path
-from mots.utils import generate_machine_readable_name
 from mots.config import FileConfig
+from mots.utils import generate_machine_readable_name
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +147,7 @@ class Module:
 
         return serialized
 
-    def validate(self, errors=None):
+    def validate(self):
         """Perform validation on module and submodules recursively.
 
         Starting with the current module, ensure that this module includes at least one
@@ -157,7 +157,7 @@ class Module:
         :param errors: a list of errors to append to
         :rtype: list
         """
-        errors = errors or []
+        errors = []
 
         if not self.machine_name.strip():
             errors.append("Module has a blank machine_name.")
@@ -168,23 +168,11 @@ class Module:
         if not self.calculate_paths():
             errors.append(f"No valid paths were found in {self.machine_name}.")
 
-        # # TODO do this validation against BMO/mock client
-        # if self.owners:
-        #     for owner in self.owners:
-        #         logger.debug(f"Parsing owner {owner}...")
-        #         owner = parse_user_string(owner)
-        #         if not owner["email"]:
-        #             errors.append(f"No valid email found for owner {owner['name']}")
-        # if self.peers:
-        #     for peer in self.peers:
-        #         logger.debug(f"Parsing peer {peer}...")
-        #         peer = parse_user_string(peer)
-        #         if not peer["email"]:
-        #             errors.append(f"No valid email found for peer {peer['name']}")
+        # TODO: validate people
 
         if self.submodules:
             for submodule in self.submodules:
-                return submodule.validate(errors=errors)
+                errors += submodule.validate()
 
         return errors
 
@@ -205,24 +193,11 @@ def show(modules: list[Module], module: str):
 
     :raises ValueError: when no module matches the given machine name
     """
-    modules_by_name = {}
     for _module in modules:
-        modules_by_name[_module["machine_name"]] = _module
-    if module not in modules_by_name:
-        raise ValueError(f"{module} not found.")
-    else:
-        print(modules_by_name[module])
-
-
-def extract_people(module):
-    """Return a list of people that are in a module or submodule."""
-    people_keys = ["owners", "peers"]  # "owners_emeritus", "peers_emeritus"
-    people = []
-    for key in people_keys:
-        if key in module and module[key]:
-            logger.debug(f"Extracting people from {module[key]} ({key})")
-            people += module[key]
-    return people
+        if _module["machine_name"] == module:
+            print(_module)
+            return
+    raise ValueError(f"{module} not found.")
 
 
 def clean(file_config: FileConfig, write: bool = True):

@@ -22,7 +22,6 @@ commands:
 import argparse
 from datetime import datetime
 import logging
-import sys
 from pathlib import Path
 
 from mots import module
@@ -36,84 +35,79 @@ from mots.utils import get_list_input
 logger = logging.getLogger(__name__)
 
 
-class CLI:
-    """Wrap methods and call with the correct arguments."""
+def init(args: argparse.Namespace) -> None:
+    """Call `file_config.init` with correct arguments."""
+    file_config = FileConfig(Path(args.path))
+    file_config.init()
 
-    @staticmethod
-    def init(args):
-        """Call `file_config.init` with correct arguments."""
-        file_config = FileConfig(Path(args.path))
-        file_config.init()
 
-    @staticmethod
-    def ls(args):
-        """Call `module.ls` with correct arguments."""
-        file_config = FileConfig(Path(args.path))
-        file_config.load()
-        return module.ls(file_config.config["modules"])
+def ls(args: argparse.Namespace) -> None:
+    """Call `module.ls` with correct arguments."""
+    file_config = FileConfig(Path(args.path))
+    file_config.load()
+    module.ls(file_config.config["modules"])
 
-    @staticmethod
-    def show(args):
-        """Call `module.show` with correct arguments."""
-        file_config = FileConfig(Path(args.path))
-        file_config.load()
-        return module.show(file_config.config["modules"], args.module)
 
-    @staticmethod
-    def validate(args):
-        """Call `module.validate` with correct arguments."""
-        file_config = FileConfig(Path(args.path))
-        file_config.load()
-        return module.validate(file_config.config, args.repo_path)
+def show(args: argparse.Namespace) -> None:
+    """Call `module.show` with correct arguments."""
+    file_config = FileConfig(Path(args.path))
+    file_config.load()
+    module.show(file_config.config["modules"], args.module)
 
-    @staticmethod
-    def clean(args):
-        """Call `module.clean` with correct arguments."""
-        file_config = FileConfig(Path(args.path))
-        file_config.load()
-        return module.clean(file_config)
 
-    @staticmethod
-    def query(args):
-        """Call `directory.query` with correct arguments."""
-        file_config = FileConfig(Path(args.path))
-        file_config.load()
-        directory = Directory(file_config)
-        directory.load()
-        result = directory.query(*args.paths)
-        for path in result.path_map:
-            modules = result.path_map[path]
-            module_names = ",".join([m.machine_name for m in modules])
-            sys.stdout.write(f"{path}:{module_names}\n")
+def validate(args: argparse.Namespace) -> None:
+    """Call `module.validate` with correct arguments."""
+    file_config = FileConfig(Path(args.path))
+    file_config.load()
+    module.validate(file_config.config, args.repo_path)
 
-    @staticmethod
-    def add(args):
-        """Prompt user to add a new module."""
-        params = {
-            "machine_name": input("Enter machine name of new module: "),
-            "name": input("Enter a human readable name: "),
-            "owners": get_list_input("Enter a comma separated list of owners"),
-            "peers": get_list_input("Enter a comma separated list of peers"),
-            "includes": get_list_input(
-                "Enter a comma separated list of paths to include"
-            ),
-            "excludes": get_list_input(
-                "Enter a comma separated list of paths to exclude"
-            ),
-        }
-        parent = input("Enter a machine name of the parent module (optional): ") or None
-        file_config = FileConfig(Path(args.path))
-        module.add(params, file_config, parent=parent, write=True)
 
-    @staticmethod
-    def export(args):
-        """Call `directory.export` with relevant parameters."""
-        file_config = FileConfig(Path(args.path))
-        file_config.load()
-        directory = Directory(file_config)
-        directory.load()
-        output = directory.export(args.format)
-        print(output)
+def clean(args: argparse.Namespace) -> None:
+    """Call `module.clean` with correct arguments."""
+    file_config = FileConfig(Path(args.path))
+    file_config.load()
+    module.clean(file_config)
+
+
+def query(args: argparse.Namespace) -> None:
+    """Call `directory.query` with correct arguments."""
+    file_config = FileConfig(Path(args.path))
+    file_config.load()
+    directory = Directory(file_config)
+    directory.load()
+    result = directory.query(*args.paths)
+    for path in result.path_map:
+        modules = result.path_map[path]
+        module_names = ",".join([m.machine_name for m in modules])
+        print(f"{path}:{module_names}\n")
+
+
+def add(args: argparse.Namespace) -> None:
+    """Prompt user to add a new module."""
+    params = {
+        "machine_name": input(
+            "Enter a machine name (alphanumeric characters and underscores)"
+            " for the new module: "
+        ),
+        "name": input("Enter a human readable name: "),
+        "owners": get_list_input("Enter a comma separated list of owners"),
+        "peers": get_list_input("Enter a comma separated list of peers"),
+        "includes": get_list_input("Enter a comma separated list of paths to include"),
+        "excludes": get_list_input("Enter a comma separated list of paths to exclude"),
+    }
+    parent = input("Enter a machine name of the parent module (optional): ") or None
+    file_config = FileConfig(Path(args.path))
+    module.add(params, file_config, parent=parent, write=True)
+
+
+def export(args: argparse.Namespace) -> None:
+    """Call `directory.export` with relevant parameters."""
+    file_config = FileConfig(Path(args.path))
+    file_config.load()
+    directory = Directory(file_config)
+    directory.load()
+    output = directory.export(args.format)
+    print(output)
 
 
 def main():
@@ -152,7 +146,7 @@ def create_parser():
         help="the path of the repo to initialize",
         default=DEFAULT_CONFIG_FILEPATH,
     )
-    init_parser.set_defaults(func=CLI.init)
+    init_parser.set_defaults(func=init)
 
     module_parser = subparsers.add_parser("module", help="module_operations")
     module_parser.add_argument(
@@ -165,14 +159,14 @@ def create_parser():
     module_parsers = module_parser.add_subparsers(title="module")
 
     list_parser = module_parsers.add_parser("list", help="list all modules")
-    list_parser.set_defaults(func=CLI.ls)
+    list_parser.set_defaults(func=ls)
 
     add_parser = module_parsers.add_parser("add", help="add a new module")
-    add_parser.set_defaults(func=CLI.add)
+    add_parser.set_defaults(func=add)
 
     show_parser = module_parsers.add_parser("show", help="show a module")
     show_parser.add_argument("module", help="name of the module to show")
-    show_parser.set_defaults(func=CLI.show)
+    show_parser.set_defaults(func=show)
 
     validate_parser = subparsers.add_parser(
         "validate", help="validate mots config for current repo"
@@ -191,7 +185,7 @@ def create_parser():
         help="the path of the repo",
         default=".",
     )
-    validate_parser.set_defaults(func=CLI.validate)
+    validate_parser.set_defaults(func=validate)
 
     clean_parser = subparsers.add_parser(
         "clean", help="clean mots config for current repo"
@@ -210,7 +204,7 @@ def create_parser():
         help="the path of the repo",
         default=".",
     )
-    clean_parser.set_defaults(func=CLI.clean)
+    clean_parser.set_defaults(func=clean)
 
     query_parser = subparsers.add_parser("query", help="query the module directory")
     query_parser.add_argument(
@@ -221,7 +215,7 @@ def create_parser():
         default=DEFAULT_CONFIG_FILEPATH,
     )
     query_parser.add_argument("paths", nargs="+", help="a list of paths to query")
-    query_parser.set_defaults(func=CLI.query)
+    query_parser.set_defaults(func=query)
 
     export_parser = subparsers.add_parser("export", help="export the module directory")
     export_parser.add_argument(
@@ -234,6 +228,6 @@ def create_parser():
     export_parser.add_argument(
         "--format", "-f", type=str, default="wiki", help="the format of exported data"
     )
-    export_parser.set_defaults(func=CLI.export)
+    export_parser.set_defaults(func=export)
 
     return parser, subparsers

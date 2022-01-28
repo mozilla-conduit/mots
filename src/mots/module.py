@@ -61,13 +61,14 @@ class Module:
     ):
         self.name = name
         self.machine_name = machine_name
+        self.description = description
         self.repo_path = Path(repo_path)
         self.parent = parent
 
         self.excludes = excludes or []
         self.includes = includes or []
         self.owners = owners or []
-        self.peers = owners or []
+        self.peers = peers or []
         self.submodules = []
         self.exclude_submodule_paths = exclude_submodule_paths
         self.exclude_module_paths = exclude_module_paths
@@ -138,6 +139,11 @@ class Module:
             "peers": self.peers,
             "meta": self.meta,
         }
+
+        if self.submodules:
+            serialized["submodules"] = [sm.serialize() for sm in self.submodules]
+        if self.parent:
+            serialized["parent"] = self.parent.machine_name
 
         return serialized
 

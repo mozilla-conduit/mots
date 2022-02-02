@@ -37,66 +37,8 @@ Utils
 
 Command Line Usage
 ==================
-You can get this help by typing ``mots`` at the command line.
+You can get command line usage help by typing ``mots --help`` at the command line.
 
-usage: mots [-h] [--debug] {init,module,validate,clean,query} ...
-
-main command line interface for mots
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --debug               enable debug output
-
-commands:
-  {init,module,validate,clean,query}
-    init                initialize mots configuration in repo
-    module              module_operations
-    validate            validate mots config for current repo
-    clean               clean mots config for current repo
-    query               query the module directory
-
-usage: mots init [-h] [--path PATH]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --path PATH, -p PATH  the path of the repo to initialize
-
-usage: mots module [-h] [--path PATH] {list,add,show} ...
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --path PATH, -p PATH  the path of the repo config file
-
-module:
-  {list,add,show}
-    list                list all modules
-    add                 add a new module
-    show                show a module
-
-usage: mots validate [-h] [--path PATH] [--repo-path REPO_PATH]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --path PATH, -p PATH  the path of the repo config file
-  --repo-path REPO_PATH, -r REPO_PATH
-                        the path of the repo
-
-usage: mots clean [-h] [--path PATH] [--repo-path REPO_PATH]
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --path PATH, -p PATH  the path of the repo config file
-  --repo-path REPO_PATH, -r REPO_PATH
-                        the path of the repo
-
-usage: mots query [-h] [--path PATH] paths [paths ...]
-
-positional arguments:
-  paths                 a list of paths to query
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --path PATH, -p PATH  the path of the repo config file
 
 Development environment
 =======================

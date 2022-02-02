@@ -25,7 +25,7 @@ import logging
 from pathlib import Path
 
 from mots import module
-from mots.config import FileConfig
+from mots import config
 from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
@@ -38,41 +38,41 @@ logger = logging.getLogger(__name__)
 
 def init(args: argparse.Namespace) -> None:
     """Call `file_config.init` with correct arguments."""
-    file_config = FileConfig(Path(args.path))
+    file_config = config.FileConfig(Path(args.path))
     file_config.init()
 
 
 def ls(args: argparse.Namespace) -> None:
     """Call `module.ls` with correct arguments."""
-    file_config = FileConfig(Path(args.path))
+    file_config = config.FileConfig(Path(args.path))
     file_config.load()
     module.ls(file_config.config["modules"])
 
 
 def show(args: argparse.Namespace) -> None:
     """Call `module.show` with correct arguments."""
-    file_config = FileConfig(Path(args.path))
+    file_config = config.FileConfig(Path(args.path))
     file_config.load()
     module.show(file_config.config["modules"], args.module)
 
 
 def validate(args: argparse.Namespace) -> None:
-    """Call `module.validate` with correct arguments."""
-    file_config = FileConfig(Path(args.path))
+    """Call `config.validate` with correct arguments."""
+    file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    module.validate(file_config.config, args.repo_path)
+    config.validate(file_config.config, args.repo_path)
 
 
 def clean(args: argparse.Namespace) -> None:
-    """Call `module.clean` with correct arguments."""
-    file_config = FileConfig(Path(args.path))
+    """Call `config.clean` with correct arguments."""
+    file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    module.clean(file_config)
+    config.clean(file_config)
 
 
 def query(args: argparse.Namespace) -> None:
     """Call `directory.query` with correct arguments."""
-    file_config = FileConfig(Path(args.path))
+    file_config = config.FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
     directory.load()
@@ -97,13 +97,13 @@ def add(args: argparse.Namespace) -> None:
         "excludes": get_list_input("Enter a comma separated list of paths to exclude"),
     }
     parent = input("Enter a machine name of the parent module (optional): ") or None
-    file_config = FileConfig(Path(args.path))
-    module.add(params, file_config, parent=parent, write=True)
+    file_config = config.FileConfig(Path(args.path))
+    config.add(params, file_config, parent=parent, write=True)
 
 
 def export(args: argparse.Namespace) -> None:
     """Call `export.export_to_format` with relevant parameters."""
-    file_config = FileConfig(Path(args.path))
+    file_config = config.FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
     directory.load()

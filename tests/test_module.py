@@ -7,11 +7,8 @@
 from __future__ import annotations
 import pytest
 
-from mots.config import FileConfig
-from mots.module import add
+from mots.config import FileConfig, add, validate, ValidationError
 from mots.module import Module
-from mots.module import ValidationError
-from mots.module import validate
 
 
 def test_module__Module(repo):
@@ -175,7 +172,3 @@ def test_module__add(repo):
     ]
 
     # TODO: validate that includes, excludes, and owners are lists...
-
-
-def test_module__clean(repo):
-    pass

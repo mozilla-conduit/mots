@@ -12,49 +12,25 @@ from dataclasses import InitVar
 import logging
 from mots.bmo import BMOClient
 from mots.module import Module
-from mots.config import FileConfig
 from mots.utils import parse_real_name
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mots.config import FileConfig
+
 
 logger = logging.getLogger(__name__)
 
-WIKI_TMPL = """
-{% macro people_entry(people) %}
-{%- for p in people %}{{ p.nick }}{% if not loop.last %}, {% endif %}{% endfor %}
-{% endmacro %}
 
-{%- macro module_entry(module) -%}
-{% raw %}{{Module{% endraw %}
-|name={{ module.name }}
-|description={{ module.description }}
-|owner(s)={{ people_entry(module.owners) -}}
-|peer(s)={{ people_entry(module.peers) -}}
-|includes={{ module.includes|join(", ") }}
-|excludes={{ module.excludes|join(", ") }}
-{%- if module.meta.group -%}
-|group={{ module.meta.group }}
-{% endif %}
-{%- if module.meta.url -%}
-|url={{ module.meta.group }}
-{% endif %}
-{%- if module.meta.components -%}
-|url={{ module.meta.components }}
-{% endif %}
-{% raw %}}}{% endraw %}
-{% endmacro %}
+def _get_bmo_data(people: list) -> dict:
+    """Fetch an updated dictionary from Bugzilla with user data.
 
-
-{{ directory.description or "No directory description provided." }}
-
-{%- for module in directory.modules -%}
-{{ module_entry(module) }}
-{% if module.submodules %}
-== Submodules ==
-{% for submodule in module.submodules %}
-{{ module_entry(submodule) }}
-{% endfor %}
-{% endif %}
-{% endfor %}
-"""
+    Dictionary keys are set to user IDs, and values are set to various data.
+    """
+    bmo_client = BMOClient()
+    bmo_data = bmo_client.get_users_by_ids([p["bmo_id"] for p in people])
+    return bmo_data
 
 
 class Directory:
@@ -110,7 +86,9 @@ class Directory:
         self.index = dict(self.index)
 
         # Load people directory
-        self.people = People(self.config_handle.config["people"], query_bmo=query_bmo)
+        people = list(self.config_handle.config["people"])
+        bmo_data = _get_bmo_data(people) if query_bmo else {}
+        self.people = People(people, bmo_data)
         if self.people.serialized != list(self.config_handle.config["people"]):
             logger.debug("People directory modified, updating configuration...")
             self.config_handle.config["people"] = self.people.serialized
@@ -128,21 +106,6 @@ class Directory:
         logger.debug(f"Query {paths} resolved to {result}.")
 
         return QueryResult(result, rejected)
-
-    def _export_wiki(self):
-        from jinja2 import Template
-
-        template = Template(WIKI_TMPL)
-        out = template.render(directory=self)
-        return out
-
-    def export(self, frmt="wiki"):
-        """Export directory in a specified format."""
-        supported_formats = ["wiki"]
-        if frmt not in supported_formats:
-            raise ValueError(f"{frmt} not one of {supported_formats}.")
-
-        return getattr(self, f"_export_{frmt}")()
 
 
 class QueryResult:
@@ -211,12 +174,14 @@ class Person:
         """Refresh BMO data from BMO API."""
         if bmo_data:
             self.nick = bmo_data.get("nick", "")
-            self.bmo_id = bmo_data.get("id") or self.bmo_id
+            self.bmo_id = bmo_data.get("id", self.bmo_id)
             real_name = bmo_data.get("real_name", "")
 
             parsed_real_name = parse_real_name(real_name)
             self.name = parsed_real_name["name"]
             self.info = parsed_real_name["info"]
+        else:
+            logger.warning(f"No bugzilla data was provided for user {self.bmo_id}")
 
     def __hash__(self):
         """Return a unique identifier for this person."""
@@ -230,24 +195,20 @@ class People:
     people: list = None
     serialized: list = None
 
-    def __init__(self, people, query_bmo: bool = True):
+    def __init__(self, people, bmo_data: dict):
         logger.debug(f"Initializing people directory with {len(people)} people...")
-        if query_bmo:
-            bmo_client = BMOClient()
-            bmo_data = bmo_client.get_users_by_ids([p["bmo_id"] for p in people])
-        else:
-            bmo_data = {}
         people = list(people)
         self.people = []
         self.by_bmo_id = {}
-        for i, p in enumerate(people):
-            logger.debug(f"Adding person {p} to roster...")
+        for i, person in enumerate(people):
+            logger.debug(f"Adding person {person} to roster...")
+            # TODO: should have a fallback here without BMO data.
             self.people.append(
                 Person(
-                    bmo_id=p["bmo_id"],
-                    bmo_data=bmo_data.get(p["bmo_id"]),
+                    bmo_id=person["bmo_id"],
+                    bmo_data=bmo_data.get(person["bmo_id"]),
                 )
             )
-            self.by_bmo_id[p["bmo_id"]] = i
-            logger.debug(f"Person {p} added to position {i}.")
-        self.serialized = [asdict(p) for p in self.people]
+            self.by_bmo_id[person["bmo_id"]] = i
+            logger.debug(f"Person {person} added to position {i}.")
+        self.serialized = [asdict(person) for person in self.people]

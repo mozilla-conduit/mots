@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://people.mozilla.org/api/v4/"
 USER_AGENT = "mots"  # TODO: improve this and include version.
+PMO_COOKIE_ENV_VAR = "PMO_COOKIE"
 
 
 class PMOClient:
@@ -20,9 +21,12 @@ class PMOClient:
 
     def __init__(self, token: str = None, base_url: str = DEFAULT_BASE_URL):
         if not token:
-            token = os.getenv("PMO_COOKIE", input("Enter PMO Cookie: "))
+            token = os.getenv("PMO_COOKIE_ENV_VAR")
             if not token:
-                raise Exception()
+                raise ValueError(
+                    f"{PMO_COOKIE_ENV_VAR} environment variable missing,"
+                    " and no other token was explicitly provided"
+                )
         self.headers = {"Cookie": token, "User-Agent": USER_AGENT}
         self.base_url = base_url
 

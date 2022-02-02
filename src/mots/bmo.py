@@ -8,7 +8,6 @@ from __future__ import annotations
 import requests
 import os
 import logging
-import time
 
 
 logger = logging.getLogger(__name__)
@@ -51,9 +50,8 @@ class BMOClient:
         result = response.json()
         return {u["id"]: u for u in result["users"]}
 
-    def get_match(self, match: str, rate_limit_delay: float = 0.3):
+    def get_match(self, match: str):
         """Get user data based on provided info."""
-        time.sleep(rate_limit_delay)
         fields = ["real_name", "nick", "email", "name", "id"]
         response = self._get(
             "user", {"match": match, "include_fields": ",".join(fields)}
@@ -65,6 +63,3 @@ class BMOClient:
         result = response.json()
         if result["users"]:
             return result["users"][0]
-        else:
-            return None
-        return result["users"][0]

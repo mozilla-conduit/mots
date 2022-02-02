@@ -164,7 +164,7 @@ class QueryResult:
 class Person:
     """A class representing a person."""
 
-    bmo_id: int = None
+    bmo_id: int
     name: str = ""
     info: str = ""
     nick: str = ""

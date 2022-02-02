@@ -91,11 +91,15 @@ def add(args: argparse.Namespace) -> None:
             " for the new module: "
         ),
         "name": input("Enter a human readable name: "),
-        "owners": get_list_input("Enter a comma separated list of owners"),
-        "peers": get_list_input("Enter a comma separated list of peers"),
+        "owners": get_list_input("Enter a comma separated list of owner bugzilla IDs"),
+        "peers": get_list_input("Enter a comma separated list of peer bugzilla IDs"),
         "includes": get_list_input("Enter a comma separated list of paths to include"),
         "excludes": get_list_input("Enter a comma separated list of paths to exclude"),
     }
+
+    params["owners"] = [{"bmo_id": int(bmo_id)} for bmo_id in params["owners"]]
+    params["peers"] = [{"bmo_id": int(bmo_id)} for bmo_id in params["peers"]]
+
     parent = input("Enter a machine name of the parent module (optional): ") or None
     file_config = config.FileConfig(Path(args.path))
     config.add(params, file_config, parent=parent, write=True)

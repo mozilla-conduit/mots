@@ -49,7 +49,8 @@ class FileConfig:
                 "repo": str(Path(self.path).resolve().parts[-2]),
                 "created_at": now,
                 "updated_at": None,
-                "modules": None,
+                "modules": [],
+                "people": [],
             }
             self.write()
             logger.info(f"mots configuration initialized in {self.path}.")
@@ -88,9 +89,13 @@ def clean(file_config: FileConfig, write: bool = True):
         for key in people_keys:
             if key in module and module[key]:
                 for i, person in enumerate(module[key]):
-                    module[key][i] = file_config.config["people"][
-                        directory.people.by_bmo_id[person["bmo_id"]]
-                    ]
+                    try:
+                        module[key][i] = file_config.config["people"][
+                            directory.people.by_bmo_id[person["bmo_id"]]
+                        ]
+                    except KeyError:
+                        file_config.config["people"].append(person)
+                        module[key][i] = person
 
         # Do the same for submodules.
         if "submodules" in module and module["submodules"]:

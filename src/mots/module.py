@@ -96,6 +96,9 @@ class Module:
         if not self.peers and self.parent:
             self.peers = self.parent.peers
 
+        self.owner_names = [owner["nick"] for owner in self.owners]
+        self.peer_names = [peer["nick"] for peer in self.peers]
+
     def calculate_paths(self):
         """Calculate paths based on inclusions and exclusions.
 

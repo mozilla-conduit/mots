@@ -157,7 +157,7 @@ def test_module__add(repo):
     module = {
         "machine_name": "reptiles",
         "includes": ["reptiles/**/*"],
-        "owners": ["angel"],
+        "owners": [{"nick": "otis", "bmo_id": 2, "info": "testing"}],
     }
 
     add(module, file_config, parent="pets", write=True)
@@ -170,7 +170,9 @@ def test_module__add(repo):
     assert file_config.config["modules"][1]["submodules"][0]["includes"] == [
         "reptiles/**/*"
     ]
-    assert file_config.config["modules"][1]["submodules"][0]["owners"] == ["angel"]
+    assert file_config.config["modules"][1]["submodules"][0]["owners"] == [
+        {"nick": "otis", "bmo_id": 2, "info": "testing"}
+    ]
 
     # TODO: validate that includes, excludes, and owners are lists...
 

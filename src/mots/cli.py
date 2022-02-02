@@ -27,6 +27,7 @@ from pathlib import Path
 from mots import module
 from mots.config import FileConfig
 from mots.directory import Directory
+from mots.export import export_to_format
 from mots.logging import init_logging
 from mots.config import DEFAULT_CONFIG_FILEPATH
 
@@ -101,12 +102,12 @@ def add(args: argparse.Namespace) -> None:
 
 
 def export(args: argparse.Namespace) -> None:
-    """Call `directory.export` with relevant parameters."""
+    """Call `export.export_to_format` with relevant parameters."""
     file_config = FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
     directory.load()
-    output = directory.export(args.format)
+    output = export_to_format(directory, args.format)
     print(output)
 
 
@@ -226,7 +227,7 @@ def create_parser():
         default=DEFAULT_CONFIG_FILEPATH,
     )
     export_parser.add_argument(
-        "--format", "-f", type=str, default="wiki", help="the format of exported data"
+        "--format", "-f", type=str, default="rst", help="the format of exported data"
     )
     export_parser.set_defaults(func=export)
 

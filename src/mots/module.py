@@ -7,11 +7,9 @@
 from __future__ import annotations
 import logging
 from pathlib import Path
-import pprint
+from pprint import pprint as print
 
 logger = logging.getLogger(__name__)
-
-print = pprint.PrettyPrinter().pprint
 
 
 class Module:

@@ -77,13 +77,16 @@ else
 	-@(python3 -m venv .mots-env && ([ $$? -eq 0 ] && echo "Found $(shell python3 --version)")) 2>/dev/null
 endif
 
+.ONESHELL:
 .PHONY: dev
 dev:
-	# TODO: only run this if we can detect .mots-env virtual environment.
-	$(PYTHON) -m pip install --upgrade pip
-	$(PYTHON) -m pip install pip-tools
-	$(PYTHON) -m pip install -r requirements.txt
-	$(PYTHON) -m pip install -e .
+	deactivate
+	set -e
+	source ./.mots-env/bin/activate
+	python -m pip install --upgrade pip
+	python -m pip install pip-tools
+	python -m pip install -r requirements.txt
+	python -m pip install -e .
 
 .PHONY: serve-docs
 serve-docs:

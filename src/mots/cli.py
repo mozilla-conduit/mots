@@ -77,8 +77,7 @@ def query(args: argparse.Namespace) -> None:
     directory = Directory(file_config)
     directory.load()
     result = directory.query(*args.paths)
-    for path in result.path_map:
-        modules = result.path_map[path]
+    for path, modules in result.path_map.items():
         module_names = ",".join([m.machine_name for m in modules])
         print(f"{path}:{module_names}\n")
 
@@ -130,9 +129,6 @@ def main():
         logger.debug(f"{args.func} took {(et - st).total_seconds()} seconds.")
     else:
         parser.print_help()
-        for name, subparser in subparsers.choices.items():
-            print()
-            subparser.print_help()
 
 
 def create_parser():

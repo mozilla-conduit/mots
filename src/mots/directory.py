@@ -127,23 +127,21 @@ class QueryResult:
     }
 
     def __init__(self, result, rejected):
-        data = {k: list() for k in self.data_keys}
+        data = {k: set() for k in self.data_keys}
         self.path_map = result
 
         for path in self.path_map:
-            data["paths"].append(path)
-            data["modules"] += self.path_map[path]
+            data["paths"].add(path)
+            data["modules"].update(self.path_map[path])
 
         for module in data["modules"]:
-            # TODO: this conversion should happen elsewhere.
-            data["owners"] += [Person(**o) for o in module.owners]
-            data["peers"] += [Person(**p) for p in module.peers]
+            data["owners"].update([Person(**o) for o in module.owners])
+            data["peers"].update([Person(**p) for p in module.peers])
 
-        data["rejected_paths"] = rejected
+        data["rejected_paths"].update(rejected)
 
-        # Remove duplicate entries in all data attributes.
         for key in data:
-            setattr(self, key, list(set(data[key])))
+            setattr(self, key, list(data[key]))
 
     def __add__(self, query_result):
         """Merge the data from both QueryResult objects."""
@@ -180,8 +178,6 @@ class Person:
             parsed_real_name = parse_real_name(real_name)
             self.name = parsed_real_name["name"]
             self.info = parsed_real_name["info"]
-        else:
-            logger.warning(f"No bugzilla data was provided for user {self.bmo_id}")
 
     def __hash__(self):
         """Return a unique identifier for this person."""
@@ -194,6 +190,12 @@ class People:
     by_bmo_id: dict = None
     people: list = None
     serialized: list = None
+
+    def refresh_by_bmo_id(self):
+        """Refresh index positions of people by their bugzilla ID."""
+        self.by_bmo_id = {}
+        for i, person in enumerate(self.people):
+            self.by_bmo_id[person["bmo_id"]] = i
 
     def __init__(self, people, bmo_data: dict):
         logger.debug(f"Initializing people directory with {len(people)} people...")

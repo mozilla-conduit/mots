@@ -49,8 +49,8 @@ class FileConfig:
                 "repo": str(Path(self.path).resolve().parts[-2]),
                 "created_at": now,
                 "updated_at": None,
-                "modules": [],
                 "people": [],
+                "modules": [],
             }
             self.write()
             logger.info(f"mots configuration initialized in {self.path}.")
@@ -78,6 +78,7 @@ def clean(file_config: FileConfig, write: bool = True):
     :param file_config: an instance of :class:`FileConfig`
     :param write: if set to `True`, writes changes to disk.
     """
+    people_keys = ("owners", "peers")
     file_config.load()
     directory = Directory(file_config)
     directory.load()
@@ -85,26 +86,33 @@ def clean(file_config: FileConfig, write: bool = True):
         if "machine_name" not in module:
             module["machine_name"] = generate_machine_readable_name(module["name"])
 
-        people_keys = ("owners", "peers")
         for key in people_keys:
-            if key in module and module[key]:
-                for i, person in enumerate(module[key]):
-                    try:
-                        module[key][i] = file_config.config["people"][
-                            directory.people.by_bmo_id[person["bmo_id"]]
-                        ]
-                    except KeyError:
-                        file_config.config["people"].append(person)
-                        module[key][i] = person
+            if key not in module or not module[key]:
+                continue
+            for i, person in enumerate(module[key]):
+                if person["bmo_id"] not in directory.people.by_bmo_id:
+                    file_config.config["people"].append(person)
+                    module[key][i] = person
+                    directory.people.refresh_by_bmo_id()
+                else:
+                    module[key][i] = file_config.config["people"][
+                        directory.people.by_bmo_id[person["bmo_id"]]
+                    ]
 
         # Do the same for submodules.
+        # TODO: this should be refactored.
         if "submodules" in module and module["submodules"]:
             module["submodules"].sort(key=lambda x: x["name"])
             for submodule in module["submodules"]:
                 for key in people_keys:
-                    if key in submodule and submodule[key]:
-                        for i, person in enumerate(submodule[key]):
-                            person = submodule[key][i]
+                    if key not in submodule or not submodule[key]:
+                        continue
+                    for i, person in enumerate(submodule[key]):
+                        if person["bmo_id"] not in directory.people.by_bmo_id:
+                            file_config.config["people"].append(person)
+                            submodule[key][i] = person
+                            directory.people.refresh_by_bmo_id()
+                        else:
                             submodule[key][i] = file_config.config["people"][
                                 directory.people.by_bmo_id[person["bmo_id"]]
                             ]
@@ -153,11 +161,11 @@ def validate(config: dict, repo_path: str):
 
     # Count machine name repetitions in a defaultdict.
     machine_names = defaultdict(int)
-    for m in modules:
-        machine_names[m["machine_name"]] += 1
-        if "submodules" in m and m["submodules"]:
-            for sm in m["submodules"]:
-                machine_names[sm["machine_name"]] += 1
+    for module in modules:
+        machine_names[module["machine_name"]] += 1
+        if "submodules" in module and module["submodules"]:
+            for submodule in module["submodules"]:
+                machine_names[submodule["machine_name"]] += 1
 
     machine_names = {name: count for name, count in machine_names.items() if count > 1}
     if machine_names:

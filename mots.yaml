@@ -1,6 +1,12 @@
 repo: mots
 created_at: '2022-02-02T14:48:50.574414'
-updated_at: '2022-02-02T14:57:03.916934'
+updated_at: '2022-02-04T10:21:14.554274'
+people:
+  - &zeid
+    bmo_id: 633708
+    name: Zeid Zabaneh
+    info: '[:zeid]'
+    nick: zeid
 modules:
   - machine_name: main
     name: Main
@@ -8,12 +14,6 @@ modules:
       - '**/*'
     excludes: []
     owners:
-      - &zeid
-        bmo_id: 633708
-        name: Zeid Zabaneh
-        info: '[:zeid]'
-        nick: zeid
+      - *zeid
     peers: []
     meta:
-people:
-  - *zeid

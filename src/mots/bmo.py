@@ -13,8 +13,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://bugzilla.mozilla.org/rest"
-USER_AGENT = "mots"  # TODO: improve this and include version.
+USER_AGENT = "mots"
 BUGZILLA_API_KEY_ENV_VAR = "BUGZILLA_API_KEY"
+
+
+def get_bmo_data(people: list) -> dict:
+    """Fetch an updated dictionary from Bugzilla with user data.
+
+    Dictionary keys are set to user IDs, and values are set to various data.
+    """
+    bmo_client = BMOClient()
+    bmo_data = bmo_client.get_users_by_ids([p["bmo_id"] for p in people])
+    return bmo_data
 
 
 class BMOClient:
@@ -28,14 +38,14 @@ class BMOClient:
                     f"{BUGZILLA_API_KEY_ENV_VAR} environment variable missing,"
                     " and no other token was explicitly provided"
                 )
-        self.headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": USER_AGENT}
-        self.base_url = base_url
+        self._headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": USER_AGENT}
+        self._base_url = base_url
 
     def _get(self, path: str, params=None):
-        logger.debug(f"GET {self.base_url}/{path}")
+        logger.debug(f"GET {self._base_url}/{path}")
         params = params or {}
         response = requests.get(
-            f"{self.base_url}/{path}", headers=self.headers, params=params
+            f"{self._base_url}/{path}", headers=self._headers, params=params
         )
         return response
 

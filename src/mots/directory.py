@@ -8,9 +8,7 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import asdict
 from dataclasses import dataclass
-from dataclasses import InitVar
 import logging
-from mots.bmo import BMOClient
 from mots.module import Module
 from mots.utils import parse_real_name
 
@@ -21,16 +19,6 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
-
-
-def _get_bmo_data(people: list) -> dict:
-    """Fetch an updated dictionary from Bugzilla with user data.
-
-    Dictionary keys are set to user IDs, and values are set to various data.
-    """
-    bmo_client = BMOClient()
-    bmo_data = bmo_client.get_users_by_ids([p["bmo_id"] for p in people])
-    return bmo_data
 
 
 class Directory:
@@ -87,11 +75,7 @@ class Directory:
 
         # Load people directory
         people = list(self.config_handle.config["people"])
-        bmo_data = _get_bmo_data(people) if query_bmo else {}
-        self.people = People(people, bmo_data)
-        if self.people.serialized != list(self.config_handle.config["people"]):
-            logger.debug("People directory modified, updating configuration...")
-            self.config_handle.config["people"] = self.people.serialized
+        self.people = People(people, {})
 
     def query(self, *paths: str) -> QueryResult:
         """Query given paths and return a list of corresponding modules."""
@@ -110,13 +94,6 @@ class Directory:
 
 class QueryResult:
     """Helper class to simplify query result interpretation."""
-
-    paths: list = None
-    path_map: dict = None
-    rejected_paths: list = None
-    modules: list = None
-    owners: list = None
-    peers: list = None
 
     data_keys = {
         "paths",
@@ -163,54 +140,45 @@ class Person:
     """A class representing a person."""
 
     bmo_id: int
-    name: str = ""
-    info: str = ""
-    nick: str = ""
-    bmo_data: InitVar[dict] = None
-
-    def __post_init__(self, bmo_data):
-        """Refresh BMO data from BMO API."""
-        if bmo_data:
-            self.nick = bmo_data.get("nick", "")
-            self.bmo_id = bmo_data.get("id", self.bmo_id)
-            real_name = bmo_data.get("real_name", "")
-
-            parsed_real_name = parse_real_name(real_name)
-            self.name = parsed_real_name["name"]
-            self.info = parsed_real_name["info"]
+    name: str
+    info: str
+    nick: str
 
     def __hash__(self):
         """Return a unique identifier for this person."""
-        return int(self.bmo_id)
+        return self.bmo_id
 
 
 class People:
     """A people directory searchable by name, email, or BMO ID."""
 
-    by_bmo_id: dict = None
-    people: list = None
-    serialized: list = None
+    def __init__(self, people, bmo_data: dict):
+        logger.debug(f"Initializing people directory with {len(people)} people...")
+
+        self.people = []
+        self.by_bmo_id = {}
+
+        people = list(people)
+        for i, person in enumerate(people):
+            logger.debug(f"Adding person {person} to roster...")
+
+            bmo_id = person["bmo_id"] = int(person["bmo_id"])
+            if bmo_id in bmo_data and bmo_data[bmo_id]:
+                # Update person's data base on BMO data.
+                bmo_datum = bmo_data[person["bmo_id"]]
+                person["nick"] = bmo_datum.get("nick", "")
+
+                parsed_real_name = parse_real_name(bmo_datum["real_name"])
+                person["name"] = parsed_real_name["name"]
+                person["info"] = parsed_real_name["info"]
+
+            self.people.append(Person(**person))
+            self.by_bmo_id[person["bmo_id"]] = i
+            logger.debug(f"Person {person} added to position {i}.")
+        self.serialized = [asdict(person) for person in self.people]
 
     def refresh_by_bmo_id(self):
         """Refresh index positions of people by their bugzilla ID."""
         self.by_bmo_id = {}
         for i, person in enumerate(self.people):
-            self.by_bmo_id[person["bmo_id"]] = i
-
-    def __init__(self, people, bmo_data: dict):
-        logger.debug(f"Initializing people directory with {len(people)} people...")
-        people = list(people)
-        self.people = []
-        self.by_bmo_id = {}
-        for i, person in enumerate(people):
-            logger.debug(f"Adding person {person} to roster...")
-            # TODO: should have a fallback here without BMO data.
-            self.people.append(
-                Person(
-                    bmo_id=person["bmo_id"],
-                    bmo_data=bmo_data.get(person["bmo_id"]),
-                )
-            )
-            self.by_bmo_id[person["bmo_id"]] = i
-            logger.debug(f"Person {person} added to position {i}.")
-        self.serialized = [asdict(person) for person in self.people]
+            self.by_bmo_id[person.bmo_id] = i

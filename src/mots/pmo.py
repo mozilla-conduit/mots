@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://people.mozilla.org/api/v4/"
-USER_AGENT = "mots"  # TODO: improve this and include version.
+USER_AGENT = "mots"
 PMO_COOKIE_ENV_VAR = "PMO_COOKIE"
 
 

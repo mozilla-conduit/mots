@@ -31,24 +31,6 @@ def get_list_input(text: str):
     return [e.strip() for e in user_input if e]
 
 
-def parse_user_string(string):
-    """Return user data based on provided string.
-
-    Example:
-        >>> test = parse_user_string("charlie jones (cj) <cjones@example.org>")
-        >>> print(test)
-        >>> {"meta": "cj", "email": "cjones@example.org", "name": "charlie jones"}
-    """
-    logger.debug(f"Parsing provided string {string}...")
-    pattern = re.compile(
-        r"^((?P<name>([\w\-'.]+)( +[\w\-'.]+)*)\s?)"
-        r"(\((?P<meta>.*)\))?\s?(\<(?P<email>.*)\>)?$"
-    )
-    match = pattern.match(string)
-    if match:
-        return match.groupdict()
-
-
 def parse_real_name(real_name):
     """Parse real_name into name and info."""
     pattern = re.compile(r"^(?P<name>[\w\ ]+?)?\ ?(?P<info>[\(\[\|\:].*)?$")

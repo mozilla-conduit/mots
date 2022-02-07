@@ -87,9 +87,9 @@ def add(args: argparse.Namespace) -> None:
     params = {
         "machine_name": input(
             "Enter a machine name (alphanumeric characters and underscores)"
-            " for the new module: "
+            " for the new module (e.g. core_accessibility): "
         ),
-        "name": input("Enter a human readable name: "),
+        "name": input("Enter a human readable name (e.g. Core: Accessibility): "),
         "owners": get_list_input("Enter a comma separated list of owner bugzilla IDs"),
         "peers": get_list_input("Enter a comma separated list of peer bugzilla IDs"),
         "includes": get_list_input("Enter a comma separated list of paths to include"),

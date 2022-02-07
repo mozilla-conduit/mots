@@ -11,7 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from ruamel.yaml import YAML
 
-from mots.directory import Directory
+from mots.bmo import get_bmo_data
+from mots.directory import Directory, People
 from mots.module import Module
 from mots.utils import generate_machine_readable_name
 
@@ -46,7 +47,7 @@ class FileConfig:
             # File does not exist, create it.
             now = datetime.now().isoformat()
             self.config = {
-                "repo": str(Path(self.path).resolve().parts[-2]),
+                "repo": str(Path(self.path).resolve().parent.name),
                 "created_at": now,
                 "updated_at": None,
                 "people": [],
@@ -82,6 +83,14 @@ def clean(file_config: FileConfig, write: bool = True):
     file_config.load()
     directory = Directory(file_config)
     directory.load()
+
+    people = list(file_config.config["people"])
+
+    bmo_data = get_bmo_data(people)
+    updated_people = People(people, bmo_data)
+    logger.debug("Updating people configuration based on BMO data...")
+    file_config.config["people"] = updated_people.serialized
+
     for i, module in enumerate(file_config.config["modules"]):
         if "machine_name" not in module:
             module["machine_name"] = generate_machine_readable_name(module["name"])
@@ -100,7 +109,6 @@ def clean(file_config: FileConfig, write: bool = True):
                     ]
 
         # Do the same for submodules.
-        # TODO: this should be refactored.
         if "submodules" in module and module["submodules"]:
             module["submodules"].sort(key=lambda x: x["name"])
             for submodule in module["submodules"]:
@@ -208,7 +216,6 @@ def add(
                 break
     else:
         modules.append(serialized)
-        # TODO: do better validation here, via schema validation or otherwise
 
     if write:
         file_config.write()

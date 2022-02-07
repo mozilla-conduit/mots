@@ -39,10 +39,10 @@ class Module:
         self,
         machine_name: str,
         repo_path: str,
-        name: str = None,
-        description: str = None,
-        includes: str = None,
-        excludes: str = None,
+        name: str = "",
+        description: str = "",
+        includes: list = None,
+        excludes: list = None,
         owners: list[str] = None,
         peers: list[str] = None,
         meta: dict = None,
@@ -162,8 +162,6 @@ class Module:
 
         if not self.calculate_paths():
             errors.append(f"No valid paths were found in {self.machine_name}.")
-
-        # TODO: validate people
 
         if self.submodules:
             for submodule in self.submodules:

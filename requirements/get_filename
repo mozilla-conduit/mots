@@ -1,0 +1,8 @@
+#! /usr/bin/env python
+
+import platform
+
+
+if __name__ == "__main__":
+    version = platform.python_version_tuple()
+    print("python%s.%s.txt" % version[0:2])

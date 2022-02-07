@@ -61,8 +61,11 @@ format:
 
 .PHONY: requirements
 requirements:
-	$ rm requirements.txt
-	$(PYTHON) -m piptools compile --generate-hashes
+	rm requirements/*.txt
+	docker-compose run generate-python3.7-requirements
+	docker-compose run generate-python3.8-requirements
+	docker-compose run generate-python3.9-requirements
+	docker-compose run generate-python3.10-requirements
 
 .ONESHELL:
 .PHONY: dev-env
@@ -85,7 +88,8 @@ dev:
 	source ./.mots-env/bin/activate
 	python -m pip install --upgrade pip
 	python -m pip install pip-tools
-	python -m pip install -r requirements.txt
+	ls -lla requirements
+	python -m pip install -r requirements/$$(./requirements/get_filename)
 	python -m pip install -e .
 
 .PHONY: serve-docs

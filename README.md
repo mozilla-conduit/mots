@@ -9,17 +9,18 @@ mots - Module Ownership in Tree System
 
 - The [main repository](https://github.com/mozilla-conduit/mots) is hosted on GitHub. Pull requests should be submitted against the `main` branch.
 
-- Bugs are tracked [on Bugzilla](https://bugzilla.mozilla.org), under the `Conduit::mots` component.
+- Bugs are tracked [on Bugzilla](https://bugzilla.mozilla.org), under the `Conduit :: mots` component.
 
 
 Development environment
 =======================
 To set up a local development environment, run the following commands. Optionally replace the python version with the desired version on your local machine.
 
-.. code-block:: bash
 
-    make dev-env PY=python3.9
-    source .mots-env/bin/activate
-    make dev
+```shell
+make dev-env PY=python3.9
+source .mots-env/bin/activate
+make dev
+```
 
 The above commands will set up a local development environment using the provided python version available on your machine, and subsequently install all required packages in that environment.

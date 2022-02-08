@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 # -- Project information -----------------------------------------------------
 
 project = "mots"
-copyright = "2021 Mozilla Inc."
+copyright = "2021 - 2022 Mozilla Inc."
 author = "Zeid Zabaneh <zeid@mozilla.com>"
 
 

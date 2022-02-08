@@ -1,7 +1,7 @@
 mots - Module Ownership in Tree System
 ======================================
 
-[Full documentation](https://mots.readthedocs.io/en/develop/) can be viewed online.
+[Full documentation](https://mots.readthedocs.io/en/latest/) can be viewed online.
 
 ### Contributing
 

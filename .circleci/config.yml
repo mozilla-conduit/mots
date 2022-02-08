@@ -1,0 +1,51 @@
+version: 2.1
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test_3_10
+      - test_3_9
+      - test_3_8
+      - test_3_7
+
+jobs:
+  test_3_7: &test_template
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: setup
+          command: |
+            set -e
+            sudo apt-get install python3-venv
+            mkdir -p /tmp/test-reports
+            make dev-env
+            source .mots-env/bin/activate
+            make dev
+      - run:
+          name: run tests
+          command: |
+            set -e
+            source .mots-env/bin/activate
+            ulimit -c unlimited
+            for F in tests/test_*.py; do
+              pytest --junitxml=/tmp/test-reports/junit-$( basename $F .py ).xml -vv $F
+            done
+      - store_test_results:
+          path: /tmp/test-reports
+      - store_artifacts:
+          path: /tmo/test-reports
+  test_3_8:
+    <<: *test_template
+    docker:
+        - image: circleci/python:3.8
+  test_3_9:
+    <<: *test_template
+    docker:
+        - image: circleci/python:3.9
+  test_3_10:
+    <<: *test_template
+    docker:
+        - image: circleci/python:3.10

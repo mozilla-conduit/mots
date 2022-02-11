@@ -1,13 +1,11 @@
 {# This Source Code Form is subject to the terms of the Mozilla Public #}
 {# License, v. 2.0. If a copy of the MPL was not distributed with this #}
 {# file, You can obtain one at https://mozilla.org/MPL/2.0/. #}
-
 {%- macro module_entry(module, is_submodule=False) -%}
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
 
 {{ module.description }}
-
 {% if not module.owners %}
 .. warning::
 
@@ -46,10 +44,10 @@
       - {{ module.meta.components|join(", ") }}
 {% endif %}
 {% endmacro %}
-
 =======
 Modules
 =======
+
 {{ directory.description }}
 
 {%- for module in directory.modules -%}

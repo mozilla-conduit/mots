@@ -22,7 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 class Directory:
-    """Mots directory and path index."""
+    """Path indexer.
+
+    When this class is initialized with a :class:`FileConfig <mots.config.FileConfig>`
+    instance, it parses the configuration and loads all modules into the instance. In
+    order to use the rest of the methods provided by this class, the
+    :func:`load <mots.directory.Directory.load>` method must be called first.
+    """
 
     def __init__(self, config: FileConfig):
         self.config_handle = config
@@ -41,8 +47,15 @@ class Directory:
         self.index = None
         self.people = None
 
-    def load(self, full_paths: bool = False, query_bmo=True):
-        """Load all paths in each module and put them in index."""
+    def load(self, full_paths: bool = False):
+        """Populate file path and people indexes.
+
+        :param full_paths: when true, loads all repo paths in filesystem into index.
+
+        This method should be called any time there are changes in the filesystem. For
+        example, if the directory index is loaded before a patch is applied, then any
+        new files that are added, removed, or moved, may not resolve correctly.
+        """
         self.index = defaultdict(list)
 
         if full_paths:
@@ -78,7 +91,11 @@ class Directory:
         self.people = People(people, {})
 
     def query(self, *paths: str) -> QueryResult:
-        """Query given paths and return a list of corresponding modules."""
+        """Query given paths and return a list of corresponding modules.
+
+        :param paths: a string representing a path within the repo
+        :rtype: mots.directory.QueryResult
+        """
         result = {}
         rejected = []
         for path in paths:
@@ -120,7 +137,7 @@ class QueryResult:
         for key in data:
             setattr(self, key, list(data[key]))
 
-    def __add__(self, query_result):
+    def __add__(self, query_result: QueryResult) -> QueryResult:
         """Merge the data from both QueryResult objects."""
         path_map = self.path_map.copy()
         path_map.update(query_result.path_map)
@@ -130,7 +147,7 @@ class QueryResult:
         )
         return QueryResult(path_map, rejected_paths)
 
-    def __radd__(self, query_result):
+    def __radd__(self, query_result: QueryResult) -> QueryResult:
         """Call self.__add__ since the order of addition does not matter."""
         return self.__add__(query_result)
 
@@ -171,6 +188,10 @@ class People:
                 parsed_real_name = parse_real_name(bmo_datum["real_name"])
                 person["name"] = parsed_real_name["name"]
                 person["info"] = parsed_real_name["info"]
+            else:
+                person["name"] = person.get("name", "")
+                person["info"] = person.get("info", "")
+                person["nick"] = person.get("nick", "")
 
             self.people.append(Person(**person))
             self.by_bmo_id[person["bmo_id"]] = i

@@ -140,7 +140,7 @@ def clean(file_config: FileConfig, write: bool = True):
         nicks = []
         for person in file_config.config["people"]:
             machine_readable_nick = generate_machine_readable_name(
-                person["nick"], keep_case=True
+                person.get("nick", ""), keep_case=True
             )
             if machine_readable_nick in nicks or not machine_readable_nick:
                 continue

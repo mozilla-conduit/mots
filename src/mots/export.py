@@ -31,7 +31,7 @@ class Exporter:
         loader = jinja2.FileSystemLoader(
             searchpath=importlib_resources.files("mots") / "templates"
         )
-        env = jinja2.Environment(loader=loader)
+        env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = env.get_template("directory.template.rst")
         out = template.render(directory=self.directory)
         return out

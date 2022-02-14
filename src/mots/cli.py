@@ -90,6 +90,7 @@ def add(args: argparse.Namespace) -> None:
             " for the new module (e.g. core_accessibility): "
         ),
         "name": input("Enter a human readable name (e.g. Core: Accessibility): "),
+        "description": input("Enter a description for the new module: "),
         "owners": get_list_input("Enter a comma separated list of owner bugzilla IDs"),
         "peers": get_list_input("Enter a comma separated list of peer bugzilla IDs"),
         "includes": get_list_input("Enter a comma separated list of paths to include"),

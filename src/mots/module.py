@@ -29,6 +29,9 @@ class Module:
     :param exclude_submodule_paths: when True, paths in submodules are excluded
     :param exclude_module_paths: when True, common paths in other modules are excluded
         from the directory index
+
+    The ``Module`` class wraps modules and submodules in a configuration, and provides
+    useful methods for validation, calculating paths, and serialization.
     """
 
     def __repr__(self):
@@ -94,7 +97,7 @@ class Module:
     def calculate_paths(self):
         """Calculate paths based on inclusions and exclusions.
 
-        Upon calling this method, excluded paths are parsed using `pathlib.Path.rglob`
+        Upon calling this method, excluded paths are parsed using ``pathlib.Path.rglob``
         and then subtracted from the included paths, which are parsed in the same way.
 
         :rtype: set
@@ -124,10 +127,14 @@ class Module:
         return paths
 
     def serialize(self):
-        """Return a dictionary with relevant module information."""
+        """Return a dictionary with relevant module information.
+
+        :rtype: dict
+        """
         serialized = {
             "machine_name": self.machine_name,
             "name": self.name,
+            "description": self.description,
             "includes": self.includes,
             "excludes": self.excludes,
             "owners": self.owners,

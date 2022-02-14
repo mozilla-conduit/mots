@@ -1,3 +1,7 @@
+======================================
+mots - Module Ownership in Tree System
+======================================
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

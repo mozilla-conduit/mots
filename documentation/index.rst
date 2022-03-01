@@ -62,21 +62,21 @@ The above code will create a new module in ``mots.yaml`` so that the file will l
 
 .. code-block:: yaml
 
-	repo: test-repo
-	created_at: '2022-02-14T09:08:38.055168'
-	updated_at: '2022-02-14T09:10:08.096987'
-	people: []
-	modules:
-	  - machine_name: example
-		name: Example
-		description: This is an example module.
-		includes:
-		  - example.text
-		excludes: []
-		owners:
-		  - bmo_id: 633708
-		peers: []
-		meta:
+    repo: test-repo
+    created_at: '2022-02-14T09:08:38.055168'
+    updated_at: '2022-02-14T09:10:08.096987'
+    people: []
+    modules:
+      - machine_name: example
+        name: Example
+        description: This is an example module.
+        includes:
+          - example.text
+        excludes: []
+        owners:
+          - bmo_id: 633708
+        peers: []
+        meta:
 
 
 Note that the only required attribute under "owners" is the ``bmo_id`` field. You can optionally add this information manually, and then run the ``mots clean`` command which will query the Bugzilla API to fetch the remaining information.
@@ -84,26 +84,26 @@ Note that the only required attribute under "owners" is the ``bmo_id`` field. Yo
 
 .. code-block:: yaml
 
-	repo: test-repo
-	created_at: '2022-02-14T09:08:38.055168'
-	updated_at: '2022-02-14T09:11:32.991309'
-	people:
-	  - &zeid
-		bmo_id: 633708
-		name: Zeid Zabaneh
-		info: '[:zeid]'
-		nick: zeid
-	modules:
-	  - machine_name: example
-		name: Example
-		description: This is an example module.
-		includes:
-		  - example.text
-		excludes: []
-		owners:
-		  - *zeid
-		peers: []
-		meta:
+    repo: test-repo
+    created_at: '2022-02-14T09:08:38.055168'
+    updated_at: '2022-02-14T09:11:32.991309'
+    people:
+      - &zeid
+        bmo_id: 633708
+        name: Zeid Zabaneh
+        info: '[:zeid]'
+        nick: zeid
+    modules:
+      - machine_name: example
+        name: Example
+        description: This is an example module.
+        includes:
+          - example.text
+        excludes: []
+        owners:
+          - *zeid
+        peers: []
+        meta:
 
 
 Adding a Submodule
@@ -127,37 +127,37 @@ This will result in a file that looks like this:
 
 .. code-block:: yaml
 
-	repo: test-repo
-	created_at: '2022-02-14T09:08:38.055168'
-	updated_at: '2022-02-14T09:32:52.387222'
-	people:
-	  - &zeid
-		bmo_id: 633708
-		name: Zeid Zabaneh
-		info: '[:zeid]'
-		nick: zeid
-	modules:
-	  - machine_name: example
-		name: Example
-		description: This is an example module.
-		includes:
-		  - example.text
-		excludes: []
-		owners:
-		  - *zeid
-		peers: []
-		meta:
-		submodules:
-		  - machine_name: example_submodule
-			name: Example Submodule
-			description: This module is a submodule of the "Example" module.
-			includes:
-			  - example_submodule/**/*
-			excludes: []
-			owners: []
-			peers:
-			  - *zeid
-			meta:
+    repo: test-repo
+    created_at: '2022-02-14T09:08:38.055168'
+    updated_at: '2022-02-14T09:32:52.387222'
+    people:
+      - &zeid
+        bmo_id: 633708
+        name: Zeid Zabaneh
+        info: '[:zeid]'
+        nick: zeid
+    modules:
+      - machine_name: example
+        name: Example
+        description: This is an example module.
+        includes:
+          - example.text
+        excludes: []
+        owners:
+          - *zeid
+        peers: []
+        meta:
+        submodules:
+          - machine_name: example_submodule
+            name: Example Submodule
+            description: This module is a submodule of the "Example" module.
+            includes:
+              - example_submodule/**/*
+            excludes: []
+            owners: []
+            peers:
+              - *zeid
+            meta:
 
 Cleaning ``mots.yaml``
 ~~~~~~~~~~~~~~~~~~~~~~

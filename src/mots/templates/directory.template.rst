@@ -1,14 +1,17 @@
 {# This Source Code Form is subject to the terms of the Mozilla Public #}
 {# License, v. 2.0. If a copy of the MPL was not distributed with this #}
-{# file, You can obtain one at https://mozilla.org/MPL/2.0/. #}
+{# file, You can obtain one at https://mozilla.org/MPL/2.0/.           #}
+..
+    This file was automatically generated using `mots export`.
 {%- macro module_entry(module, is_submodule=False) -%}
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
-
+{% if module.description %}
 {{ module.description }}
+{% endif %}
+
 {% if not module.owners %}
 .. warning::
-
     This module does not have any owners specified.
 {% endif %}
 
@@ -19,7 +22,7 @@
     * - Owner(s)
       - {{ module.owner_names|join(", ") }}
 {% endif %}
-{% if module.peers%}
+{% if module.peers %}
     * - Peer(s)
       - {{ module.peer_names|join(", ") }}
 {% endif %}
@@ -44,11 +47,13 @@
       - {{ module.meta.components|join(", ") }}
 {% endif %}
 {% endmacro %}
+
+
 =======
 Modules
 =======
 
-{{ directory.description }}
+{{ directory.description + "\n" }}
 
 {%- for module in directory.modules -%}
 {{ module_entry(module) }}

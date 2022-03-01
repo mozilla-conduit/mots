@@ -107,12 +107,37 @@ def add(args: argparse.Namespace) -> None:
 
 def export(args: argparse.Namespace) -> None:
     """Call `export.export_to_format` with relevant parameters."""
+    DEFAULT_EXPORT_FORMAT = "rst"
+
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
     directory.load()
-    output = export_to_format(directory, args.format)
-    print(output)
+
+    frmt = (
+        args.format
+        if args.format
+        else file_config.config.get("export", {}).get("format", DEFAULT_EXPORT_FORMAT)
+    )
+
+    # Render output based on provided format.
+    output = export_to_format(directory, frmt)
+
+    if not args.out:
+        # Explicit output path was not provided, try to get it from config.
+        if file_config.config.get("export", {}).get("path"):
+            out_path = file_config.config["export"]["path"]
+            with open(out_path, "w") as f:
+                logger.info(f"Writing output to specified file path ({out_path})...")
+                f.write(output)
+        else:
+            # No output path could be determined, so output to standard out.
+            print(output)
+    else:
+        # TODO: do more checks here to make sure we don't overwrite important things.
+        logger.info(f"Writing output to specified file path ({args.out})...")
+        with open(args.out, "w") as f:
+            f.write(output)
 
 
 def main():
@@ -228,7 +253,10 @@ def create_parser():
         default=DEFAULT_CONFIG_FILEPATH,
     )
     export_parser.add_argument(
-        "--format", "-f", type=str, default="rst", help="the format of exported data"
+        "--format", "-f", type=str, help="the format of exported data"
+    )
+    export_parser.add_argument(
+        "--out", "-o", type=str, help="the file path to output to"
     )
     export_parser.set_defaults(func=export)
 

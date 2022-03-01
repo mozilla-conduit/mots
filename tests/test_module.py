@@ -102,7 +102,8 @@ def test_module__Module__serialize(repo):
 
 
 def test_module__validate(repo, config):
-    validate(config, str(repo))
+    result = validate(config, str(repo))
+    assert result is None
 
 
 def test_module__validate__error_duplicate_machine_names(repo):
@@ -140,10 +141,36 @@ def test_module__validate__error_duplicate_machine_names(repo):
             },
         ],
     }
+
     with pytest.raises(ValidationError) as e:
         validate(config, repo)
+        assert e.value.args[0] == "Duplicate machine name(s) found: m1, m3"
 
-    assert e.value.args[0] == "Duplicate machine name(s) found: m1, m3"
+    messages = validate(config, repo, do_raise=False)
+    assert messages == ["Duplicate machine name(s) found: m1, m3"]
+
+
+def test_module__validate__error_no_paths(repo):
+    """Ensure an error is thrown when there are duplicate machine names in modules."""
+    config = {
+        "repo": "test_repo",
+        "created_at": "2021-09-10 12:53:22.383393",
+        "updated_at": "2021-09-10 12:53:22.383393",
+        "modules": [
+            {
+                "name": "m1",
+                "machine_name": "m1",
+                "includes": ["does_not_exist"],
+            },
+        ],
+    }
+
+    with pytest.raises(ValidationError) as e:
+        validate(config, repo)
+        assert e.value.args[0] == ["No valid paths were found in m1."]
+
+    messages = validate(config, repo, do_raise=False)
+    assert messages == ["No valid paths were found in m1."]
 
 
 def test_module__add(repo):

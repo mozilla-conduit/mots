@@ -4,10 +4,10 @@
 
 """Module that provides helpers to interact with the Bugzilla API."""
 
-from __future__ import annotations
 import requests
 import os
 import logging
+from typing import List
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ class BMOClient:
         )
         return response
 
-    def get_users_by_ids(self, ids: list[str]):
+    def get_users_by_ids(self, ids: List[str]):
         """Get user data by BMO IDs."""
         fields = ["real_name", "nick", "name", "id", "email"]
         response = self._get("user", {"ids": ids, "include_fields": ",".join(fields)})

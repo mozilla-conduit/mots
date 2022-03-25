@@ -4,7 +4,6 @@
 
 """Integration tests for mots.module."""
 
-from __future__ import annotations
 import pytest
 
 from mots.config import FileConfig, add, validate, ValidationError

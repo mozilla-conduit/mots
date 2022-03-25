@@ -62,6 +62,7 @@ format:
 .PHONY: requirements
 requirements:
 	rm requirements/*.txt
+	docker-compose run generate-python3.6-requirements
 	docker-compose run generate-python3.7-requirements
 	docker-compose run generate-python3.8-requirements
 	docker-compose run generate-python3.9-requirements

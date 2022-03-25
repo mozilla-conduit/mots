@@ -4,10 +4,10 @@
 
 """Module operations and utility functions."""
 
-from __future__ import annotations
 import logging
 from pathlib import Path
 from pprint import pprint as print
+from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +44,13 @@ class Module:
         repo_path: str,
         name: str = "",
         description: str = "",
-        includes: list = None,
-        excludes: list = None,
-        owners: list[str] = None,
-        peers: list[str] = None,
+        includes: List[str] = None,
+        excludes: List[str] = None,
+        owners: List[dict] = None,
+        peers: List[dict] = None,
         meta: dict = None,
         parent: "Module" = None,
-        submodules: list[dict] = None,
+        submodules: List[dict] = None,
         exclude_submodule_paths: bool = True,
         exclude_module_paths: bool = False,
     ):
@@ -177,7 +177,7 @@ class Module:
         return errors
 
 
-def ls(modules: list[Module]):
+def ls(modules: List[Module]):
     """Print a list of given modules.
 
     :param modules: a list of :class:`Module` instances
@@ -185,7 +185,7 @@ def ls(modules: list[Module]):
     print(modules)
 
 
-def show(modules: list[Module], module: str):
+def show(modules: List[Module], module: str):
     """Show details for a particular module.
 
     :param modules: a list of :class:`Module` instances

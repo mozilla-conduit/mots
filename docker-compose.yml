@@ -1,6 +1,11 @@
 version: '2'
 
 services:
+    generate-python3.6-requirements:
+        image: python:3.6
+        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile requirements/base.in --generate-hashes -o requirements/python3.6.txt"
+        volumes:
+            - .:/mots
     generate-python3.7-requirements:
         image: python:3.7
         command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile requirements/base.in --generate-hashes -o requirements/python3.7.txt"

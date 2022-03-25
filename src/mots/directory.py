@@ -4,7 +4,6 @@
 
 """Directory classes for mots."""
 
-from __future__ import annotations
 from collections import defaultdict
 from dataclasses import asdict
 from dataclasses import dataclass
@@ -30,7 +29,7 @@ class Directory:
     :func:`load <mots.directory.Directory.load>` method must be called first.
     """
 
-    def __init__(self, config: FileConfig):
+    def __init__(self, config: "FileConfig"):
         self.config_handle = config
         self.config_handle.load()
 
@@ -90,7 +89,7 @@ class Directory:
         people = list(self.config_handle.config["people"])
         self.people = People(people, {})
 
-    def query(self, *paths: str) -> QueryResult:
+    def query(self, *paths: str) -> "QueryResult":
         """Query given paths and return a list of corresponding modules.
 
         :param paths: a string representing a path within the repo
@@ -137,7 +136,7 @@ class QueryResult:
         for key in data:
             setattr(self, key, list(data[key]))
 
-    def __add__(self, query_result: QueryResult) -> QueryResult:
+    def __add__(self, query_result: "QueryResult") -> "QueryResult":
         """Merge the data from both QueryResult objects."""
         path_map = self.path_map.copy()
         path_map.update(query_result.path_map)
@@ -147,7 +146,7 @@ class QueryResult:
         )
         return QueryResult(path_map, rejected_paths)
 
-    def __radd__(self, query_result: QueryResult) -> QueryResult:
+    def __radd__(self, query_result: "QueryResult") -> "QueryResult":
         """Call self.__add__ since the order of addition does not matter."""
         return self.__add__(query_result)
 

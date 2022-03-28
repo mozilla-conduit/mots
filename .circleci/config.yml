@@ -102,8 +102,6 @@ jobs:
           name: setup
           command: |
             set -e
-            sudo apt-get install python3-venv
-            make dev-env
             pip install .
       - run:
           name: ci/cd checks and validations

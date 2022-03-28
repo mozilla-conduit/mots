@@ -6,6 +6,7 @@
 
 from collections import defaultdict
 import logging
+from typing import List
 
 from datetime import datetime
 from pathlib import Path
@@ -150,7 +151,7 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.write()
 
 
-def validate(config: dict, repo_path: str):
+def validate(config: dict, repo_path: str) -> List[str]:
     """Validate the current state of the config file.
 
     - Check if top-level dictionary contains required keys

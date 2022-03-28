@@ -148,7 +148,7 @@ def export(args: argparse.Namespace) -> None:
     else:
         # TODO: do more checks here to make sure we don't overwrite important things.
         logger.info(f"Writing output to specified file path ({args.out})...")
-        with open(args.out, "w") as f:
+        with args.out.open("w") as f:
             f.write(output)
 
 
@@ -272,7 +272,7 @@ def create_parser():
         "--format", "-f", type=str, help="the format of exported data"
     )
     export_parser.add_argument(
-        "--out", "-o", type=str, help="the file path to output to"
+        "--out", "-o", type=Path, help="the file path to output to"
     )
     export_parser.set_defaults(func=export)
 

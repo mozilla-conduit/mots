@@ -21,6 +21,8 @@ help:
 	@echo "    dev           setup local dev environment by installing required packages, etc."
 	@echo "    dev-env       create a python virtual environment in ./mots-env"
 	@echo "    docs          generate documentation"
+	@echo "    publish-test  publish package to test.pypi.org"
+	@echo "    publish       publish package to pypi.org"
 	@echo "    requirements  regenerate requirements.txt"
 	@echo "    serve-cov     simple http server for coverage report"
 	@echo "    serve-docs    simple http server for docs"
@@ -58,6 +60,26 @@ format:
 	$(PYTHON) -m black src/mots
 	$(PYTHON) -m black tests
 	$(PYTHON) -m black documentation
+
+.ONESHELL:
+.PHONY: publish
+publish:
+ifdef PYPI_TOKEN
+	$(PYTHON) -m twine upload -r pypi dist/* --verbose \
+	--username __token__ --password $(PYPI_TOKEN)
+else
+	$(error "PYPI_TOKEN must be defined.")
+endif
+
+.ONESHELL:
+.PHONY: publish-test
+publish-test:
+ifdef TESTPYPI_TOKEN
+	$(PYTHON) -m twine upload -r testpypi dist/* --verbose \
+	--username __token__ --password $(TESTPYPI_TOKEN)
+else
+	$(error "TESTPYPI_TOKEN must be defined.")
+endif
 
 .PHONY: requirements
 requirements:

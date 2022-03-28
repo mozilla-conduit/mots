@@ -30,8 +30,9 @@ from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
 from mots.config import DEFAULT_CONFIG_FILEPATH
-
 from mots.utils import get_list_input
+from mots import __version__
+
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +106,11 @@ def add(args: argparse.Namespace) -> None:
     config.add(params, file_config, parent=parent, write=True)
 
 
+def version():
+    """Return version information."""
+    return __version__
+
+
 def export(args: argparse.Namespace) -> None:
     """Call `export.export_to_format` with relevant parameters."""
     DEFAULT_EXPORT_FORMAT = "rst"
@@ -161,6 +167,7 @@ def create_parser():
     """Create parser, subparsers, and arguments."""
     parser = argparse.ArgumentParser(description="main command line interface for mots")
     parser.add_argument("--debug", action="store_true", help="enable debug output")
+    parser.add_argument("--version", action="version", version=version())
     subparsers = parser.add_subparsers(title="commands")
 
     init_parser = subparsers.add_parser(

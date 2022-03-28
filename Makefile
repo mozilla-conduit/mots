@@ -65,7 +65,7 @@ format:
 .PHONY: publish
 publish:
 ifdef PYPI_TOKEN
-	$(PYTHON) -m twine upload -r pypi dist/* --verbose\
+	$(PYTHON) -m twine upload -r pypi dist/* --verbose \
 	--username __token__ --password $(PYPI_TOKEN)
 else
 	$(error "PYPI_TOKEN must be defined.")
@@ -75,7 +75,7 @@ endif
 .PHONY: publish-test
 publish-test:
 ifdef TESTPYPI_TOKEN
-	$(PYTHON) -m twine upload -r testpypi dist/* --verbose\
+	$(PYTHON) -m twine upload -r testpypi dist/* --verbose \
 	--username __token__ --password $(TESTPYPI_TOKEN)
 else
 	$(error "TESTPYPI_TOKEN must be defined.")

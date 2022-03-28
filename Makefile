@@ -61,20 +61,24 @@ format:
 	$(PYTHON) -m black tests
 	$(PYTHON) -m black documentation
 
+.ONESHELL:
 .PHONY: publish
 publish:
-ifneq ($(and $(TWINE_USERNAME),$(TWINE_PASSWORD)),)
-	$(PYTHON) -m twine upload -r pypi dist/* --verbose
+idef PYPI_TOKEN
+	$(PYTHON) -m twine upload -r pypi dist/* --verbose\
+	--username __token__ --password $(PYPI_TOKEN)
 else
-	$(error "TWINE_USERNAME and TWINE_PASSWORD must be defined.")
+	$(error "PYPI_TOKEN must be defined.")
 endif
 
+.ONESHELL:
 .PHONY: publish-test
 publish-test:
-ifneq ($(and $(TWINE_USERNAME),$(TWINE_PASSWORD)),)
-	$(PYTHON) -m twine upload -r testpypi dist/* --verbose
+ifdef TESTPYPI_TOKEN
+	$(PYTHON) -m twine upload -r testpypi dist/* --verbose\
+	--username __token__ --password $(TESTPYPI_TOKEN)
 else
-	$(error "TWINE_USERNAME and TWINE_PASSWORD must be defined.")
+	$(error "TESTPYPI_TOKEN must be defined.")
 endif
 
 .PHONY: requirements

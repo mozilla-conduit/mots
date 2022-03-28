@@ -64,7 +64,7 @@ format:
 .ONESHELL:
 .PHONY: publish
 publish:
-idef PYPI_TOKEN
+ifdef PYPI_TOKEN
 	$(PYTHON) -m twine upload -r pypi dist/* --verbose\
 	--username __token__ --password $(PYPI_TOKEN)
 else

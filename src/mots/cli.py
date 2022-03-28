@@ -140,8 +140,8 @@ def export(args: argparse.Namespace) -> None:
     if not args.out:
         # Explicit output path was not provided, try to get it from config.
         if file_config.config.get("export", {}).get("path"):
-            out_path = file_config.config["export"]["path"]
-            with open(out_path, "w") as f:
+            out_path = Path(file_config.config["export"]["path"])
+            with out_path.open("w") as f:
                 logger.info(f"Writing output to specified file path ({out_path})...")
                 f.write(output)
         else:
@@ -271,7 +271,7 @@ def create_parser():
         default=DEFAULT_CONFIG_FILEPATH,
     )
     export_parser.add_argument(
-        "--format", "-f", type=str, help="the format of exported data"
+        "--format", "-f", type=str, choices=("rst",), help="the format of exported data"
     )
     export_parser.add_argument(
         "--out", "-o", type=Path, help="the file path to output to"

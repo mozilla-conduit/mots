@@ -1,6 +1,9 @@
 repo: mots
 created_at: '2022-02-02T14:48:50.574414'
 updated_at: '2022-02-04T10:21:14.554274'
+export:
+    path: ./mots.rst
+    format: rst
 people:
   - &zeid
     bmo_id: 633708

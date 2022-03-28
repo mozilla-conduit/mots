@@ -31,6 +31,13 @@ class Directory:
 
     def __init__(self, config: "FileConfig"):
         self.config_handle = config
+        self.reset_config()
+
+        self.index = None
+        self.people = None
+
+    def reset_config(self):
+        """Load config and refresh modules, etc..."""
         self.config_handle.load()
 
         self.repo_path = self.config_handle.repo_path
@@ -43,8 +50,7 @@ class Directory:
         for module in self.modules:
             self.modules_by_machine_name[module.machine_name] = module
 
-        self.index = None
-        self.people = None
+        self.description = self.config_handle.config.get("description", "")
 
     def load(self, full_paths: bool = False):
         """Populate file path and people indexes.

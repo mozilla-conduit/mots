@@ -6,6 +6,7 @@
 
 from collections import defaultdict
 import logging
+from typing import List
 
 from datetime import datetime
 from pathlib import Path
@@ -150,7 +151,7 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.write()
 
 
-def validate(config: dict, repo_path: str):
+def validate(config: dict, repo_path: str) -> List[str]:
     """Validate the current state of the config file.
 
     - Check if top-level dictionary contains required keys
@@ -177,19 +178,20 @@ def validate(config: dict, repo_path: str):
 
     machine_names = {name: count for name, count in machine_names.items() if count > 1}
     if machine_names:
-        raise ValidationError(
+        error_msg = (
             f"Duplicate machine name(s) found: {', '.join(machine_names.keys())}"
         )
+        return [error_msg]
 
     errors = []
     for i, module in enumerate(config["modules"]):
         module = Module(repo_path=repo_path, **module)
         validation_errors = module.validate()
         if validation_errors:
-            errors.append(validation_errors)
+            errors += validation_errors
 
     if errors:
-        raise ValidationError(errors)
+        return errors
     logger.info("All modules validated successfully.")
 
 

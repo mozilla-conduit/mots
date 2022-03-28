@@ -150,7 +150,7 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.write()
 
 
-def validate(config: dict, repo_path: str, do_raise: bool = True):
+def validate(config: dict, repo_path: str):
     """Validate the current state of the config file.
 
     - Check if top-level dictionary contains required keys
@@ -180,10 +180,7 @@ def validate(config: dict, repo_path: str, do_raise: bool = True):
         error_msg = (
             f"Duplicate machine name(s) found: {', '.join(machine_names.keys())}"
         )
-        if do_raise:
-            raise ValidationError(error_msg)
-        else:
-            return [error_msg]
+        return [error_msg]
 
     errors = []
     for i, module in enumerate(config["modules"]):
@@ -193,10 +190,7 @@ def validate(config: dict, repo_path: str, do_raise: bool = True):
             errors += validation_errors
 
     if errors:
-        if do_raise:
-            raise ValidationError(errors)
-        else:
-            return errors
+        return errors
     logger.info("All modules validated successfully.")
 
 

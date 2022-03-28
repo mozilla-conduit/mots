@@ -4,9 +4,7 @@
 
 """Integration tests for mots.module."""
 
-import pytest
-
-from mots.config import FileConfig, add, validate, ValidationError
+from mots.config import FileConfig, add, validate
 from mots.module import Module
 
 
@@ -142,11 +140,7 @@ def test_module__validate__error_duplicate_machine_names(repo):
         ],
     }
 
-    with pytest.raises(ValidationError) as e:
-        validate(config, repo)
-        assert e.value.args[0] == "Duplicate machine name(s) found: m1, m3"
-
-    messages = validate(config, repo, do_raise=False)
+    messages = validate(config, repo)
     assert messages == ["Duplicate machine name(s) found: m1, m3"]
 
 
@@ -165,11 +159,7 @@ def test_module__validate__error_no_paths(repo):
         ],
     }
 
-    with pytest.raises(ValidationError) as e:
-        validate(config, repo)
-        assert e.value.args[0] == ["No valid paths were found in m1."]
-
-    messages = validate(config, repo, do_raise=False)
+    messages = validate(config, repo)
     assert messages == ["No valid paths were found in m1."]
 
 

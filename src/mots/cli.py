@@ -30,7 +30,7 @@ from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
-from mots.config import DEFAULT_CONFIG_FILEPATH
+from mots.config import DEFAULT_CONFIG_FILEPATH, ValidationError
 from mots.utils import get_list_input
 from mots import __version__
 
@@ -62,7 +62,9 @@ def validate(args: argparse.Namespace) -> None:
     """Call `config.validate` with correct arguments."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    config.validate(file_config.config, args.repo_path)
+    errors = config.validate(file_config.config, args.repo_path)
+    if errors:
+        raise ValidationError(errors)
 
 
 def clean(args: argparse.Namespace) -> None:

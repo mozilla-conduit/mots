@@ -26,6 +26,7 @@ from pathlib import Path
 
 from mots import module
 from mots import config
+from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
@@ -106,6 +107,11 @@ def add(args: argparse.Namespace) -> None:
     config.add(params, file_config, parent=parent, write=True)
 
 
+def ci(args: argparse.Namespace) -> None:
+    """Perform any CI/CD checks or verifications."""
+    validate_version_tag()
+
+
 def version():
     """Return version information."""
     return __version__
@@ -144,6 +150,9 @@ def create_parser():
     parser.add_argument("--debug", action="store_true", help="enable debug output")
     parser.add_argument("--version", action="version", version=version())
     subparsers = parser.add_subparsers(title="commands")
+
+    ci_parser = subparsers.add_parser("ci", help="perform CI checks or operations")
+    ci_parser.set_defaults(func=ci)
 
     init_parser = subparsers.add_parser(
         "init", help="initialize mots configuration in repo"

@@ -21,6 +21,8 @@ help:
 	@echo "    dev           setup local dev environment by installing required packages, etc."
 	@echo "    dev-env       create a python virtual environment in ./mots-env"
 	@echo "    docs          generate documentation"
+	@echo "    publish-test  publish package to test.pypi.org"
+	@echo "    publish       publish package to pypi.org"
 	@echo "    requirements  regenerate requirements.txt"
 	@echo "    serve-cov     simple http server for coverage report"
 	@echo "    serve-docs    simple http server for docs"
@@ -58,6 +60,22 @@ format:
 	$(PYTHON) -m black src/mots
 	$(PYTHON) -m black tests
 	$(PYTHON) -m black documentation
+
+.PHONY: publish
+publish:
+ifneq ($(and $(TWINE_USERNAME),$(TWINE_PASSWORD)),)
+	$(PYTHON) -m twine upload -r pypi dist/* --verbose
+else
+	$(error "TWINE_USERNAME and TWINE_PASSWORD must be defined.")
+endif
+
+.PHONY: publish-test
+publish-test:
+ifneq ($(and $(TWINE_USERNAME),$(TWINE_PASSWORD)),)
+	$(PYTHON) -m twine upload -r testpypi dist/* --verbose
+else
+	$(error "TWINE_USERNAME and TWINE_PASSWORD must be defined.")
+endif
 
 .PHONY: requirements
 requirements:

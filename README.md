@@ -19,7 +19,6 @@ To set up a local development environment, run the following commands. Optionall
 
 ```shell
 make dev-env PY=python3.9
-source .mots-env/bin/activate
 make dev
 ```
 

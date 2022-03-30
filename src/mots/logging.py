@@ -7,18 +7,16 @@ import logging
 import logging.config
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from mots.settings import settings
 
-LOG_FILE_PATH = Path("mots.log")
-LOG_MAX_SIZE = 1024 * 1024 * 50
-LOG_BACKUPS = 5
+logger = logging.getLogger(__name__)
 
 
 def init_logging(
     debug: bool = False,
-    path: Path = LOG_FILE_PATH,
-    log_max_size: int = LOG_MAX_SIZE,
-    log_backups: int = LOG_BACKUPS,
+    path: Path = settings.LOG_FILE,
+    log_max_size: int = settings.LOG_MAX_SIZE,
+    log_backups: int = settings.LOG_BACKUPS,
 ):
     """Initialize default logger."""
     logging.config.dictConfig(

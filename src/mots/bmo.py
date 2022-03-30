@@ -5,16 +5,13 @@
 """Module that provides helpers to interact with the Bugzilla API."""
 
 import requests
-import os
 import logging
 from typing import List
 
+from mots.settings import settings
+
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_BASE_URL = "https://bugzilla.mozilla.org/rest"
-USER_AGENT = "mots"
-BUGZILLA_API_KEY_ENV_VAR = "BUGZILLA_API_KEY"
 
 
 def get_bmo_data(people: list) -> dict:
@@ -30,15 +27,15 @@ def get_bmo_data(people: list) -> dict:
 class BMOClient:
     """A thin wrapper as a Bugzilla API client."""
 
-    def __init__(self, token: str = None, base_url: str = DEFAULT_BASE_URL):
+    def __init__(self, token: str = None, base_url: str = settings.BUGZILLA_URL):
         if not token:
-            token = os.getenv(BUGZILLA_API_KEY_ENV_VAR, "")
+            token = settings.BUGZILLA_API_KEY
             if not token:
                 raise ValueError(
-                    f"{BUGZILLA_API_KEY_ENV_VAR} environment variable missing,"
-                    " and no other token was explicitly provided"
+                    "Bugzilla API Key is missing and no other "
+                    "token was explicitly provided"
                 )
-        self._headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": USER_AGENT}
+        self._headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": settings.USER_AGENT}
         self._base_url = base_url
 
     def _get(self, path: str, params=None):

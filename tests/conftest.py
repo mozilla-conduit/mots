@@ -4,9 +4,7 @@
 
 """Test configuration and fixtures."""
 
-
 import pytest
-from mots.config import FileConfig
 
 
 @pytest.fixture
@@ -18,6 +16,8 @@ def repo(tmp_path, config):
     the hope that it will make it easier to understand the different module definitions
     in other fixtures and tests.
     """
+    from mots.config import FileConfig
+
     test_repo = tmp_path / "test_repo"
     test_repo.mkdir()
 

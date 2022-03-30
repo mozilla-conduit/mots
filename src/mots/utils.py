@@ -4,10 +4,9 @@
 
 """Utility helper functions."""
 
-import logging
+from pathlib import Path
+from typing import Optional
 import re
-
-logger = logging.getLogger(__name__)
 
 
 def generate_machine_readable_name(display_name, keep_case=False):
@@ -39,3 +38,32 @@ def parse_real_name(real_name):
         return match.groupdict()
     else:
         return {"name": None, "info": None}
+
+
+class Disk:
+    """Utilities to read and write settings files and directories to disk."""
+
+    def __init__(self):
+        self.home = Path.home()
+        self.resource_directory = self.home / ".mots"
+        self.overrides_file = self.resource_directory / "settings.yaml"
+
+    def setup_resource_directory(self) -> Path:
+        """Create the mots resource directory if it does not exist."""
+        if not self.resource_directory.exists():
+            self.resource_directory.mkdir()
+
+    def setup_overrides_file(self) -> Path:
+        """Create the mots overrides file if it does not exist."""
+        if not self.overrides_file.exists():
+            self.overrides_file.touch()
+
+    def load_overrides(self) -> Optional[dict]:
+        """Load overrides from file and return if available."""
+        from mots.yaml import yaml
+
+        if self.overrides_file.exists():
+            with self.overrides_file.open("r") as f:
+                return yaml.load(f) or {}
+        else:
+            return {}

@@ -30,8 +30,9 @@ from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
-from mots.config import DEFAULT_CONFIG_FILEPATH, ValidationError
-from mots.utils import get_list_input
+from mots.config import ValidationError
+from mots.settings import settings
+from mots.utils import get_list_input, Disk
 from mots import __version__
 
 
@@ -121,8 +122,6 @@ def version():
 
 def export(args: argparse.Namespace) -> None:
     """Call `export.export_to_format` with relevant parameters."""
-    DEFAULT_EXPORT_FORMAT = "rst"
-
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
@@ -131,7 +130,9 @@ def export(args: argparse.Namespace) -> None:
     frmt = (
         args.format
         if args.format
-        else file_config.config.get("export", {}).get("format", DEFAULT_EXPORT_FORMAT)
+        else file_config.config.get("export", {}).get(
+            "format", settings.DEFAULT_EXPORT_FORMAT
+        )
     )
 
     # Render output based on provided format.
@@ -159,6 +160,9 @@ def main():
     parser, subparsers = create_parser()
     args = parser.parse_args()
 
+    disk = Disk()
+    disk.setup_resource_directory()
+    disk.setup_overrides_file()
     init_logging(debug=args.debug)
 
     if hasattr(args, "func"):
@@ -189,7 +193,7 @@ def create_parser():
         "-p",
         type=str,
         help="the path of the repo to initialize",
-        default=DEFAULT_CONFIG_FILEPATH,
+        default=settings.DEFAULT_CONFIG_FILEPATH,
     )
     init_parser.set_defaults(func=init)
 
@@ -199,7 +203,7 @@ def create_parser():
         "-p",
         type=str,
         help="the path of the repo config file",
-        default=DEFAULT_CONFIG_FILEPATH,
+        default=settings.DEFAULT_CONFIG_FILEPATH,
     )
     module_parsers = module_parser.add_subparsers(title="module")
 
@@ -221,7 +225,7 @@ def create_parser():
         "-p",
         type=str,
         help="the path of the repo config file",
-        default=DEFAULT_CONFIG_FILEPATH,
+        default=settings.DEFAULT_CONFIG_FILEPATH,
     )
     validate_parser.add_argument(
         "--repo-path",
@@ -240,7 +244,7 @@ def create_parser():
         "-p",
         type=str,
         help="the path of the repo config file",
-        default=DEFAULT_CONFIG_FILEPATH,
+        default=settings.DEFAULT_CONFIG_FILEPATH,
     )
     clean_parser.add_argument(
         "--repo-path",
@@ -257,7 +261,7 @@ def create_parser():
         "-p",
         type=str,
         help="the path of the repo config file",
-        default=DEFAULT_CONFIG_FILEPATH,
+        default=settings.DEFAULT_CONFIG_FILEPATH,
     )
     query_parser.add_argument("paths", nargs="+", help="a list of paths to query")
     query_parser.set_defaults(func=query)
@@ -268,7 +272,7 @@ def create_parser():
         "-p",
         type=str,
         help="the path of the repo config file",
-        default=DEFAULT_CONFIG_FILEPATH,
+        default=settings.DEFAULT_CONFIG_FILEPATH,
     )
     export_parser.add_argument(
         "--format", "-f", type=str, choices=("rst",), help="the format of exported data"

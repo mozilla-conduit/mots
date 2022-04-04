@@ -33,7 +33,7 @@ class ValidationError(TypeError):
 class FileConfig:
     """Loader and writer for filesystem based configuration."""
 
-    def __init__(self, path: Path = settings.DEFAULT_CONFIG_FILEPATH):
+    def __init__(self, path: Path = Path(settings.DEFAULT_CONFIG_FILEPATH)):
         """Initialize the configuration with provided config file path."""
         if not path.exists() and path.is_file():
             raise ValueError(f"{path} does not exist or is not a file.")

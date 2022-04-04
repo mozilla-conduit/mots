@@ -7,7 +7,10 @@
 import logging
 from pathlib import Path
 from pprint import pprint as print
-from typing import List
+from typing import (
+    List,
+    Union,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +44,7 @@ class Module:
     def __init__(
         self,
         machine_name: str,
-        repo_path: str,
+        repo_path: Union[str, Path],
         name: str = "",
         description: str = "",
         includes: List[str] = None,

@@ -23,21 +23,21 @@ class Settings:
     """Helper class to convert settings dict to object."""
 
     DEFAULTS = {
-        "BUGZILLA_URL": "https://bugzilla.mozilla.org/rest",
         "BUGZILLA_API_KEY": "",
-        "PMO_URL": "https://people.mozilla.org/api/v4/",
-        "PMO_COOKIE": "",
+        "BUGZILLA_URL": "https://bugzilla.mozilla.org/rest",
         "CIRCLECI_TAG_KEY": "CIRCLE_TAG",
+        "DEBUG": 0,
         "DEFAULT_CONFIG_FILEPATH": "./mots.yaml",
         "DEFAULT_EXPORT_FORMAT": "rst",
-        "LOG_MAX_SIZE": 1024 * 1024 * 50,
         "LOG_BACKUPS": 5,
-        "DEBUG": 0,
         "LOG_FILE": "mots.log",
+        "LOG_MAX_SIZE": 1024 * 1024 * 50,
+        "OVERRIDES_FILE": disk.overrides_file,
+        "PMO_COOKIE": "",
+        "PMO_URL": "https://people.mozilla.org/api/v4/",
+        "RESOURCE_DIR": disk.resource_directory,
         "USER_AGENT": f"mots/{__version__}",
         "VERSION": __version__,
-        "RESOURCE_DIR": disk.resource_directory,
-        "OVERRIDES_FILE": disk.overrides_file,
     }
 
     def __init__(self, **kwargs):

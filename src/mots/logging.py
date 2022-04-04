@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def init_logging(
     debug: bool = False,
-    path: Path = settings.LOG_FILE,
+    path: Path = Path(settings.LOG_FILE),
     log_max_size: int = settings.LOG_MAX_SIZE,
     log_backups: int = settings.LOG_BACKUPS,
 ):

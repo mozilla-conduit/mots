@@ -5,6 +5,7 @@
 """Utility helper functions."""
 
 import logging
+from pathlib import Path
 import re
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ def parse_real_name(real_name):
         return {"name": None, "info": None}
 
 
-def mkdir_if_not_exists(path):
+def mkdir_if_not_exists(path: Path):
     """Check if a directory exists, if not, create it."""
     if not path.exists():
         path.mkdir()
@@ -49,7 +50,7 @@ def mkdir_if_not_exists(path):
         logger.warning(f"{path} exists but is not a directory.")
 
 
-def touch_if_not_exists(path):
+def touch_if_not_exists(path: Path):
     """Check if a file exists, if not, create it."""
     if not path.exists():
         path.touch()

@@ -34,6 +34,7 @@ def mock_path():
             path.is_dir.return_value = False
             path.is_file.return_value = False
         return path
+
     return _mock_path
 
 

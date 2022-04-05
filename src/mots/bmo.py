@@ -6,7 +6,7 @@
 
 import requests
 import logging
-from typing import List
+from typing import List, Optional
 
 from mots.settings import settings
 
@@ -27,7 +27,9 @@ def get_bmo_data(people: list) -> dict:
 class BMOClient:
     """A thin wrapper as a Bugzilla API client."""
 
-    def __init__(self, token: str = None, base_url: str = settings.BUGZILLA_URL):
+    def __init__(
+        self, token: Optional[str] = None, base_url: str = settings.BUGZILLA_URL
+    ):
         if not token:
             token = settings.BUGZILLA_API_KEY
             if not token:

@@ -11,7 +11,7 @@ from ruamel.yaml import YAML
 logger = logging.getLogger(__name__)
 
 
-def load_yaml():
+def load_yaml() -> YAML:
     """Load and return a ruamel.yaml.YAML instance."""
     yaml = YAML()
     yaml.indent(

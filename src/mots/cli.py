@@ -190,7 +190,7 @@ def create_parser():
     init_parser.add_argument(
         "--path",
         "-p",
-        type=str,
+        type=Path,
         help="the path of the repo to initialize",
         default=settings.DEFAULT_CONFIG_FILEPATH,
     )
@@ -200,7 +200,7 @@ def create_parser():
     module_parser.add_argument(
         "--path",
         "-p",
-        type=str,
+        type=Path,
         help="the path of the repo config file",
         default=settings.DEFAULT_CONFIG_FILEPATH,
     )
@@ -222,7 +222,7 @@ def create_parser():
     validate_parser.add_argument(
         "--path",
         "-p",
-        type=str,
+        type=Path,
         help="the path of the repo config file",
         default=settings.DEFAULT_CONFIG_FILEPATH,
     )
@@ -241,7 +241,7 @@ def create_parser():
     clean_parser.add_argument(
         "--path",
         "-p",
-        type=str,
+        type=Path,
         help="the path of the repo config file",
         default=settings.DEFAULT_CONFIG_FILEPATH,
     )
@@ -258,7 +258,7 @@ def create_parser():
     query_parser.add_argument(
         "--path",
         "-p",
-        type=str,
+        type=Path,
         help="the path of the repo config file",
         default=settings.DEFAULT_CONFIG_FILEPATH,
     )
@@ -269,7 +269,7 @@ def create_parser():
     export_parser.add_argument(
         "--path",
         "-p",
-        type=str,
+        type=Path,
         help="the path of the repo config file",
         default=settings.DEFAULT_CONFIG_FILEPATH,
     )

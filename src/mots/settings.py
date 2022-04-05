@@ -30,7 +30,7 @@ class Settings:
         "BUGZILLA_URL": "https://bugzilla.mozilla.org/rest",
         "CIRCLECI_TAG_KEY": "CIRCLE_TAG",
         "DEBUG": 0,
-        "DEFAULT_CONFIG_FILEPATH": "./mots.yaml",
+        "DEFAULT_CONFIG_FILEPATH": Path("./mots.yaml"),
         "DEFAULT_EXPORT_FORMAT": "rst",
         "LOG_BACKUPS": 5,
         "LOG_FILE": RESOURCE_DIRECTORY / "mots.log",

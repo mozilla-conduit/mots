@@ -12,11 +12,14 @@ in the overrides file.
 """
 
 import os
+from pathlib import Path
 
 from mots import __version__
-from mots.utils import Disk
+from mots.yaml import yaml
 
-disk = Disk()
+HOME_DIRECTORY = Path.home()
+RESOURCE_DIRECTORY = HOME_DIRECTORY / ".mots"
+OVERRIDES_FILE = RESOURCE_DIRECTORY / "settings.yaml"
 
 
 class Settings:
@@ -30,12 +33,12 @@ class Settings:
         "DEFAULT_CONFIG_FILEPATH": "./mots.yaml",
         "DEFAULT_EXPORT_FORMAT": "rst",
         "LOG_BACKUPS": 5,
-        "LOG_FILE": "mots.log",
+        "LOG_FILE": RESOURCE_DIRECTORY / "mots.log",
         "LOG_MAX_SIZE": 1024 * 1024 * 50,
-        "OVERRIDES_FILE": disk.overrides_file,
+        "OVERRIDES_FILE": OVERRIDES_FILE,
         "PMO_COOKIE": "",
         "PMO_URL": "https://people.mozilla.org/api/v4/",
-        "RESOURCE_DIR": disk.resource_directory,
+        "RESOURCE_DIRECTORY": RESOURCE_DIRECTORY,
         "USER_AGENT": f"mots/{__version__}",
         "VERSION": __version__,
     }
@@ -62,5 +65,9 @@ class Settings:
             setattr(self, k, v)
 
 
-overrides = disk.load_overrides()
+if OVERRIDES_FILE.exists():
+    with OVERRIDES_FILE.open("r") as f:
+        overrides = yaml.load(f) or {}
+else:
+    overrides = {}
 settings = Settings(**overrides)

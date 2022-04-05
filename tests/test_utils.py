@@ -4,10 +4,37 @@
 
 """Tests for utils module."""
 
+from unittest.mock import MagicMock
+
+import pytest
+
 from mots.utils import (
     generate_machine_readable_name,
+    mkdir_if_not_exists,
     parse_real_name,
+    touch_if_not_exists,
 )
+
+
+@pytest.fixture(scope="function")
+def mock_path():
+    def _mock_path(exists=False, is_dir=False, is_file=False):
+        assert exists is True or exists is False
+        if not exists:
+            assert is_file is False and is_dir is False
+        else:
+            assert is_file is False or is_dir is False
+
+        path = MagicMock()
+        path.exists.return_value = exists
+        if exists:
+            path.is_dir.return_value = is_dir
+            path.is_file.return_value = is_file
+        else:
+            path.is_dir.return_value = False
+            path.is_file.return_value = False
+        return path
+    return _mock_path
 
 
 def test_generate_machine_readable_name():
@@ -78,3 +105,45 @@ def test_parse_real_name():
         "name": None,
         "info": None,
     }
+
+
+def test_mkdir_if_not_exists__does_not_exist(mock_path):
+    path = mock_path(exists=False)
+    mkdir_if_not_exists(path)
+    assert path.exists.call_count == 1
+    assert path.mkdir.call_count == 1
+
+
+def test_mkdir_if_not_exists__exists_as_file(mock_path):
+    path = mock_path(exists=True, is_file=True)
+    mkdir_if_not_exists(path)
+    assert path.exists.call_count == 2
+    assert path.mkdir.call_count == 0
+
+
+def test_mkdir_if_not_exists__exists(mock_path):
+    path = mock_path(exists=True, is_dir=True)
+    mkdir_if_not_exists(path)
+    assert path.exists.call_count == 2
+    assert path.mkdir.call_count == 0
+
+
+def test_touch_if_not_exists__does_not_exist(mock_path):
+    path = mock_path(exists=False)
+    touch_if_not_exists(path)
+    assert path.exists.call_count == 1
+    assert path.touch.call_count == 1
+
+
+def test_touch_if_not_exists__exists_as_dir(mock_path):
+    path = mock_path(exists=True, is_dir=True)
+    touch_if_not_exists(path)
+    assert path.exists.call_count == 2
+    assert path.touch.call_count == 0
+
+
+def test_touch_if_not_exists__exists(mock_path):
+    path = mock_path(exists=True, is_file=True)
+    touch_if_not_exists(path)
+    assert path.exists.call_count == 2
+    assert path.touch.call_count == 0

@@ -32,7 +32,7 @@ from mots.export import export_to_format
 from mots.logging import init_logging
 from mots.config import ValidationError
 from mots.settings import settings
-from mots.utils import get_list_input, Disk
+from mots.utils import get_list_input, mkdir_if_not_exists, touch_if_not_exists
 from mots import __version__
 
 
@@ -160,10 +160,9 @@ def main():
     parser, subparsers = create_parser()
     args = parser.parse_args()
 
-    disk = Disk()
-    disk.setup_resource_directory()
-    disk.setup_overrides_file()
     init_logging(debug=args.debug)
+    mkdir_if_not_exists(settings.RESOURCE_DIRECTORY)
+    touch_if_not_exists(settings.OVERRIDES_FILE)
 
     if hasattr(args, "func"):
         logger.debug(f"Calling {args.func} with {args}...")

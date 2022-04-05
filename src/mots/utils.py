@@ -4,10 +4,10 @@
 
 """Utility helper functions."""
 
-from pathlib import Path
+import logging
 import re
 
-from mots.yaml import yaml
+logger = logging.getLogger(__name__)
 
 
 def generate_machine_readable_name(display_name, keep_case=False):
@@ -41,27 +41,17 @@ def parse_real_name(real_name):
         return {"name": None, "info": None}
 
 
-class Disk:
-    """Utilities to read and write settings files and directories to disk."""
+def mkdir_if_not_exists(path):
+    """Check if a directory exists, if not, create it."""
+    if not path.exists():
+        path.mkdir()
+    elif path.exists() and not path.is_dir():
+        logger.warning(f"{path} exists but is not a directory.")
 
-    def __init__(self):
-        self.home = Path.home()
-        self.resource_directory = self.home / ".mots"
-        self.overrides_file = self.resource_directory / "settings.yaml"
 
-    def setup_resource_directory(self):
-        """Create the mots resource directory if it does not exist."""
-        if not self.resource_directory.exists():
-            self.resource_directory.mkdir()
-
-    def setup_overrides_file(self):
-        """Create the mots overrides file if it does not exist."""
-        if not self.overrides_file.exists():
-            self.overrides_file.touch()
-
-    def load_overrides(self) -> dict:
-        """Load overrides from file and return if available."""
-        if self.overrides_file.exists():
-            with self.overrides_file.open("r") as f:
-                return yaml.load(f) or {}
-        return {}
+def touch_if_not_exists(path):
+    """Check if a file exists, if not, create it."""
+    if not path.exists():
+        path.touch()
+    elif path.exists() and not path.is_file():
+        logger.warning(f"{path} exists but is not a file.")

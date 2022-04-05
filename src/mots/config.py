@@ -19,13 +19,12 @@ from mots.bmo import get_bmo_data
 from mots.directory import Directory, People
 from mots.module import Module
 from mots.utils import generate_machine_readable_name
+from mots.settings import settings
 
 logger = logging.getLogger(__name__)
 
 yaml = YAML()
 yaml.indent(mapping=2, sequence=4, offset=2)
-
-DEFAULT_CONFIG_FILEPATH = Path("./mots.yaml")
 
 
 class ValidationError(TypeError):
@@ -37,7 +36,7 @@ class ValidationError(TypeError):
 class FileConfig:
     """Loader and writer for filesystem based configuration."""
 
-    def __init__(self, path: Path = DEFAULT_CONFIG_FILEPATH):
+    def __init__(self, path: Path = settings.DEFAULT_CONFIG_FILEPATH):
         """Initialize the configuration with provided config file path."""
         if not path.exists() and path.is_file():
             raise ValueError(f"{path} does not exist or is not a file.")

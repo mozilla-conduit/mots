@@ -5,29 +5,26 @@
 """Module that provides helpers to interact with the PMO API."""
 
 import requests
-import os
 import logging
+
+from mots.settings import settings
 
 
 logger = logging.getLogger(__name__)
-
-DEFAULT_BASE_URL = "https://people.mozilla.org/api/v4/"
-USER_AGENT = "mots"
-PMO_COOKIE_ENV_VAR = "PMO_COOKIE"
 
 
 class PMOClient:
     """A thin wrapper as a PMO API client."""
 
-    def __init__(self, token: str = None, base_url: str = DEFAULT_BASE_URL):
+    def __init__(self, token: str = None, base_url: str = settings.PMO_URL):
         if not token:
-            token = os.getenv("PMO_COOKIE_ENV_VAR")
+            token = settings.PMO_COOKIE
             if not token:
                 raise ValueError(
-                    f"{PMO_COOKIE_ENV_VAR} environment variable missing,"
-                    " and no other token was explicitly provided"
+                    "PMO cookies is missing and no other "
+                    "token was explicitly provided"
                 )
-        self.headers = {"Cookie": token, "User-Agent": USER_AGENT}
+        self.headers = {"Cookie": token, "User-Agent": settings.USER_AGENT}
         self.base_url = base_url
 
     def _get(self, path: str, params=None):

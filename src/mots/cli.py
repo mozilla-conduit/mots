@@ -160,9 +160,9 @@ def main():
     parser, subparsers = create_parser()
     args = parser.parse_args()
 
-    init_logging(debug=args.debug)
     mkdir_if_not_exists(settings.RESOURCE_DIRECTORY)
     touch_if_not_exists(settings.OVERRIDES_FILE)
+    init_logging(debug=args.debug)
 
     if hasattr(args, "func"):
         logger.debug(f"Calling {args.func} with {args}...")

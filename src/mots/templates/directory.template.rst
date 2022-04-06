@@ -7,7 +7,7 @@
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
 {% if module.description %}
-{{ module.description }}
+{{ module.description|escape_for_rst }}
 {% endif %}
 
 {% if not module.owners %}
@@ -28,11 +28,11 @@
 {% endif %}
 {% if module.includes %}
     * - Includes
-      - {{ module.includes|join(", ")|replace("*", "\*") }}
+      - {{ module.includes|join(", ")|escape_for_rst }}
 {% endif %}
 {% if module.excludes %}
     * - Excludes
-      - {{ module.excludes|join(", ")|replace("*", "\*") }}
+      - {{ module.excludes|join(", ")|escape_for_rst }}
 {% endif %}
 {% if module.meta.group %}
     * - Group
@@ -53,7 +53,7 @@
 Modules
 =======
 
-{{ directory.description + "\n" }}
+{{ directory.description|escape_for_rst + "\n" }}
 
 {%- for module in directory.modules -%}
 {{ module_entry(module) }}

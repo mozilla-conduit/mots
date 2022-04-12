@@ -74,37 +74,37 @@ def test_parse_real_name():
 
     assert parse_real_name("tester testerson") == {
         "name": "tester testerson",
-        "info": None,
+        "info": "",
     }
 
     assert parse_real_name("tester") == {
         "name": "tester",
-        "info": None,
+        "info": "",
     }
 
     assert parse_real_name("(:bees)") == {
-        "name": None,
+        "name": "",
         "info": "(:bees)",
     }
 
     assert parse_real_name("[:bees]") == {
-        "name": None,
+        "name": "",
         "info": "[:bees]",
     }
 
     assert parse_real_name("[bees]") == {
-        "name": None,
+        "name": "",
         "info": "[bees]",
     }
 
     assert parse_real_name("(bees)") == {
-        "name": None,
+        "name": "",
         "info": "(bees)",
     }
 
     assert parse_real_name("") == {
-        "name": None,
-        "info": None,
+        "name": "",
+        "info": "",
     }
 
 

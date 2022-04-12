@@ -163,7 +163,6 @@ class Person:
 
     bmo_id: int
     name: str
-    info: str
     nick: str
 
     def __hash__(self):
@@ -192,10 +191,8 @@ class People:
 
                 parsed_real_name = parse_real_name(bmo_datum["real_name"])
                 person["name"] = parsed_real_name["name"]
-                person["info"] = parsed_real_name["info"]
             else:
                 person["name"] = person.get("name", "")
-                person["info"] = person.get("info", "")
                 person["nick"] = person.get("nick", "")
 
             self.people.append(Person(**person))

@@ -37,7 +37,8 @@ def parse_real_name(real_name):
     pattern = re.compile(r"^(?P<name>[\w\ ]+?)?\ ?(?P<info>[\(\[\|\:].*)?$")
     match = pattern.match(real_name)
     if match:
-        return match.groupdict()
+        data = match.groupdict()
+        return {k: v.strip() if v else "" for k, v in data.items()}
     else:
         return {"name": None, "info": None}
 

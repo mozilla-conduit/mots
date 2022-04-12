@@ -141,6 +141,7 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.load()
 
         nicks = []
+        file_config.config["people"].sort(key=lambda p: p["nick"].lower())
         for person in file_config.config["people"]:
             machine_readable_nick = generate_machine_readable_name(
                 person.get("nick", ""), keep_case=True
@@ -149,6 +150,7 @@ def clean(file_config: FileConfig, write: bool = True):
                 continue
             nicks.append(machine_readable_nick)
             person.yaml_set_anchor(machine_readable_nick)
+            person.fa.set_flow_style()
 
         file_config.write()
 

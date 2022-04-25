@@ -218,7 +218,7 @@ def clean(file_config: FileConfig, write: bool = True):
                 directory, file_config.config["export"]["format"]
             ).encode("utf-8")
         else:
-            export = None
+            export = b""
         hashes = calculate_hashes(file_config.config, export)
         file_config.write(hashes)
 

@@ -17,7 +17,7 @@ def test_directory__Directory(repo):
     rp = directory.repo_path
     di = directory.index
 
-    assert len(di) == 23
+    assert len(di) == 24
 
     assert [m.machine_name for m in di[rp / "birds"]] == []
     assert [m.machine_name for m in di[rp / "birds/eagle"]] == ["predators"]
@@ -101,12 +101,8 @@ def test_directory__Directory__query(repo):
         "birds/parrot",
         "felines/persian",
     }
-    assert set(result.owners) == {
-        Person(bmo_id=2, name="otis", nick="otis")
-    }
-    assert set(result.peers) == {
-        Person(bmo_id=1, name="jill", nick="jill")
-    }
+    assert set(result.owners) == {Person(bmo_id=2, name="otis", nick="otis")}
+    assert set(result.peers) == {Person(bmo_id=1, name="jill", nick="jill")}
     assert result.rejected_paths == ["felines/maine_coon"]
 
 
@@ -140,10 +136,6 @@ def test_directory__Directory__query_merging(repo):
         "birds/parrot",
         "felines/persian",
     }
-    assert set(result.owners) == {
-        Person(bmo_id=2, name="otis", nick="otis")
-    }
-    assert set(result.peers) == {
-        Person(bmo_id=1, name="jill", nick="jill")
-    }
+    assert set(result.owners) == {Person(bmo_id=2, name="otis", nick="otis")}
+    assert set(result.peers) == {Person(bmo_id=1, name="jill", nick="jill")}
     assert result.rejected_paths == ["felines/maine_coon"]

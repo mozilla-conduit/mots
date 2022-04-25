@@ -45,11 +45,16 @@ def repo(tmp_path, config):
         (test_repo / "birds").mkdir(),
         (test_repo / "birds" / "parrot").touch(),
         (test_repo / "birds" / "eagle").touch(),
+        (test_repo / "mots.rst").touch(),
     ]
 
     file_config = FileConfig(test_repo / "mots.yml")
     file_config.config = config
-    file_config.write()
+    hashes = {
+        "config": "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1",
+        "export": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    }
+    file_config.write(hashes)
 
     return test_repo
 
@@ -66,6 +71,7 @@ def config():
         "created_at": "2021-09-10 12:53:22.383393",
         "updated_at": "2021-09-10 12:53:22.383393",
         "people": people,
+        "export": {"format": "rst", "path": "mots.rst"},
         "modules": [
             {
                 "machine_name": "domesticated_animals",

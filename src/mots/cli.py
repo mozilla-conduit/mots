@@ -2,23 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-"""
-usage: mots [-h] [--debug] {init,module,validate,clean,query} ...
+"""This module sets up parsers and maps cli commands to methods."""
 
-main command line interface for mots
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --debug               enable debug output
-
-commands:
-  {init,module,validate,clean,query}
-    init                initialize mots configuration in repo
-    module              module_operations
-    validate            validate mots config for current repo
-    clean               clean mots config for current repo
-    query               query the module directory
-"""
 import argparse
 from datetime import datetime
 import logging
@@ -31,7 +16,6 @@ from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
-from mots.config import ValidationError
 from mots.settings import settings
 from mots.utils import get_list_input, mkdir_if_not_exists, touch_if_not_exists
 from mots import __version__
@@ -41,43 +25,44 @@ logger = logging.getLogger(__name__)
 
 
 def init(args: argparse.Namespace) -> None:
-    """Call `file_config.init` with correct arguments."""
+    """Initialize mots configuration file."""
     file_config = config.FileConfig(Path(args.path))
     file_config.init()
 
 
 def ls(args: argparse.Namespace) -> None:
-    """Call `module.ls` with correct arguments."""
+    """List modules."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     module.ls(file_config.config["modules"])
 
 
 def show(args: argparse.Namespace) -> None:
-    """Call `module.show` with correct arguments."""
+    """Show given module details."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     module.show(file_config.config["modules"], args.module)
 
 
 def validate(args: argparse.Namespace) -> None:
-    """Call `config.validate` with correct arguments."""
+    """Validate configuration and show error output if applicable."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    errors = config.validate(file_config.config, args.repo_path)
-    if errors:
-        raise ValidationError(errors)
+    errors = config.validate(file_config.config, file_config.repo_path)
+    for error in errors:
+        logger.error(error)
+    sys.exit(1 if errors else 0)
 
 
 def clean(args: argparse.Namespace) -> None:
-    """Call `config.clean` with correct arguments."""
+    """Run clean methods for configuration file and write to disk."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     config.clean(file_config)
 
 
 def check_hashes(args: argparse.Namespace) -> None:
-    """Call `file_config.check_hashes` and exit with appropriate code."""
+    """Check stored hashes against calculated hashes and exit with appropriate code."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     errors = file_config.check_hashes()
@@ -88,7 +73,7 @@ def check_hashes(args: argparse.Namespace) -> None:
 
 
 def query(args: argparse.Namespace) -> None:
-    """Call `directory.query` with correct arguments."""
+    """Query list of files for module information."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
@@ -100,7 +85,7 @@ def query(args: argparse.Namespace) -> None:
 
 
 def add(args: argparse.Namespace) -> None:
-    """Prompt user to add a new module."""
+    """Add a new module or submodule to repo configuration file."""
     params = {
         "machine_name": input(
             "Enter a machine name (alphanumeric characters and underscores)"
@@ -123,8 +108,12 @@ def add(args: argparse.Namespace) -> None:
 
 
 def ci(args: argparse.Namespace) -> None:
-    """Perform any CI/CD checks or verifications."""
-    validate_version_tag()
+    """Perform CI checks or validations."""
+    try:
+        validate_version_tag()
+    except ValueError as e:
+        logger.error(e)
+        sys.exit(1)
 
 
 def version():
@@ -133,7 +122,7 @@ def version():
 
 
 def export(args: argparse.Namespace) -> None:
-    """Call `export.export_to_format` with relevant parameters."""
+    """Export repo configuration and write to disk, or print to stdout as needed."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     directory = Directory(file_config)
@@ -168,8 +157,8 @@ def export(args: argparse.Namespace) -> None:
 
 
 def main():
-    """Redirect to appropriate function."""
-    parser, subparsers = create_parser()
+    """Run startup commands and redirect to appropriate function."""
+    parser = create_parser()
     args = parser.parse_args()
 
     mkdir_if_not_exists(settings.RESOURCE_DIRECTORY)
@@ -186,123 +175,66 @@ def main():
         parser.print_help()
 
 
+def _add_path_argument(_parser):
+    _parser.add_argument(
+        "--path",
+        "-p",
+        type=Path,
+        help="the path of the repo config file",
+        default=settings.DEFAULT_CONFIG_FILEPATH,
+    )
+
+
 def create_parser():
     """Create parser, subparsers, and arguments."""
+    parsers = {}
     parser = argparse.ArgumentParser(description="main command line interface for mots")
     parser.add_argument("--debug", action="store_true", help="enable debug output")
     parser.add_argument("--version", action="version", version=version())
-    subparsers = parser.add_subparsers(title="commands")
+    main_cli = parser.add_subparsers(title="commands")
+    module_parser = main_cli.add_parser("module", help="module operations")
+    _add_path_argument(module_parser)
+    module_cli = module_parser.add_subparsers(title="module")
 
-    ci_parser = subparsers.add_parser("ci", help="perform CI checks or operations")
-    ci_parser.set_defaults(func=ci)
+    # Create path argument template.
+    path_flags = ("--path", "-p")
+    path_args = {
+        "type": Path,
+        "help": "the path of the repo config file",
+        "default": settings.DEFAULT_CONFIG_FILEPATH,
+    }
 
-    init_parser = subparsers.add_parser(
-        "init", help="initialize mots configuration in repo"
-    )
-    init_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo to initialize",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    init_parser.set_defaults(func=init)
+    for _cli, func, help_text in (
+        (main_cli, ci, "perform CI checks or operations"),
+        (main_cli, init, "initialize mots configuration in repo"),
+        (main_cli, clean, "clean mots config"),
+        (main_cli, check_hashes, "check mots config and export hashes"),
+        (main_cli, query, "query the module directory"),
+        (main_cli, export, "export the module directory"),
+        (module_cli, add, "add a new module"),
+        (module_cli, ls, "list all modules"),
+        (module_cli, show, "show module details"),
+        (module_cli, validate, "validate mots config"),
+    ):
+        name = func.__name__
+        parsers[name] = _cli.add_parser(name, help=help_text)
+        parsers[name].set_defaults(func=func)
 
-    module_parser = subparsers.add_parser("module", help="module_operations")
-    module_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo config file",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    module_parsers = module_parser.add_subparsers(title="module")
+    # Add custom arguments where needed.
+    parsers["query"].add_argument("paths", nargs="+", help="a list of paths to query")
+    parsers["query"].add_argument(*path_flags, **path_args)
 
-    list_parser = module_parsers.add_parser("list", help="list all modules")
-    list_parser.set_defaults(func=ls)
-
-    add_parser = module_parsers.add_parser("add", help="add a new module")
-    add_parser.set_defaults(func=add)
-
-    show_parser = module_parsers.add_parser("show", help="show a module")
-    show_parser.add_argument("module", help="name of the module to show")
-    show_parser.set_defaults(func=show)
-
-    validate_parser = subparsers.add_parser(
-        "validate", help="validate mots config for current repo"
-    )
-    validate_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo config file",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    validate_parser.add_argument(
-        "--repo-path",
-        "-r",
-        type=str,
-        help="the path of the repo",
-        default=".",
-    )
-    validate_parser.set_defaults(func=validate)
-
-    clean_parser = subparsers.add_parser(
-        "clean", help="clean mots config for current repo"
-    )
-    clean_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo config file",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    clean_parser.add_argument(
-        "--repo-path",
-        "-r",
-        type=str,
-        help="the path of the repo",
-        default=".",
-    )
-    clean_parser.set_defaults(func=clean)
-
-    check_hashes_parser = subparsers.add_parser(
-        "check-hashes", help="check mots config hashes for current repo"
-    )
-    check_hashes_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo config file",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    check_hashes_parser.set_defaults(func=check_hashes)
-
-    query_parser = subparsers.add_parser("query", help="query the module directory")
-    query_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo config file",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    query_parser.add_argument("paths", nargs="+", help="a list of paths to query")
-    query_parser.set_defaults(func=query)
-
-    export_parser = subparsers.add_parser("export", help="export the module directory")
-    export_parser.add_argument(
-        "--path",
-        "-p",
-        type=Path,
-        help="the path of the repo config file",
-        default=settings.DEFAULT_CONFIG_FILEPATH,
-    )
-    export_parser.add_argument(
+    parsers["export"].add_argument(
         "--format", "-f", type=str, choices=("rst",), help="the format of exported data"
     )
-    export_parser.add_argument(
+    parsers["export"].add_argument(
         "--out", "-o", type=Path, help="the file path to output to"
     )
-    export_parser.set_defaults(func=export)
+    parsers["export"].add_argument(*path_flags, **path_args)
 
-    return parser, subparsers
+    parsers["init"].add_argument(*path_flags, **path_args)
+    parsers["validate"].add_argument(*path_flags, **path_args)
+    parsers["clean"].add_argument(*path_flags, **path_args)
+    parsers["check_hashes"].add_argument(*path_flags, **path_args)
+
+    return parser

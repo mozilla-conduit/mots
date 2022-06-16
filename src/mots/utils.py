@@ -34,8 +34,10 @@ def get_list_input(text: str):
 
 def parse_real_name(real_name):
     """Parse real_name into name and info."""
-    pattern = re.compile(r"^(?P<name>[\w\ ]+?)?\ ?(?P<info>[\(\[\|\:].*)?$")
+    pattern = re.compile(r"^(?P<name>[\w\ \-]*)?\ ?(?P<info>\W.*)?$")
     match = pattern.match(real_name)
+    if not match:
+        return {"name": "", "info": real_name}
     data = match.groupdict()
     return {k: v.strip() if v else "" for k, v in data.items()}
 

@@ -150,7 +150,6 @@ def clean(file_config: FileConfig, write: bool = True):
                 continue
             nicks.append(machine_readable_nick)
             person.yaml_set_anchor(machine_readable_nick)
-            person.fa.set_flow_style()
 
         file_config.write()
 

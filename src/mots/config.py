@@ -210,7 +210,6 @@ def clean(file_config: FileConfig, write: bool = True):
                 continue
             nicks.append(machine_readable_nick)
             person.yaml_set_anchor(machine_readable_nick)
-            person.fa.set_flow_style()
 
         if "export" in file_config.config and "format" in file_config.config["export"]:
             export = export_to_format(

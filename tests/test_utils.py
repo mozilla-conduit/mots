@@ -67,6 +67,17 @@ def test_parse_real_name():
         "info": ":test",
     }
 
+    # This test is not great, but some folks have their e-mail instead of name.
+    assert parse_real_name("tester@testerson.example (:test)") == {
+        "name": "tester",
+        "info": "@testerson.example (:test)",
+    }
+
+    assert parse_real_name("Emoji Tester💡 :tester") == {
+        "name": "Emoji Tester",
+        "info": "💡 :tester",
+    }
+
     assert parse_real_name("tester testerson | TEST | te/st") == {
         "name": "tester testerson",
         "info": "| TEST | te/st",
@@ -74,37 +85,37 @@ def test_parse_real_name():
 
     assert parse_real_name("tester testerson") == {
         "name": "tester testerson",
-        "info": None,
+        "info": "",
     }
 
     assert parse_real_name("tester") == {
         "name": "tester",
-        "info": None,
+        "info": "",
     }
 
     assert parse_real_name("(:bees)") == {
-        "name": None,
+        "name": "",
         "info": "(:bees)",
     }
 
     assert parse_real_name("[:bees]") == {
-        "name": None,
+        "name": "",
         "info": "[:bees]",
     }
 
     assert parse_real_name("[bees]") == {
-        "name": None,
+        "name": "",
         "info": "[bees]",
     }
 
     assert parse_real_name("(bees)") == {
-        "name": None,
+        "name": "",
         "info": "(bees)",
     }
 
     assert parse_real_name("") == {
-        "name": None,
-        "info": None,
+        "name": "",
+        "info": "",
     }
 
 

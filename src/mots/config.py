@@ -82,30 +82,22 @@ class FileConfig:
         errors = []
         config = self.config.copy()
 
-        # Exclude hashes and updated timestamp from hash generation
-        hashes = config.pop("hashes", {})
-        config.pop("updated_at", None)
-
-        # Write actual config yaml dump to stream.
-        with io.StringIO() as stream:
-            yaml.dump(config, stream)
-            content = stream.getvalue()
-
-        # Calculate hash based on actual content.
-        config_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
-
-        # Compare generated hash with original stored hash.
-        if config_hash != hashes["config"]:
-            errors.append(f"{config_hash} hash does not match {hashes['config']}")
-            errors.append("config file is out of date. Did you run mots clean?")
-
-        # Do the same for export.
         if "export" in self.config and "path" in self.config["export"]:
             with (self.repo_path / config["export"]["path"]).open("rb") as f:
-                export_hash = hashlib.sha1(f.read()).hexdigest()
-            if export_hash != hashes["export"]:
-                errors.append(f"{export_hash} hash does not match {hashes['export']}")
-                errors.append("exported file is out of date. Did you run mots export?")
+                export = f.read()
+        else:
+            export = None
+
+        original_hashes, hashes = calculate_hashes(self.config, export)
+
+        for hash_key in ("config", "export"):
+            if original_hashes.get(hash_key) != hashes.get(hash_key):
+                errors.append(f"Mismatch in {hash_key} hash detected.")
+                errors.append(
+                    f"{hashes[hash_key]} does not match {original_hashes[hash_key]}"
+                )
+                errors.append(f"{hash_key} file is out of date.")
+
         return errors
 
     def write(self, hashes: Optional[dict] = None):
@@ -120,17 +112,24 @@ class FileConfig:
 def calculate_hashes(config: dict, export: bytes) -> dict:
     """Calculate a hash of the yaml config file."""
     config = config.copy()
-    hashes = config.pop("hashes", {})
+
+    # Exclude hashes and updated timestamp from hash generation
+    original_hashes = config.pop("hashes", {})
+    hashes = {}
     config.pop("updated_at", None)
 
+    # Write actual config yaml dump to stream.
     with io.StringIO() as stream:
         yaml.dump(config, stream)
-        hashes["config"] = hashlib.sha1(stream.getvalue().encode("utf-8")).hexdigest()
+        content = stream.getvalue()
+
+    config_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
+    hashes["config"] = config_hash
 
     if "export" in config:
         hashes["export"] = hashlib.sha1(export).hexdigest()
 
-    return hashes
+    return original_hashes, hashes
 
 
 def clean(file_config: FileConfig, write: bool = True):
@@ -211,7 +210,6 @@ def clean(file_config: FileConfig, write: bool = True):
                 continue
             nicks.append(machine_readable_nick)
             person.yaml_set_anchor(machine_readable_nick)
-            person.fa.set_flow_style()
 
         if "export" in file_config.config and "format" in file_config.config["export"]:
             export = export_to_format(
@@ -219,7 +217,7 @@ def clean(file_config: FileConfig, write: bool = True):
             ).encode("utf-8")
         else:
             export = None
-        hashes = calculate_hashes(file_config.config, export)
+        hashes = calculate_hashes(file_config.config, export)[1]
         file_config.write(hashes)
 
 

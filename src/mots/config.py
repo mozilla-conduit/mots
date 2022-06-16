@@ -10,6 +10,7 @@ import hashlib
 import logging
 from typing import (
     List,
+    Tuple,
     Optional,
 )
 
@@ -109,7 +110,7 @@ class FileConfig:
             yaml.dump(self.config, f)
 
 
-def calculate_hashes(config: dict, export: bytes) -> dict:
+def calculate_hashes(config: dict, export: bytes) -> Tuple[dict, dict]:
     """Calculate a hash of the yaml config file."""
     config = config.copy()
 

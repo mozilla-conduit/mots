@@ -10,6 +10,8 @@ import re
 
 logger = logging.getLogger(__name__)
 
+REAL_NAME_RE = re.compile(r"^(?P<name>[\w\ \-]*)?\ ?(?P<info>\W.*)?$")
+
 
 def generate_machine_readable_name(display_name, keep_case=False):
     """Turn spaces into underscores, and lower the case. Strip all but alphanumerics."""
@@ -34,8 +36,7 @@ def get_list_input(text: str):
 
 def parse_real_name(real_name):
     """Parse real_name into name and info."""
-    pattern = re.compile(r"^(?P<name>[\w\ \-]*)?\ ?(?P<info>\W.*)?$")
-    match = pattern.match(real_name)
+    match = REAL_NAME_RE.match(real_name)
     if not match:
         return {"name": "", "info": real_name}
     data = match.groupdict()

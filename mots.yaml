@@ -1,11 +1,14 @@
 repo: mots
 created_at: '2022-02-02T14:48:50.574414'
-updated_at: '2022-04-14T13:38:44.609352'
+updated_at: '2022-06-16T13:15:01.409617'
 export:
   path: ./mots.rst
   format: rst
 people:
-  - &zeid {bmo_id: 633708, name: Zeid Zabaneh, nick: zeid}
+  - &zeid
+    bmo_id: 633708
+    name: Zeid Zabaneh
+    nick: zeid
 modules:
   - machine_name: main
     name: Main
@@ -17,5 +20,5 @@ modules:
     peers: []
     meta:
 hashes:
-  config: d7d518575fa318b6e0ceac7978f4aaba2c2f45a8
+  config: d29392d47d35ea7e93614c1bb0ff0d5fbd58ec4e
   export: 229a9972d2fef7479672453585750835f7089086

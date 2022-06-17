@@ -216,7 +216,7 @@ def create_parser():
         (module_cli, show, "show module details"),
         (module_cli, validate, "validate mots config"),
     ):
-        name = func.__name__
+        name = func.__name__.replace("_", "-")
         parsers[name] = _cli.add_parser(name, help=help_text)
         parsers[name].set_defaults(func=func)
 
@@ -235,6 +235,6 @@ def create_parser():
     parsers["init"].add_argument(*path_flags, **path_args)
     parsers["validate"].add_argument(*path_flags, **path_args)
     parsers["clean"].add_argument(*path_flags, **path_args)
-    parsers["check_hashes"].add_argument(*path_flags, **path_args)
+    parsers["check-hashes"].add_argument(*path_flags, **path_args)
 
     return parser

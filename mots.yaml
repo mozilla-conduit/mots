@@ -1,6 +1,6 @@
 repo: mots
 created_at: '2022-02-02T14:48:50.574414'
-updated_at: '2022-06-16T13:04:27.354854'
+updated_at: '2022-06-16T13:15:01.409617'
 export:
   path: ./mots.rst
   format: rst
@@ -19,3 +19,6 @@ modules:
       - *zeid
     peers: []
     meta:
+hashes:
+  config: d29392d47d35ea7e93614c1bb0ff0d5fbd58ec4e
+  export: 229a9972d2fef7479672453585750835f7089086

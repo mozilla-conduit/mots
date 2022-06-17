@@ -17,7 +17,7 @@ def test_directory__Directory(repo):
     rp = directory.repo_path
     di = directory.index
 
-    assert len(di) == 23
+    assert len(di) == 24
 
     assert [m.machine_name for m in di[rp / "birds"]] == []
     assert [m.machine_name for m in di[rp / "birds/eagle"]] == ["predators"]

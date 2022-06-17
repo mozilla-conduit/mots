@@ -23,6 +23,7 @@ import argparse
 from datetime import datetime
 import logging
 from pathlib import Path
+import sys
 
 from mots import module
 from mots import config
@@ -73,6 +74,17 @@ def clean(args: argparse.Namespace) -> None:
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     config.clean(file_config)
+
+
+def check_hashes(args: argparse.Namespace) -> None:
+    """Call `file_config.check_hashes` and exit with appropriate code."""
+    file_config = config.FileConfig(Path(args.path))
+    file_config.load()
+    errors = file_config.check_hashes()
+    if errors:
+        for error in errors:
+            logger.error(error)
+        sys.exit(1)
 
 
 def query(args: argparse.Namespace) -> None:
@@ -253,6 +265,18 @@ def create_parser():
         default=".",
     )
     clean_parser.set_defaults(func=clean)
+
+    check_hashes_parser = subparsers.add_parser(
+        "check-hashes", help="check mots config hashes for current repo"
+    )
+    check_hashes_parser.add_argument(
+        "--path",
+        "-p",
+        type=Path,
+        help="the path of the repo config file",
+        default=settings.DEFAULT_CONFIG_FILEPATH,
+    )
+    check_hashes_parser.set_defaults(func=check_hashes)
 
     query_parser = subparsers.add_parser("query", help="query the module directory")
     query_parser.add_argument(

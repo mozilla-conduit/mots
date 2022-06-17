@@ -5,9 +5,12 @@
 """Configuration classes used to initialize and manage mots in a repo."""
 
 from collections import defaultdict
+import io
+import hashlib
 import logging
 from typing import (
     List,
+    Tuple,
     Optional,
 )
 
@@ -17,6 +20,7 @@ from ruamel.yaml import YAML
 
 from mots.bmo import get_bmo_data
 from mots.directory import Directory, People
+from mots.export import export_to_format
 from mots.module import Module
 from mots.utils import generate_machine_readable_name
 from mots.settings import settings
@@ -53,6 +57,8 @@ class FileConfig:
                 "repo": str(Path(self.path).resolve().parent.name),
                 "created_at": now,
                 "updated_at": None,
+                "hashes": {"config": None, "export": None},
+                "export": {},
                 "people": [],
                 "modules": [],
             }
@@ -66,18 +72,73 @@ class FileConfig:
         with self.path.open("r") as f:
             self.config = yaml.load(f)
 
-    def write(self):
-        """Write configuration to file, and update the timestamp."""
+    def check_hashes(self) -> List[str]:
+        """Check that the hashes in the config are up to date.
+
+        Upon calling this function, the existing configuration is copied and stripped
+        of volatile keys, then a hash is calculated and compared against the old hash.
+
+        If there is a mismatch, return non-zero exit code. Otherwise return 0.
+        """
+        errors = []
+        config = self.config.copy()
+
+        if "export" in self.config and "path" in self.config["export"]:
+            with (self.repo_path / config["export"]["path"]).open("rb") as f:
+                export = f.read()
+        else:
+            export = None
+
+        original_hashes, hashes = calculate_hashes(self.config, export)
+
+        for hash_key in ("config", "export"):
+            if original_hashes.get(hash_key) != hashes.get(hash_key):
+                errors.append(f"Mismatch in {hash_key} hash detected.")
+                errors.append(
+                    f"{hashes[hash_key]} does not match {original_hashes[hash_key]}"
+                )
+                errors.append(f"{hash_key} file is out of date.")
+
+        return errors
+
+    def write(self, hashes: Optional[dict] = None):
+        """Write configuration to file, and update the timestamp and hashes."""
+        logger.debug(f"Writing configuration to {self.path}")
         self.config["updated_at"] = datetime.now().isoformat()
+        self.config["hashes"] = hashes or {}
         with self.path.open("w") as f:
             yaml.dump(self.config, f)
+
+
+def calculate_hashes(config: dict, export: bytes) -> Tuple[dict, dict]:
+    """Calculate a hash of the yaml config file."""
+    config = config.copy()
+
+    # Exclude hashes and updated timestamp from hash generation
+    original_hashes = config.pop("hashes", {})
+    hashes = {}
+    config.pop("updated_at", None)
+
+    # Write actual config yaml dump to stream.
+    with io.StringIO() as stream:
+        yaml.dump(config, stream)
+        content = stream.getvalue()
+
+    config_hash = hashlib.sha1(content.encode("utf-8")).hexdigest()
+    hashes["config"] = config_hash
+
+    if "export" in config:
+        hashes["export"] = hashlib.sha1(export).hexdigest()
+
+    return original_hashes, hashes
 
 
 def clean(file_config: FileConfig, write: bool = True):
     """Clean and re-sort configuration file.
 
     Load configuration from disk, sort modules and submodules by `machine_name`. If
-    there is no valid `machine_name`, generate one. Write changes to disk.
+    there is no valid `machine_name`, generate one. Reformat yaml content. Calculate
+    and store hashes if needed. Write changes to disk if needed.
 
     :param file_config: an instance of :class:`FileConfig`
     :param write: if set to `True`, writes changes to disk.
@@ -151,7 +212,14 @@ def clean(file_config: FileConfig, write: bool = True):
             nicks.append(machine_readable_nick)
             person.yaml_set_anchor(machine_readable_nick)
 
-        file_config.write()
+        if "export" in file_config.config and "format" in file_config.config["export"]:
+            export = export_to_format(
+                directory, file_config.config["export"]["format"]
+            ).encode("utf-8")
+        else:
+            export = None
+        hashes = calculate_hashes(file_config.config, export)[1]
+        file_config.write(hashes)
 
 
 def validate(config: dict, repo_path: str) -> Optional[List[str]]:

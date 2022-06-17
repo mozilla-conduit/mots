@@ -8,4 +8,4 @@ Mots is the in-tree module ownership system.
 This library helps you track who owns what parts of the source code!
 """
 
-__version__ = "0.0.1"
+__version__ = "0.0.1rc0"

@@ -7,7 +7,7 @@
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
 {% if module.description %}
-{{ module.description|escape_for_rst }}
+{{ module.description|escape_for_rst|trim }}
 {% endif %}
 
 {% if not module.owners %}
@@ -17,30 +17,39 @@
 
 .. list-table::
     :stub-columns: 1
+    :widths: 30 70
 
 {% if module.owners %}
     * - Owner(s)
-      - {{ module.owner_names|join(", ") }}
+      -{{ module.owners|format_people_for_rst }}
 {% endif %}
 {% if module.peers %}
     * - Peer(s)
-      - {{ module.peer_names|join(", ") }}
+      -{{ module.peers|format_people_for_rst }}
+{% endif %}
+{% if module.meta.owners_emeritus %}
+    * - Owner(s) Emeritus
+      - {{ module.meta.owners_emeritus|join(", ") }}
+{% endif %}
+{% if module.meta.peers_emeritus %}
+    * - Peer(s) Emeritus
+      - {{ module.meta.peers_emeritus|join(", ") }}
 {% endif %}
 {% if module.includes %}
     * - Includes
-      - {{ module.includes|join(", ")|escape_for_rst }}
+      -{{ module.includes|format_paths_for_rst(directory=directory) }}
 {% endif %}
 {% if module.excludes %}
     * - Excludes
-      - {{ module.excludes|join(", ")|escape_for_rst }}
+      -{{ module.excludes|format_paths_for_rst(directory=directory) }}
 {% endif %}
 {% if module.meta.group %}
     * - Group
-      - {{ module.meta.group }}
+      - {{ module.meta.group|trim }}
 {% endif %}
 {% if module.meta.url %}
     * - URL
-      - {{ module.meta.url }}
+      - {{ module.meta.url|trim }}
 {% endif %}
 {% if module.meta.components %}
     * - Bugzilla Components
@@ -48,18 +57,21 @@
 {% endif %}
 {% endmacro %}
 
+.. note::
+    To add, remove, or update module information, see the `mots documentation <https://mots.readthedocs.io/en/latest/#adding-a-module>`_.
 
 =======
 Modules
 =======
 
-{{ directory.description|escape_for_rst + "\n" }}
+{{ directory.description + "\n" }}
 
 {%- for module in directory.modules -%}
 {{ module_entry(module) }}
 {% if module.submodules %}
 {% for submodule in module.submodules %}
 {{ module_entry(submodule, True) }}
+
 {% endfor %}
 {% endif %}
 {% endfor %}

@@ -54,7 +54,7 @@ def test_export_format_paths_for_rst():
 
     paths = ["test_path_1", "test_path_2"]
 
-    assert format_paths_for_rst(paths, directory=mock_directory) == (
+    assert format_paths_for_rst(paths, indent=8, directory=mock_directory) == (
         "\n        | `test_path_1 "
         "<https://searchfox.org/test-repo/search?q=&path=test_path_1>`__"
         "\n        | `test_path_2 "
@@ -67,7 +67,7 @@ def test_export_format_paths_for_rst():
 
     paths = ["test_path_1", "test_path_2"]
 
-    assert format_paths_for_rst(paths, directory=mock_directory) == (
+    assert format_paths_for_rst(paths, indent=8, directory=mock_directory) == (
         "\n        | test_path_1" "\n        | test_path_2"
     )
 
@@ -75,10 +75,10 @@ def test_export_format_paths_for_rst():
 def test_export_format_people_for_rst(config):
     """Ensure outputted strings are correct when formatting people."""
     config["people"].append({"nick": "unnamed"})
-    test = format_people_for_rst(config["people"])
+    test = format_people_for_rst(config["people"], indent=8)
     assert test == (
         "\n        | `jane (jane) <https://people.mozilla.org/s?query=jane>`__"
         "\n        | `jill (jill) <https://people.mozilla.org/s?query=jill>`__"
         "\n        | `otis (otis) <https://people.mozilla.org/s?query=otis>`__"
         "\n        | `unnamed <https://people.mozilla.org/s?query=unnamed>`__"
-        )
+    )

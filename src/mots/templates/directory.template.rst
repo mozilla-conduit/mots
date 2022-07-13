@@ -21,11 +21,11 @@
 
 {% if module.owners %}
     * - Owner(s)
-      -{{ module.owners|format_people_for_rst }}
+      -{{ module.owners|format_people_for_rst(indent=8) }}
 {% endif %}
 {% if module.peers %}
     * - Peer(s)
-      -{{ module.peers|format_people_for_rst }}
+      -{{ module.peers|format_people_for_rst(indent=8) }}
 {% endif %}
 {% if module.meta.owners_emeritus %}
     * - Owner(s) Emeritus
@@ -37,11 +37,11 @@
 {% endif %}
 {% if module.includes %}
     * - Includes
-      -{{ module.includes|format_paths_for_rst(directory=directory) }}
+      -{{ module.includes|format_paths_for_rst(directory=directory, indent=8) }}
 {% endif %}
 {% if module.excludes %}
     * - Excludes
-      -{{ module.excludes|format_paths_for_rst(directory=directory) }}
+      -{{ module.excludes|format_paths_for_rst(directory=directory, indent=8) }}
 {% endif %}
 {% if module.meta.group %}
     * - Group

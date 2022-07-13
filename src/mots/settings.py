@@ -37,6 +37,7 @@ class Settings:
         "LOG_MAX_SIZE": 1024 * 1024 * 50,
         "OVERRIDES_FILE": OVERRIDES_FILE,
         "PMO_COOKIE": "",
+        "PMO_SEARCH_URL": "https://people.mozilla.org/s?query=",
         "PMO_URL": "https://people.mozilla.org/api/v4/",
         "RESOURCE_DIRECTORY": RESOURCE_DIRECTORY,
         "USER_AGENT": f"mots/{__version__}",

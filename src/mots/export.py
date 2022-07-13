@@ -13,9 +13,12 @@ if sys.version_info < (3, 9):
 else:
     import importlib.resources as importlib_resources
 
+from typing import List
+
 import jinja2
 
 from mots.directory import Directory
+from mots.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +35,7 @@ def escape_for_rst(value: str) -> str:
 
 
 def format_paths_for_rst(
-    value: list, indent: int = DEFAULT_LIST_TABLE_INDENT, directory: Directory = None
+    value: List[str], indent: int, directory: Directory = None
 ) -> str:
     """Escape and format a path string (e.g. for includes or excludes)."""
     config = directory.config_handle.config
@@ -40,12 +43,11 @@ def format_paths_for_rst(
         searchfox_enabled = config["export"]["searchfox_enabled"]
     except KeyError:
         searchfox_enabled = False
-        searchfox_base_url = None
+
+    if searchfox_enabled:
+        searchfox_base_url = f"https://searchfox.org/{config['repo']}/search?q=&path="
     else:
-        if searchfox_enabled:
-            searchfox_base_url = (
-                f"https://searchfox.org/{config['repo']}/search?q=&path="
-            )
+        searchfox_base_url = None
 
     parsed_paths = []
     for path in value:
@@ -56,9 +58,9 @@ def format_paths_for_rst(
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_paths)
 
 
-def format_people_for_rst(value: list, indent: int = DEFAULT_LIST_TABLE_INDENT) -> str:
+def format_people_for_rst(value: List[dict], indent: int) -> str:
     """Escape and format a list of people."""
-    people_base_url = "https://people.mozilla.org/s?query="
+    people_base_url = settings.PMO_SEARCH_URL
     parsed_people = []
     for person in value:
         if "name" in person and person["name"]:

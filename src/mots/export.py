@@ -13,11 +13,16 @@ if sys.version_info < (3, 9):
 else:
     import importlib.resources as importlib_resources
 
+from typing import List
+
 import jinja2
 
 from mots.directory import Directory
+from mots.settings import settings
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_LIST_TABLE_INDENT = 8
 
 
 def escape_for_rst(value: str) -> str:
@@ -27,6 +32,45 @@ def escape_for_rst(value: str) -> str:
     for character in characters:
         value = value.replace(character, f"\\{character}")
     return value
+
+
+def format_paths_for_rst(
+    value: List[str], indent: int, directory: Directory = None
+) -> str:
+    """Escape and format a path string (e.g. for includes or excludes)."""
+    config = directory.config_handle.config
+    try:
+        searchfox_enabled = config["export"]["searchfox_enabled"]
+    except KeyError:
+        searchfox_enabled = False
+
+    parsed_paths = []
+    for path in value:
+        path = path.replace("*", "\\*")
+        if searchfox_enabled:
+            path = (
+                f"`{path} <{settings.SEARCHFOX_BASE_URL}"
+                f"/{config['repo']}/search?q=&path={path}>`__"
+            )
+        parsed_paths.append(path)
+    return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_paths)
+
+
+def format_people_for_rst(value: List[dict], indent: int) -> str:
+    """Escape and format a list of people."""
+    people_base_url = settings.PMO_SEARCH_URL
+    parsed_people = []
+    for person in value:
+        if "name" in person and person["name"]:
+            parsed_person = (
+                f"`{person['name']} ({person['nick']}) "
+                f"<{people_base_url}{person['nick']}>`__"
+            )
+        else:
+            parsed_person = f"`{person['nick']} <{people_base_url}{person['nick']}>`__"
+
+        parsed_people.append(parsed_person)
+    return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_people)
 
 
 class Exporter:
@@ -40,6 +84,8 @@ class Exporter:
         )
         env = jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         env.filters["escape_for_rst"] = escape_for_rst
+        env.filters["format_paths_for_rst"] = format_paths_for_rst
+        env.filters["format_people_for_rst"] = format_people_for_rst
         return env
 
     def __init__(self, directory: Directory):
@@ -52,9 +98,10 @@ class Exporter:
         return template
 
     def _export_to_rst(self) -> str:
+        """Render the template with this instance's directory context and return it."""
         template = self._get_template("rst")
         out = template.render(directory=self.directory)
-        return out
+        return f"{out.strip()}\n"
 
 
 def export_to_format(directory: Directory, frmt="rst"):

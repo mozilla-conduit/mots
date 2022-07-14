@@ -44,16 +44,14 @@ def format_paths_for_rst(
     except KeyError:
         searchfox_enabled = False
 
-    if searchfox_enabled:
-        searchfox_base_url = f"https://searchfox.org/{config['repo']}/search?q=&path="
-    else:
-        searchfox_base_url = None
-
     parsed_paths = []
     for path in value:
         path = path.replace("*", "\\*")
-        if searchfox_base_url:
-            path = f"`{path} <{searchfox_base_url}{path}>`__"
+        if searchfox_enabled:
+            path = (
+                f"`{path} <{settings.SEARCHFOX_BASE_URL}"
+                f"/{config['repo']}/search?q=&path={path}>`__"
+            )
         parsed_paths.append(path)
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_paths)
 

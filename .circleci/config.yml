@@ -11,7 +11,6 @@ workflows:
   version: 2
   test:
     jobs:
-      - test_3_6
       - test_3_7
       - test_3_8
       - test_3_9
@@ -20,10 +19,6 @@ workflows:
     jobs:
       - verify:
           <<: *tags-only-filter
-      - test_3_6:
-          <<: *tags-only-filter
-          requires:
-            - verify
       - test_3_7:
           <<: *tags-only-filter
           requires:
@@ -43,16 +38,15 @@ workflows:
       - build-and-publish:
           <<: *tags-only-filter
           requires:
-            - test_3_6
             - test_3_7
             - test_3_8
             - test_3_9
             - test_3_10
 
 jobs:
-  test_3_6: &test_template
+  test_3_7: &test_template
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/python:3.7
     steps:
       - checkout
       - run:
@@ -78,10 +72,6 @@ jobs:
           path: /tmp/test-reports
       - store_artifacts:
           path: /tmo/test-reports
-  test_3_7:
-    <<: *test_template
-    docker:
-        - image: circleci/python:3.7
   test_3_8:
     <<: *test_template
     docker:

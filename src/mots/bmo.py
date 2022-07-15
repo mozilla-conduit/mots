@@ -4,9 +4,10 @@
 
 """Module that provides helpers to interact with the Bugzilla API."""
 
+from __future__ import annotations
+
 import requests
 import logging
-from typing import List, Optional
 
 from mots.settings import settings
 
@@ -27,9 +28,7 @@ def get_bmo_data(people: list) -> dict:
 class BMOClient:
     """A thin wrapper as a Bugzilla API client."""
 
-    def __init__(
-        self, token: Optional[str] = None, base_url: str = settings.BUGZILLA_URL
-    ):
+    def __init__(self, token: str | None = None, base_url: str = settings.BUGZILLA_URL):
         if not token:
             token = settings.BUGZILLA_API_KEY
             if not token:
@@ -48,7 +47,7 @@ class BMOClient:
         )
         return response
 
-    def get_users_by_ids(self, ids: List[str]):
+    def get_users_by_ids(self, ids: list[str]):
         """Get user data by BMO IDs."""
         fields = ["real_name", "nick", "name", "id", "email"]
         response = self._get("user", {"ids": ids, "include_fields": ",".join(fields)})

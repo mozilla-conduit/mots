@@ -4,15 +4,12 @@
 
 """Configuration classes used to initialize and manage mots in a repo."""
 
+from __future__ import annotations
+
 from collections import defaultdict
 import io
 import hashlib
 import logging
-from typing import (
-    List,
-    Tuple,
-    Optional,
-)
 
 from datetime import datetime
 from pathlib import Path
@@ -72,7 +69,7 @@ class FileConfig:
         with self.path.open("r") as f:
             self.config = yaml.load(f)
 
-    def check_hashes(self) -> List[str]:
+    def check_hashes(self) -> list[str]:
         """Check that the hashes in the config are up to date.
 
         Upon calling this function, the existing configuration is copied and stripped
@@ -101,7 +98,7 @@ class FileConfig:
 
         return errors
 
-    def write(self, hashes: Optional[dict] = None):
+    def write(self, hashes: dict | None = None):
         """Write configuration to file, and update the timestamp and hashes."""
         logger.debug(f"Writing configuration to {self.path}")
         self.config["updated_at"] = datetime.now().isoformat()
@@ -110,7 +107,7 @@ class FileConfig:
             yaml.dump(self.config, f)
 
 
-def calculate_hashes(config: dict, export: bytes) -> Tuple[dict, dict]:
+def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
     """Calculate a hash of the yaml config file."""
     config = config.copy()
 
@@ -222,7 +219,7 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.write(hashes)
 
 
-def validate(config: dict, repo_path: str) -> Optional[List[str]]:
+def validate(config: dict, repo_path: str) -> list[str] | None:
     """Validate the current state of the config file.
 
     - Check if top-level dictionary contains required keys

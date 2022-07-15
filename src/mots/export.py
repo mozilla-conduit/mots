@@ -4,6 +4,8 @@
 
 """Export directory to various formats."""
 
+from __future__ import annotations
+
 import logging
 
 import sys
@@ -12,8 +14,6 @@ if sys.version_info < (3, 9):
     import importlib_resources
 else:
     import importlib.resources as importlib_resources
-
-from typing import List
 
 import jinja2
 
@@ -35,7 +35,7 @@ def escape_for_rst(value: str) -> str:
 
 
 def format_paths_for_rst(
-    value: List[str], indent: int, directory: Directory = None
+    value: list[str], indent: int, directory: Directory = None
 ) -> str:
     """Escape and format a path string (e.g. for includes or excludes)."""
     config = directory.config_handle.config
@@ -56,7 +56,7 @@ def format_paths_for_rst(
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_paths)
 
 
-def format_people_for_rst(value: List[dict], indent: int) -> str:
+def format_people_for_rst(value: list[dict], indent: int) -> str:
     """Escape and format a list of people."""
     people_base_url = settings.PMO_SEARCH_URL
     parsed_people = []

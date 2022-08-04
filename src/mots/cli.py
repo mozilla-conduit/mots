@@ -184,9 +184,13 @@ def read(args: argparse.Namespace):
 
     If no key is provided, prints all available settings variables.
     """
+
+    def out_template(key: str, value: str):
+        return f"{key}: {value} ({type(value).__name__})"
+
     if not args.key:
         for key, value in settings.settings.items():
-            print(f"{key}: {value} ({type(value).__name__})")
+            print(out_template(key, value))
         return
 
     key = args.key
@@ -194,7 +198,7 @@ def read(args: argparse.Namespace):
     if key not in settings.settings:
         raise ValueError(f"{key} does not exist in defaults.")
     value = settings.settings[key]
-    print(f"{key}: {value} ({type(value).__name__})")
+    print(out_template(key, value))
 
 
 def main():

@@ -166,7 +166,7 @@ Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml
 
 .. code-block:: shell
 
-    $ mots set-default BUGZILLA_API_KEY=***************************************
+    $ mots set-default BUGZILLA_API_KEY ***************************************
     $ mots clean
 
 

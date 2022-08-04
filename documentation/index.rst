@@ -162,11 +162,11 @@ This will result in a file that looks like this:
 Cleaning ``mots.yaml``
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml`` configuration file. This command requires a ``BUGZILLA_API_KEY`` environment variable to be set. You can do this by running the following commands, replacing the redacted key with an actual Bugzilla API key:
+Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml`` configuration file. This command requires a ``MOTS_BUGZILLA_API_KEY`` environment variable to be set, or the key to be defined in your settings. You can do this by running the following commands, replacing the redacted key with an actual Bugzilla API key:
 
 .. code-block:: shell
 
-    $ export BUGZILLA_API_KEY=***************************************
+    $ mots settings write BUGZILLA_API_KEY ***************************************
     $ mots clean
 
 

@@ -18,6 +18,7 @@ from mots.export import export_to_format
 from mots.logging import init_logging
 from mots.settings import settings
 from mots.utils import get_list_input, mkdir_if_not_exists, touch_if_not_exists
+from mots.yaml import yaml
 from mots import __version__
 
 
@@ -156,6 +157,50 @@ def export(args: argparse.Namespace) -> None:
             f.write(output)
 
 
+def write(args: argparse.Namespace):
+    """Set a specified settings variable to the provided value."""
+    key = args.key[0]
+    value = args.value[0]
+    with settings.OVERRIDES_FILE.open("r") as f:
+        overrides = yaml.load(f) or {}
+
+    if key not in settings.DEFAULTS:
+        raise ValueError(f"{key} does not exist in defaults.")
+
+    _type = type(settings.DEFAULTS[key])
+
+    if _type(value) == overrides.get(key):
+        raise ValueError(f"{key} is already set to {value} in overrides file.")
+
+    overrides[key] = _type(value)
+    print(f"{key} is now set to {value} ({_type.__name__}) in overrides file.")
+
+    with settings.OVERRIDES_FILE.open("w") as f:
+        yaml.dump(overrides, f)
+
+
+def read(args: argparse.Namespace):
+    """Print the value of a specified settings variable.
+
+    If no key is provided, prints all available settings variables.
+    """
+
+    def out_template(key: str, value: str):
+        return f"{key}: {value} ({type(value).__name__})"
+
+    if not args.key:
+        for key, value in settings.settings.items():
+            print(out_template(key, value))
+        return
+
+    key = args.key
+
+    if key not in settings.settings:
+        raise ValueError(f"{key} does not exist in defaults.")
+    value = settings.settings[key]
+    print(out_template(key, value))
+
+
 def main():
     """Run startup commands and redirect to appropriate function."""
     parser = create_parser()
@@ -196,6 +241,9 @@ def create_parser():
     _add_path_argument(module_parser)
     module_cli = module_parser.add_subparsers(title="module")
 
+    settings_parser = main_cli.add_parser("settings", help="settings operations")
+    settings_cli = settings_parser.add_subparsers(title="settings")
+
     # Create path argument template.
     path_flags = ("--path", "-p")
     path_args = {
@@ -215,6 +263,8 @@ def create_parser():
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
         (module_cli, validate, "validate mots config"),
+        (settings_cli, write, "update settings variable and save to disk"),
+        (settings_cli, read, "get settings variable, or all if no key is provided"),
     ):
         name = func.__name__.replace("_", "-")
         parsers[name] = _cli.add_parser(name, help=help_text)
@@ -231,6 +281,15 @@ def create_parser():
         "--out", "-o", type=Path, help="the file path to output to"
     )
     parsers["export"].add_argument(*path_flags, **path_args)
+
+    parsers["write"].add_argument("key", nargs=1, help="the settings key to set")
+    parsers["write"].add_argument("value", nargs=1, help="the value to set key to")
+
+    parsers["read"].add_argument(
+        "key",
+        nargs="?",
+        help="fetch the value of key if provided, or all keys otherwise",
+    )
 
     parsers["init"].add_argument(*path_flags, **path_args)
     parsers["validate"].add_argument(*path_flags, **path_args)

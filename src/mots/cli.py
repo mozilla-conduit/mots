@@ -157,7 +157,7 @@ def export(args: argparse.Namespace) -> None:
             f.write(output)
 
 
-def set_default(args: argparse.Namespace):
+def write(args: argparse.Namespace):
     """Set a specified settings variable to the provided value."""
     key = args.key[0]
     value = args.value[0]
@@ -179,28 +179,22 @@ def set_default(args: argparse.Namespace):
         yaml.dump(overrides, f)
 
 
-def get_default(args: argparse.Namespace):
+def read(args: argparse.Namespace):
     """Print the value of a specified settings variable.
 
     If no key is provided, prints all available settings variables.
     """
     if not args.key:
         for key, value in settings.settings.items():
-            print(f"{key} -> {value} ({type(value).__name__})")
+            print(f"{key}: {value} ({type(value).__name__})")
         return
 
-    key = args.key[0]
+    key = args.key
 
-    with settings.OVERRIDES_FILE.open("r") as f:
-        overrides = yaml.load(f) or {}
-
-    if key not in settings.DEFAULTS:
+    if key not in settings.settings:
         raise ValueError(f"{key} does not exist in defaults.")
-
-    if key in overrides:
-        print(f"{key} is set to {overrides[key]} in settings file.")
-    else:
-        print(f"{key} is using default value of {settings.DEFAULTS[key]}.")
+    value = settings.settings[key]
+    print(f"{key}: {value} ({type(value).__name__})")
 
 
 def main():
@@ -243,6 +237,9 @@ def create_parser():
     _add_path_argument(module_parser)
     module_cli = module_parser.add_subparsers(title="module")
 
+    settings_parser = main_cli.add_parser("settings", help="settings operations")
+    settings_cli = settings_parser.add_subparsers(title="settings")
+
     # Create path argument template.
     path_flags = ("--path", "-p")
     path_args = {
@@ -258,12 +255,12 @@ def create_parser():
         (main_cli, check_hashes, "check mots config and export hashes"),
         (main_cli, query, "query the module directory"),
         (main_cli, export, "export the module directory"),
-        (main_cli, set_default, "update settings variable and save to disk"),
-        (main_cli, get_default, "get settings variable, or all if no key is provided"),
         (module_cli, add, "add a new module"),
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
         (module_cli, validate, "validate mots config"),
+        (settings_cli, write, "update settings variable and save to disk"),
+        (settings_cli, read, "get settings variable, or all if no key is provided"),
     ):
         name = func.__name__.replace("_", "-")
         parsers[name] = _cli.add_parser(name, help=help_text)
@@ -281,12 +278,10 @@ def create_parser():
     )
     parsers["export"].add_argument(*path_flags, **path_args)
 
-    parsers["set-default"].add_argument("key", nargs=1, help="the settings key to set")
-    parsers["set-default"].add_argument(
-        "value", nargs=1, help="the value to set key to"
-    )
+    parsers["write"].add_argument("key", nargs=1, help="the settings key to set")
+    parsers["write"].add_argument("value", nargs=1, help="the value to set key to")
 
-    parsers["get-default"].add_argument(
+    parsers["read"].add_argument(
         "key",
         nargs="?",
         help="fetch the value of key if provided, or all keys otherwise",

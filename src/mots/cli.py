@@ -281,9 +281,7 @@ def create_parser():
     )
     parsers["export"].add_argument(*path_flags, **path_args)
 
-    parsers["set-default"].add_argument(
-        "key", nargs=1, help="the settings key to set"
-    )
+    parsers["set-default"].add_argument("key", nargs=1, help="the settings key to set")
     parsers["set-default"].add_argument(
         "value", nargs=1, help="the value to set key to"
     )

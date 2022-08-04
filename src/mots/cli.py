@@ -18,6 +18,7 @@ from mots.export import export_to_format
 from mots.logging import init_logging
 from mots.settings import settings
 from mots.utils import get_list_input, mkdir_if_not_exists, touch_if_not_exists
+from mots.yaml import yaml
 from mots import __version__
 
 
@@ -156,6 +157,50 @@ def export(args: argparse.Namespace) -> None:
             f.write(output)
 
 
+def set_default(args: argparse.Namespace):
+    """Set a specified settings variable to the provided value."""
+    key = args.key[0]
+    value = args.value[0]
+    with settings.OVERRIDES_FILE.open("r") as f:
+        overrides = yaml.load(f) or {}
+
+    if key not in settings.DEFAULTS:
+        raise ValueError(f"{key} does not exist in defaults.")
+
+    _type = type(settings.DEFAULTS[key])
+
+    if _type(value) == overrides.get(key):
+        raise ValueError(f"{key} is already set to {value} in overrides file.")
+
+    overrides[key] = _type(value)
+    print(f"{key} is now set to {value} ({_type.__name__}) in overrides file.")
+
+    with settings.OVERRIDES_FILE.open("w") as f:
+        yaml.dump(overrides, f)
+
+
+def get_default(args: argparse.Namespace):
+    """Print the value of a specified settings variable."""
+    key = args.key[0]
+
+    with settings.OVERRIDES_FILE.open("r") as f:
+        overrides = yaml.load(f) or {}
+
+    if key not in settings.DEFAULTS:
+        raise ValueError(f"{key} does not exist in defaults.")
+
+    if key in overrides:
+        print(f"{key} is set to {overrides[key]} in settings file.")
+    else:
+        print(f"{key} is using default value of {settings.DEFAULTS[key]}.")
+
+
+def get_defaults(args: argparse.Namespace):
+    """Print the values of all settings variables."""
+    for key, value in settings.settings.items():
+        print(f"{key} -> {value} ({type(value).__name__})")
+
+
 def main():
     """Run startup commands and redirect to appropriate function."""
     parser = create_parser()
@@ -211,6 +256,9 @@ def create_parser():
         (main_cli, check_hashes, "check mots config and export hashes"),
         (main_cli, query, "query the module directory"),
         (main_cli, export, "export the module directory"),
+        (main_cli, set_default, "update settings variable and save to disk"),
+        (main_cli, get_default, "get settings variable"),
+        (main_cli, get_defaults, "get all settings variables"),
         (module_cli, add, "add a new module"),
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
@@ -231,6 +279,15 @@ def create_parser():
         "--out", "-o", type=Path, help="the file path to output to"
     )
     parsers["export"].add_argument(*path_flags, **path_args)
+
+    parsers["set-default"].add_argument(
+        "key", nargs=1, help="the settings `key` to set"
+    )
+    parsers["set-default"].add_argument(
+        "value", nargs=1, help="the value to set `key` to"
+    )
+
+    parsers["get-default"].add_argument("key", nargs=1, help="fetch the value of `key`")
 
     parsers["init"].add_argument(*path_flags, **path_args)
     parsers["validate"].add_argument(*path_flags, **path_args)

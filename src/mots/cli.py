@@ -182,7 +182,7 @@ def set_default(args: argparse.Namespace):
 def get_default(args: argparse.Namespace):
     """Print the value of a specified settings variable.
 
-    If not key is provided, prints all available settings variables.
+    If no key is provided, prints all available settings variables.
     """
     if not args.key:
         for key, value in settings.settings.items():
@@ -282,10 +282,10 @@ def create_parser():
     parsers["export"].add_argument(*path_flags, **path_args)
 
     parsers["set-default"].add_argument(
-        "key", nargs=1, help="the settings `key` to set"
+        "key", nargs=1, help="the settings key to set"
     )
     parsers["set-default"].add_argument(
-        "value", nargs=1, help="the value to set `key` to"
+        "value", nargs=1, help="the value to set key to"
     )
 
     parsers["get-default"].add_argument(

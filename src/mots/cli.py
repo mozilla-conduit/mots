@@ -180,7 +180,15 @@ def set_default(args: argparse.Namespace):
 
 
 def get_default(args: argparse.Namespace):
-    """Print the value of a specified settings variable."""
+    """Print the value of a specified settings variable.
+
+    If not key is provided, prints all available settings variables.
+    """
+    if not args.key:
+        for key, value in settings.settings.items():
+            print(f"{key} -> {value} ({type(value).__name__})")
+        return
+
     key = args.key[0]
 
     with settings.OVERRIDES_FILE.open("r") as f:
@@ -193,12 +201,6 @@ def get_default(args: argparse.Namespace):
         print(f"{key} is set to {overrides[key]} in settings file.")
     else:
         print(f"{key} is using default value of {settings.DEFAULTS[key]}.")
-
-
-def get_defaults(args: argparse.Namespace):
-    """Print the values of all settings variables."""
-    for key, value in settings.settings.items():
-        print(f"{key} -> {value} ({type(value).__name__})")
 
 
 def main():
@@ -257,8 +259,7 @@ def create_parser():
         (main_cli, query, "query the module directory"),
         (main_cli, export, "export the module directory"),
         (main_cli, set_default, "update settings variable and save to disk"),
-        (main_cli, get_default, "get settings variable"),
-        (main_cli, get_defaults, "get all settings variables"),
+        (main_cli, get_default, "get settings variable, or all if no key is provided"),
         (module_cli, add, "add a new module"),
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
@@ -287,7 +288,11 @@ def create_parser():
         "value", nargs=1, help="the value to set `key` to"
     )
 
-    parsers["get-default"].add_argument("key", nargs=1, help="fetch the value of `key`")
+    parsers["get-default"].add_argument(
+        "key",
+        nargs="?",
+        help="fetch the value of key if provided, or all keys otherwise",
+    )
 
     parsers["init"].add_argument(*path_flags, **path_args)
     parsers["validate"].add_argument(*path_flags, **path_args)

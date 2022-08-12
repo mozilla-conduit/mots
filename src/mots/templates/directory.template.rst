@@ -57,16 +57,23 @@
 {% endif %}
 {% endmacro %}
 
-.. note::
-    To add, remove, or update module information, see the `mots documentation <https://mots.readthedocs.io/en/latest/#adding-a-module>`_.
-
 =======
 Modules
 =======
 
-{{ directory.description + "\n" }}
+--------
+Overview
+--------
+To add, remove, or update module information, see the `mots documentation <https://mots.readthedocs.io/en/latest/#adding-a-module>`_.
 
-{%- for module in directory.modules -%}
+{{ directory.description }}
+
+
+-----------
+Definitions
+-----------
+
+{% for module in directory.modules -%}
 {{ module_entry(module) }}
 {% if module.submodules %}
 {% for submodule in module.submodules %}

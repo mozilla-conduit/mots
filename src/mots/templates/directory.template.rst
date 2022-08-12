@@ -3,7 +3,7 @@
 {# file, You can obtain one at https://mozilla.org/MPL/2.0/.           #}
 ..
     This file was automatically generated using `mots export`.
-{%- macro module_entry(module, is_submodule=False) -%}
+{% macro module_entry(module, is_submodule=False) -%}
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
 {% if module.description %}

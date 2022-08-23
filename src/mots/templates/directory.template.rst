@@ -3,7 +3,7 @@
 {# file, You can obtain one at https://mozilla.org/MPL/2.0/.           #}
 ..
     This file was automatically generated using `mots export`.
-{%- macro module_entry(module, is_submodule=False) -%}
+{% macro module_entry(module, is_submodule=False) -%}
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
 {% if module.description %}
@@ -57,16 +57,23 @@
 {% endif %}
 {% endmacro %}
 
-.. note::
-    To add, remove, or update module information, see the `mots documentation <https://mots.readthedocs.io/en/latest/#adding-a-module>`_.
+==========
+Governance
+==========
 
-=======
+--------
+Overview
+--------
+To add, remove, or update module information, see the `mots documentation <https://mots.readthedocs.io/en/latest/#adding-a-module>`_.
+
+{{ directory.description }}
+
+
+-------
 Modules
-=======
+-------
 
-{{ directory.description + "\n" }}
-
-{%- for module in directory.modules -%}
+{% for module in directory.modules -%}
 {{ module_entry(module) }}
 {% if module.submodules %}
 {% for submodule in module.submodules %}

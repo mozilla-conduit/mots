@@ -57,9 +57,9 @@
 {% endif %}
 {% endmacro %}
 
-=======
-Modules
-=======
+==========
+Governance
+==========
 
 --------
 Overview
@@ -69,9 +69,9 @@ To add, remove, or update module information, see the `mots documentation <https
 {{ directory.description }}
 
 
------------
-Definitions
------------
+-------
+Modules
+-------
 
 {% for module in directory.modules -%}
 {{ module_entry(module) }}

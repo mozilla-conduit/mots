@@ -3,6 +3,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 """Directory classes for mots."""
+from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import asdict
@@ -125,7 +126,14 @@ class QueryResult:
         "peers",
     }
 
-    def __init__(self, result, rejected):
+    def __init__(
+        self,
+        result: dict[str, list[Module]] | None = None,
+        rejected: list[str] | None = None,
+    ):
+        result = result or {}
+        rejected = rejected or []
+
         data = {k: set() for k in self.data_keys}
         self.path_map = result
 
@@ -142,11 +150,15 @@ class QueryResult:
         for key in data:
             setattr(self, key, list(data[key]))
 
+    def __bool__(self):
+        """Return whether there is any data in this object."""
+        return bool(self.path_map)
+
     def __add__(self, query_result: "QueryResult") -> "QueryResult":
         """Merge the data from both QueryResult objects."""
         path_map = self.path_map.copy()
         path_map.update(query_result.path_map)
-        rejected_paths = set.intersection(
+        rejected_paths = set.union(
             set(self.rejected_paths),
             set(query_result.rejected_paths),
         )

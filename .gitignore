@@ -6,3 +6,4 @@ __pycache__
 dist/
 documentation/_build
 htmlcov/
+*.egg-info

@@ -12,6 +12,7 @@ import sys
 
 from mots import module
 from mots import config
+from mots.bmo import MissingBugzillaAPIKey
 from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
@@ -59,7 +60,19 @@ def clean(args: argparse.Namespace) -> None:
     """Run clean methods for configuration file and write to disk."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    config.clean(file_config)
+    try:
+        config.clean(file_config)
+    except MissingBugzillaAPIKey:
+        logger.error("Could not detect a Bugzilla API Key.")
+        messages = (
+            "Either set it in your environment (MOTS_BUGZILLA_API KEY) or add it to "
+            "your settings file by running: "
+            "`mots settings write BUGZILLA_API_KEY <your API key>`.",
+            "You can generate a Bugzilla API key in your User Preferences page under"
+            "the API Keys tab.",
+        )
+        print("\n".join(messages))
+        sys.exit(1)
 
 
 def check_hashes(args: argparse.Namespace) -> None:

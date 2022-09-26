@@ -173,6 +173,9 @@ Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml
 .. note::
     You can generate a Bugzilla API key in your User Preferences page under the `API Keys <https://bugzilla.mozilla.org/userprefs.cgi?tab=apikey>`_ tab.
 
+.. note::
+    A Bugzilla API key is required to allow mots to query Bugzilla for user information.
+
 
 Validating ``mots.yaml``
 ~~~~~~~~~~~~~~~~~~~~~~~~

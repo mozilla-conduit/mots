@@ -15,6 +15,12 @@ from mots.settings import settings
 logger = logging.getLogger(__name__)
 
 
+class MissingBugzillaAPIKey(Exception):
+    """Raised when a Bugzilla API key was not detected in settings."""
+
+    pass
+
+
 def get_bmo_data(people: list) -> dict:
     """Fetch an updated dictionary from Bugzilla with user data.
 
@@ -32,10 +38,7 @@ class BMOClient:
         if not token:
             token = settings.BUGZILLA_API_KEY
             if not token:
-                raise ValueError(
-                    "Bugzilla API Key is missing and no other "
-                    "token was explicitly provided"
-                )
+                raise MissingBugzillaAPIKey()
         self._headers = {"X-BUGZILLA-API-KEY": token, "User-Agent": settings.USER_AGENT}
         self._base_url = base_url
 

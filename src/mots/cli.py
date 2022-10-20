@@ -157,6 +157,19 @@ def export(args: argparse.Namespace) -> None:
             f.write(output)
 
 
+def export_and_clean(args: argparse.Namespace) -> None:
+    """Run clean, export, and clean again to save users keystrokes."""
+    # The first clean checks mots.yaml for any issues and synchronizes with BMO.
+    clean(args)
+
+    # The export exports the yaml file to rst. This assumes that the export path is
+    # defined in the configuration.
+    export(args)
+
+    # The last clean resets hashes
+    clean(args)
+
+
 def write(args: argparse.Namespace):
     """Set a specified settings variable to the provided value."""
     key = args.key[0]
@@ -213,7 +226,12 @@ def main():
     if hasattr(args, "func"):
         logger.debug(f"Calling {args.func} with {args}...")
         st = datetime.now()
-        args.func(args)
+        try:
+            args.func(args)
+        except Exception as e:
+            logger.exception(e)
+        else:
+            logger.info("Success!")
         et = datetime.now()
         logger.debug(f"{args.func} took {(et - st).total_seconds()} seconds.")
     else:
@@ -259,6 +277,7 @@ def create_parser():
         (main_cli, check_hashes, "check mots config and export hashes"),
         (main_cli, query, "query the module directory"),
         (main_cli, export, "export the module directory"),
+        (main_cli, export_and_clean, "perform automatic cleaning and exporting"),
         (module_cli, add, "add a new module"),
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
@@ -281,6 +300,13 @@ def create_parser():
         "--out", "-o", type=Path, help="the file path to output to"
     )
     parsers["export"].add_argument(*path_flags, **path_args)
+    parsers["export-and-clean"].add_argument(*path_flags, **path_args)
+    parsers["export-and-clean"].add_argument(
+        "--format", "-f", type=str, choices=("rst",), help="the format of exported data"
+    )
+    parsers["export-and-clean"].add_argument(
+        "--out", "-o", type=Path, help="the file path to output to"
+    )
 
     parsers["write"].add_argument("key", nargs=1, help="the settings key to set")
     parsers["write"].add_argument("value", nargs=1, help="the value to set key to")

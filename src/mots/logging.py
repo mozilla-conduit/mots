@@ -31,7 +31,7 @@ def init_logging(
                 "console": {
                     "class": "logging.StreamHandler",
                     "formatter": "standard",
-                    "level": logging.DEBUG if debug else logging.WARNING,
+                    "level": logging.DEBUG if debug else logging.INFO,
                 },
                 "file": {
                     "class": "logging.handlers.RotatingFileHandler",

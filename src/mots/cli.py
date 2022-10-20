@@ -6,6 +6,7 @@
 
 import argparse
 from datetime import datetime
+import getpass
 import logging
 from pathlib import Path
 import sys
@@ -173,12 +174,20 @@ def export_and_clean(args: argparse.Namespace) -> None:
 def write(args: argparse.Namespace):
     """Set a specified settings variable to the provided value."""
     key = args.key[0]
-    value = args.value[0]
+
     with settings.OVERRIDES_FILE.open("r") as f:
         overrides = yaml.load(f) or {}
 
     if key not in settings.DEFAULTS:
         raise ValueError(f"{key} does not exist in defaults.")
+
+    is_secure = key in settings.SECURE_KEYS
+
+    if args.value is not None:
+        value = args.value[0]
+    else:
+        prompt = f"Enter value for {key}: "
+        value = input(prompt) if not is_secure else getpass.getpass(prompt=prompt)
 
     _type = type(settings.DEFAULTS[key])
 
@@ -186,7 +195,10 @@ def write(args: argparse.Namespace):
         raise ValueError(f"{key} is already set to {value} in overrides file.")
 
     overrides[key] = _type(value)
-    print(f"{key} is now set to {value} ({_type.__name__}) in overrides file.")
+    value_output = value if not is_secure else "*" * 10
+    logger.info(
+        f"{key} is now set to {value_output} ({_type.__name__}) in overrides file."
+    )
 
     with settings.OVERRIDES_FILE.open("w") as f:
         yaml.dump(overrides, f)
@@ -309,7 +321,9 @@ def create_parser():
     )
 
     parsers["write"].add_argument("key", nargs=1, help="the settings key to set")
-    parsers["write"].add_argument("value", nargs=1, help="the value to set key to")
+    parsers["write"].add_argument(
+        "value", nargs="?", help="the value to set key to if present"
+    )
 
     parsers["read"].add_argument(
         "key",

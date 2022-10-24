@@ -45,6 +45,11 @@ class Settings:
         "VERSION": __version__,
     }
 
+    # NOTE: keys present in SECURE_KEYS will not be added to logs. Users will be
+    # prompted using `getpass`, however they will still be stored as cleartext
+    # in the settings file, like all other values.
+    SECURE_KEYS = ("BUGZILLA_API_KEY",)
+
     def __init__(self, **kwargs):
         self.settings = {}
         self.overrides = kwargs

@@ -4,9 +4,8 @@
 
 """Tests for directory module."""
 
-from mots.directory import Directory
-from mots.directory import Person
-from mots.directory import QueryResult
+from mots.directory import Directory, Person, QueryResult
+from mots.module import Module
 from mots.config import FileConfig
 
 
@@ -173,6 +172,12 @@ def test_directory__Directory__query_add_to_empty_QueryResult(repo):
 def test_directory__QueryResult_empty():
     empty_result = QueryResult()
     assert not empty_result
+
+
+def test_directory__QueryResult_nonempty():
+    test_module = Module(machine_name="test_module", repo_path="/repos/test")
+    empty_result = QueryResult({"test_path": [test_module]}, ["rejected_path"])
+    assert empty_result
 
 
 def test_directory__QueryResult_empty_addition():

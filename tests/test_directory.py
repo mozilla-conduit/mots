@@ -4,8 +4,8 @@
 
 """Tests for directory module."""
 
-from mots.directory import Directory
-from mots.directory import Person
+from mots.directory import Directory, Person, QueryResult
+from mots.module import Module
 from mots.config import FileConfig
 
 
@@ -139,3 +139,48 @@ def test_directory__Directory__query_merging(repo):
     assert set(result.owners) == {Person(bmo_id=2, name="otis", nick="otis")}
     assert set(result.peers) == {Person(bmo_id=1, name="jill", nick="jill")}
     assert result.rejected_paths == ["felines/maine_coon"]
+
+
+def test_directory__Directory__query_add_to_empty_QueryResult(repo):
+    file_config = FileConfig(repo / "mots.yml")
+    directory = Directory(file_config)
+    directory.load()
+
+    paths_to_check_1 = [
+        "canines/chihuahuas/apple_head",
+        "birds/parrot",
+        "felines/maine_coon",
+    ]
+
+    result_1 = directory.query(*paths_to_check_1)
+
+    result = result_1 + QueryResult()
+
+    assert result.path_map == {
+        "canines/chihuahuas/apple_head": [directory.modules_by_machine_name["pets"]],
+        "birds/parrot": [directory.modules_by_machine_name["pets"]],
+    }
+    assert set(result.paths) == {
+        "canines/chihuahuas/apple_head",
+        "birds/parrot",
+    }
+    assert set(result.owners) == {Person(bmo_id=2, name="otis", nick="otis")}
+    assert set(result.peers) == {Person(bmo_id=1, name="jill", nick="jill")}
+    assert result.rejected_paths == ["felines/maine_coon"]
+
+
+def test_directory__QueryResult_empty():
+    empty_result = QueryResult()
+    assert not empty_result
+
+
+def test_directory__QueryResult_nonempty():
+    test_module = Module(machine_name="test_module", repo_path="/repos/test")
+    empty_result = QueryResult({"test_path": [test_module]}, ["rejected_path"])
+    assert empty_result
+
+
+def test_directory__QueryResult_empty_addition():
+    empty_result = QueryResult()
+    other_empty_result = QueryResult()
+    assert not (empty_result + other_empty_result)

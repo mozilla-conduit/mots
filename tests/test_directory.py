@@ -4,8 +4,11 @@
 
 """Tests for directory module."""
 
+import pytest
+
 from mots.directory import Directory, Person, QueryResult
 from mots.module import Module
+
 from mots.config import FileConfig
 
 
@@ -184,3 +187,18 @@ def test_directory__QueryResult_empty_addition():
     empty_result = QueryResult()
     other_empty_result = QueryResult()
     assert not (empty_result + other_empty_result)
+
+
+def test_Person():
+    with pytest.raises(TypeError):
+        Person()
+
+    person = Person(0)
+    assert person.bmo_id == 0
+    assert person.nick == ""
+    assert person.name == ""
+
+    person = Person(0, name="Tester", nick="tester")
+    assert person.bmo_id == 0
+    assert person.name == "Tester"
+    assert person.nick == "tester"

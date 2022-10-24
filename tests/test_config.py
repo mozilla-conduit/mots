@@ -4,6 +4,8 @@
 
 """Test config module."""
 
+from unittest import mock
+
 from mots.config import calculate_hashes, FileConfig, clean
 
 
@@ -34,9 +36,18 @@ def test_FileConfig__check_hashes(repo):
     ]
 
 
-def test_clean_with_no_nick(repo, config_with_bmo_ids_only):
+@mock.patch("mots.config.get_bmo_data")
+def test_clean_with_no_nick(get_bmo_data, repo, config_with_bmo_ids_only):
     """Ensures clean function runs without any errors if nick is missing."""
+    get_bmo_data.return_value = {
+        1: {"bmo_id": 1, "nick": "somenick", "real_name": "Some Name"}
+    }
     file_config = FileConfig(repo / "mots.yml")
     file_config.config = config_with_bmo_ids_only
     file_config.write()
+
+    assert file_config.config["people"] == []
     clean(file_config)
+    assert file_config.config["people"] == [
+        {"bmo_id": 1, "nick": "somenick", "name": "Some Name"}
+    ]

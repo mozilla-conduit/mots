@@ -5,6 +5,8 @@
 """Directory classes for mots."""
 from __future__ import annotations
 
+from __future__ import annotations
+
 from collections import defaultdict
 from dataclasses import asdict
 from dataclasses import dataclass
@@ -192,11 +194,10 @@ class People:
     def __init__(self, people, bmo_data: dict):
         logger.debug(f"Initializing people directory with {len(people)} people...")
 
-        self.people = []
+        self.people = set()
         self.by_bmo_id = {}
 
-        people = list(people)
-        for i, person in enumerate(people):
+        for i, person in enumerate(list(people)):
             logger.debug(f"Adding person {person} to roster...")
 
             bmo_id = person["bmo_id"] = int(person["bmo_id"])
@@ -211,10 +212,11 @@ class People:
                 person["name"] = person.get("name", "")
                 person["nick"] = person.get("nick", "")
 
-            self.people.append(Person(**person))
+            self.people.add(Person(**person))
             self.by_bmo_id[person["bmo_id"]] = i
             logger.debug(f"Person {person} added to position {i}.")
 
+        self.people = list(self.people)
         self.serialized = [asdict(person) for person in self.people]
 
     def refresh_by_bmo_id(self):

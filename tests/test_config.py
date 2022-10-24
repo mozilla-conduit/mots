@@ -4,7 +4,7 @@
 
 """Test config module."""
 
-from mots.config import calculate_hashes, FileConfig
+from mots.config import calculate_hashes, FileConfig, clean
 
 
 def test_calculate_hashes(config):
@@ -32,3 +32,11 @@ def test_FileConfig__check_hashes(repo):
         "da39a3ee5e6b4b0d3255bfef95601890afd80709 does not match ghjk",
         "export file is out of date.",
     ]
+
+
+def test_clean_with_no_nick(repo, config_with_bmo_ids_only):
+    """Ensures clean function runs without any errors if nick is missing."""
+    file_config = FileConfig(repo / "mots.yml")
+    file_config.config = config_with_bmo_ids_only
+    file_config.write()
+    clean(file_config)

@@ -162,12 +162,16 @@ class Person:
     """A class representing a person."""
 
     bmo_id: int
-    name: str
-    nick: str
+    name: str | None = ""
+    nick: str | None = ""
 
     def __hash__(self):
         """Return a unique identifier for this person."""
         return self.bmo_id
+
+    def serialize(self):
+        """Return dictionary representation of Person."""
+        return asdict(self)
 
 
 class People:
@@ -198,6 +202,7 @@ class People:
             self.people.append(Person(**person))
             self.by_bmo_id[person["bmo_id"]] = i
             logger.debug(f"Person {person} added to position {i}.")
+
         self.serialized = [asdict(person) for person in self.people]
 
     def refresh_by_bmo_id(self):

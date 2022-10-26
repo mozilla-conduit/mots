@@ -66,7 +66,7 @@ class FileConfig:
 
     def load(self):
         """Load configuration from file."""
-        with self.path.open("r") as f:
+        with self.path.open("r", encoding="utf-8") as f:
             self.config = yaml.load(f)
 
     def check_hashes(self) -> list[str]:

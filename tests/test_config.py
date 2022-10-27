@@ -11,7 +11,7 @@ def test_calculate_hashes(config):
     export = b""
     hashes = calculate_hashes(config, export)[1]
 
-    assert hashes["config"] == "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1"
+    assert hashes["config"] == "95019b9669241e19148ddd4f57f1700d397997a4"
     assert hashes["export"] == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
 
@@ -26,7 +26,7 @@ def test_FileConfig__check_hashes(repo):
     errors = file_config.check_hashes()
     assert errors == [
         "Mismatch in config hash detected.",
-        "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1 does not match asdf",
+        "95019b9669241e19148ddd4f57f1700d397997a4 does not match asdf",
         "config file is out of date.",
         "Mismatch in export hash detected.",
         "da39a3ee5e6b4b0d3255bfef95601890afd80709 does not match ghjk",

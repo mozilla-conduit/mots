@@ -158,7 +158,7 @@ def export(args: argparse.Namespace) -> None:
         # Explicit output path was not provided, try to get it from config.
         if file_config.config.get("export", {}).get("path"):
             out_path = Path(file_config.config["export"]["path"])
-            with out_path.open("w") as f:
+            with out_path.open("w", encoding="utf-8") as f:
                 logger.info(f"Writing output to specified file path ({out_path})...")
                 f.write(output)
         else:
@@ -167,7 +167,7 @@ def export(args: argparse.Namespace) -> None:
     else:
         # TODO: do more checks here to make sure we don't overwrite important things.
         logger.info(f"Writing output to specified file path ({args.out})...")
-        with args.out.open("w") as f:
+        with args.out.open("w", encoding="utf-8") as f:
             f.write(output)
 
 
@@ -188,7 +188,7 @@ def write(args: argparse.Namespace):
     """Set a specified settings variable to the provided value."""
     key = args.key[0]
 
-    with settings.OVERRIDES_FILE.open("r") as f:
+    with settings.OVERRIDES_FILE.open("r", encoding="utf-8") as f:
         overrides = yaml.load(f) or {}
 
     if key not in settings.DEFAULTS:
@@ -213,7 +213,7 @@ def write(args: argparse.Namespace):
         f"{key} is now set to {value_output} ({_type.__name__}) in overrides file."
     )
 
-    with settings.OVERRIDES_FILE.open("w") as f:
+    with settings.OVERRIDES_FILE.open("w", encoding="utf-8") as f:
         yaml.dump(overrides, f)
 
 

@@ -13,6 +13,7 @@ from mots.export import (
     escape_for_rst,
     format_paths_for_rst,
     format_people_for_rst,
+    format_emeritus,
 )
 
 
@@ -82,3 +83,9 @@ def test_export_format_people_for_rst(config):
         "\n        | `otis (otis) <https://people.mozilla.org/s?query=otis>`__"
         "\n        | `unnamed <https://people.mozilla.org/s?query=unnamed>`__"
     )
+
+
+def test_export_format_emeritus(config):
+    emeritus = ["maggie", config["people"][0]]
+    test = format_emeritus(emeritus)
+    assert test == "maggie, jane"

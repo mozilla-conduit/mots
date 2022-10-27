@@ -29,11 +29,11 @@
 {% endif %}
 {% if module.meta.owners_emeritus %}
     * - Owner(s) Emeritus
-      - {{ module.meta.owners_emeritus|join(", ") }}
+      - {{ module.meta.owners_emeritus|format_emeritus }}
 {% endif %}
 {% if module.meta.peers_emeritus %}
     * - Peer(s) Emeritus
-      - {{ module.meta.peers_emeritus|join(", ") }}
+      - {{ module.meta.peers_emeritus|format_emeritus }}
 {% endif %}
 {% if module.includes %}
     * - Includes

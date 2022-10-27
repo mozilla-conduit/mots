@@ -73,6 +73,20 @@ def format_people_for_rst(value: list[dict], indent: int) -> str:
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_people)
 
 
+def format_emeritus(value: list[dict | str]):
+    """Return names of people if provided a mixed list."""
+    parsed = []
+    for person in value:
+        if isinstance(person, str):
+            parsed.append(person)
+        elif isinstance(person, dict):
+            if "name" in person:
+                parsed.append(person["name"])
+            elif "nick" in person:
+                parsed.append(person["nick"])
+    return ", ".join(parsed)
+
+
 class Exporter:
     """A helper class that exports to various formats."""
 
@@ -86,6 +100,7 @@ class Exporter:
         env.filters["escape_for_rst"] = escape_for_rst
         env.filters["format_paths_for_rst"] = format_paths_for_rst
         env.filters["format_people_for_rst"] = format_people_for_rst
+        env.filters["format_emeritus"] = format_emeritus
         return env
 
     def __init__(self, directory: Directory):

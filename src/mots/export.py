@@ -73,7 +73,7 @@ def format_people_for_rst(value: list[dict], indent: int) -> str:
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_people)
 
 
-def format_emeritus(value: list[dict | str]):
+def format_emeritus(value: list[dict | str]) -> str:
     """Return names of people if provided a mixed list."""
     parsed = []
     for person in value:

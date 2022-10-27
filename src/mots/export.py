@@ -80,9 +80,9 @@ def format_emeritus(value: list[dict | str]):
         if isinstance(person, str):
             parsed.append(person)
         elif isinstance(person, dict):
-            if "name" in person:
+            if "name" in person and person["name"]:
                 parsed.append(person["name"])
-            elif "nick" in person:
+            elif "nick" in person and person["nick"]:
                 parsed.append(person["nick"])
     return ", ".join(parsed)
 

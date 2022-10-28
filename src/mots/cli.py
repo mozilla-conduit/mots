@@ -68,7 +68,8 @@ def clean(args: argparse.Namespace) -> None:
         messages = (
             "Either set it in your environment (MOTS_BUGZILLA_API KEY) or add it to "
             "your settings file by running: "
-            "`mots settings write BUGZILLA_API_KEY <your API key>`.",
+            "`mots settings write BUGZILLA_API_KEY`.",
+            "You will be prompted to enter the API key after running this command."
             "You can generate a Bugzilla API key in your User Preferences page under"
             "the API Keys tab.",
         )
@@ -197,7 +198,7 @@ def write(args: argparse.Namespace):
     is_secure = key in settings.SECURE_KEYS
 
     if args.value is not None:
-        value = args.value[0]
+        value = args.value
     else:
         prompt = f"Enter value for {key}: "
         value = input(prompt) if not is_secure else getpass.getpass(prompt=prompt)

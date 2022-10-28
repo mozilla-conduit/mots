@@ -51,8 +51,8 @@ def validate(args: argparse.Namespace) -> None:
     """Validate configuration and show error output if applicable."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    errors = config.validate(file_config.config, file_config.repo_path)
-    for error in errors or []:
+    errors = config.validate(file_config.config, file_config.repo_path) or []
+    for error in errors:
         logger.error(error)
     sys.exit(1 if errors else 0)
 

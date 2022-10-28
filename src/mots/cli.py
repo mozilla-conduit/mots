@@ -52,7 +52,7 @@ def validate(args: argparse.Namespace) -> None:
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     errors = config.validate(file_config.config, file_config.repo_path)
-    for error in errors:
+    for error in errors or []:
         logger.error(error)
     sys.exit(1 if errors else 0)
 
@@ -303,10 +303,10 @@ def create_parser():
         (main_cli, query, "query the module directory"),
         (main_cli, export, "export the module directory"),
         (main_cli, export_and_clean, "perform automatic cleaning and exporting"),
+        (main_cli, validate, "validate mots config"),
         (module_cli, add, "add a new module"),
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
-        (module_cli, validate, "validate mots config"),
         (settings_cli, write, "update settings variable and save to disk"),
         (settings_cli, read, "get settings variable, or all if no key is provided"),
     ):

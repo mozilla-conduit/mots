@@ -46,7 +46,7 @@ workflows:
 jobs:
   test_3_7: &test_template
     docker:
-      - image: circleci/python:3.7
+      - image: cimg/python:3.7
     steps:
       - checkout
       - run:
@@ -75,18 +75,18 @@ jobs:
   test_3_8:
     <<: *test_template
     docker:
-        - image: circleci/python:3.8
+        - image: cimg/python:3.8
   test_3_9:
     <<: *test_template
     docker:
-        - image: circleci/python:3.9
+        - image: cimg/python:3.9
   test_3_10:
     <<: *test_template
     docker:
-        - image: circleci/python:3.10
+        - image: cimg/python:3.10
   verify:
     docker:
-      - image: circleci/python:3.10
+      - image: cimg/python:3.10
     steps:
       - checkout
       - run:
@@ -99,7 +99,7 @@ jobs:
           command: mots ci
   build-and-publish:
     docker:
-      - image: circleci/python:3.10
+      - image: cimg/python:3.10
     steps:
       - checkout
       - run:

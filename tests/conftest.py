@@ -121,3 +121,31 @@ def config():
             },
         ],
     }
+
+
+@pytest.fixture
+def config_with_bmo_ids_only():
+    return {
+        "repo": "test_repo",
+        "created_at": "2021-09-10 12:53:22.383393",
+        "updated_at": "2021-09-10 12:53:22.383393",
+        "people": [],
+        "export": {"format": "rst", "path": "mots.rst"},
+        "modules": [
+            {
+                "machine_name": "domesticated_animals",
+                "exclude_submodule_paths": True,
+                "exclude_module_paths": True,
+                "includes": [
+                    "canines/**/*",
+                    "felines/**/*",
+                    "bovines/**/*",
+                    "birds/**/*",
+                    "pigs/**/*",
+                ],
+                "excludes": ["canines/red_fox"],
+                "owners": [{"bmo_id": 1}],
+                "peers": [{"bmo_id": 1}],
+            }
+        ],
+    }

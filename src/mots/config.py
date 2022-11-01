@@ -16,7 +16,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 
 from mots.bmo import get_bmo_data
-from mots.directory import Directory, People
+from mots.directory import Directory, People, Person
 from mots.export import export_to_format
 from mots.module import Module
 from mots.utils import generate_machine_readable_name
@@ -160,6 +160,7 @@ def clean(file_config: FileConfig, write: bool = True):
             if key not in module or not module[key]:
                 continue
             for i, person in enumerate(module[key]):
+                person = Person(**person).serialize()
                 if person["bmo_id"] not in directory.people.by_bmo_id:
                     file_config.config["people"].append(person)
                     module[key][i] = person
@@ -189,6 +190,11 @@ def clean(file_config: FileConfig, write: bool = True):
                     submodule["machine_name"] = generate_machine_readable_name(
                         submodule["name"]
                     )
+    # Update people again from BMO in case new people were added.
+    people = file_config.config["people"]
+    bmo_data = get_bmo_data(people)
+    updated_people = People(people, bmo_data)
+    file_config.config["people"] = updated_people.serialized
 
     file_config.config["modules"].sort(key=lambda x: x["machine_name"])
     if write:

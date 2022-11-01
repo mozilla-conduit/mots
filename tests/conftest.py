@@ -51,7 +51,7 @@ def repo(tmp_path, config):
     file_config = FileConfig(test_repo / "mots.yml")
     file_config.config = config
     hashes = {
-        "config": "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1",
+        "config": "95019b9669241e19148ddd4f57f1700d397997a4",
         "export": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     }
     file_config.write(hashes)
@@ -62,9 +62,9 @@ def repo(tmp_path, config):
 @pytest.fixture
 def config():
     people = [
-        {"name": "jane", "nick": "jane", "bmo_id": 0},
-        {"name": "jill", "nick": "jill", "bmo_id": 1},
-        {"name": "otis", "nick": "otis", "bmo_id": 2},
+        {"name": "Jane François", "nick": "jane", "bmo_id": 0},
+        {"name": "Jill O'Sullivan", "nick": "jill", "bmo_id": 1},
+        {"name": "Otis Morris-West", "nick": "otis", "bmo_id": 2},
     ]
     return {
         "repo": "test_repo",

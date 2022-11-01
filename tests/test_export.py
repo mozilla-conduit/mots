@@ -77,11 +77,12 @@ def test_export_format_people_for_rst(config):
     """Ensure outputted strings are correct when formatting people."""
     config["people"].append({"nick": "unnamed"})
     test = format_people_for_rst(config["people"], indent=8)
+    base_url = "https://people.mozilla.org/s?query="
     assert test == (
-        "\n        | `jane (jane) <https://people.mozilla.org/s?query=jane>`__"
-        "\n        | `jill (jill) <https://people.mozilla.org/s?query=jill>`__"
-        "\n        | `otis (otis) <https://people.mozilla.org/s?query=otis>`__"
-        "\n        | `unnamed <https://people.mozilla.org/s?query=unnamed>`__"
+       f"\n        | `Jane François (jane) <{base_url}jane>`__"
+       f"\n        | `Jill O'Sullivan (jill) <{base_url}jill>`__"
+       f"\n        | `Otis Morris-West (otis) <{base_url}otis>`__"
+       f"\n        | `unnamed <{base_url}unnamed>`__"
     )
 
 

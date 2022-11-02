@@ -107,6 +107,54 @@ class FileConfig:
             yaml.dump(self.config, f)
 
 
+def check_nested_keys_for_value(dictionary: dict, keys, boolean=True) -> bool:
+    """Check a nested key for a value. If boolean is False, checks if the key exists.
+
+    For example:
+        >>> test = {"a": {"b": {"c": 1, "d": None}}}
+        >>> check_nested_keys_for_value(test, ["a", "b", "c"])
+        True
+        >>> check_nested_keys_for_value(test, ["a", "b", "e"])
+        False
+        >>> check_nested_keys_for_value(test, ["a", "b", "c", "d"])
+        False
+    """
+    value = dictionary
+    for key in keys:
+        if value and isinstance(value, dict):
+            value = value.get(key)
+        else:
+            return False
+    if boolean:
+        return bool(value)
+    else:
+        return True
+
+
+def anchor_people_for_module(
+    i: int,
+    person: dict,
+    key: str,
+    file_config: FileConfig,
+    directory: Directory,
+    module: Module,
+) -> None:
+    """Associate person with a reference to a directory entry if possible."""
+    logger.debug(f"Anchoring {person}({i}) as {key} to {module['machine_name']}")
+    if "emeritus" in key:
+        reference = module["meta"][key]
+    else:
+        reference = module[key]
+    if person["bmo_id"] not in directory.people.by_bmo_id:
+        file_config.config["people"].append(person)
+        reference[i] = person
+        directory.people.refresh_by_bmo_id()
+    else:
+        reference[i] = file_config.config["people"][
+            directory.people.by_bmo_id[person["bmo_id"]]
+        ]
+
+
 def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
     """Calculate a hash of the yaml config file."""
     config = config.copy()
@@ -141,6 +189,7 @@ def clean(file_config: FileConfig, write: bool = True):
     :param write: if set to `True`, writes changes to disk.
     """
     people_keys = ("owners", "peers")
+    emeritus_keys = [f"{k}_emeritus" for k in people_keys]
     file_config.load()
     directory = Directory(file_config)
     directory.load()
@@ -156,35 +205,47 @@ def clean(file_config: FileConfig, write: bool = True):
         if "machine_name" not in module:
             module["machine_name"] = generate_machine_readable_name(module["name"])
 
+        for emeritus_key in emeritus_keys:
+            if check_nested_keys_for_value(module, ("meta", emeritus_key)):
+                for i, person in enumerate(module["meta"][emeritus_key]):
+                    if not isinstance(person, dict):
+                        continue
+                    anchor_people_for_module(
+                        i, person, emeritus_key, file_config, directory, module
+                    )
+
         for key in people_keys:
             if key not in module or not module[key]:
                 continue
             for i, person in enumerate(module[key]):
-                if person["bmo_id"] not in directory.people.by_bmo_id:
-                    file_config.config["people"].append(person)
-                    module[key][i] = person
-                    directory.people.refresh_by_bmo_id()
-                else:
-                    module[key][i] = file_config.config["people"][
-                        directory.people.by_bmo_id[person["bmo_id"]]
-                    ]
+                anchor_people_for_module(i, person, key, file_config, directory, module)
 
         # Do the same for submodules.
         if "submodules" in module and module["submodules"]:
             module["submodules"].sort(key=lambda x: x["name"])
             for submodule in module["submodules"]:
+
+                for emeritus_key in emeritus_keys:
+                    if check_nested_keys_for_value(submodule, ("meta", emeritus_key)):
+                        for i, person in enumerate(submodule["meta"][emeritus_key]):
+                            if not isinstance(person, dict):
+                                continue
+                            anchor_people_for_module(
+                                i,
+                                person,
+                                emeritus_key,
+                                file_config,
+                                directory,
+                                submodule,
+                            )
+
                 for key in people_keys:
                     if key not in submodule or not submodule[key]:
                         continue
                     for i, person in enumerate(submodule[key]):
-                        if person["bmo_id"] not in directory.people.by_bmo_id:
-                            file_config.config["people"].append(person)
-                            submodule[key][i] = person
-                            directory.people.refresh_by_bmo_id()
-                        else:
-                            submodule[key][i] = file_config.config["people"][
-                                directory.people.by_bmo_id[person["bmo_id"]]
-                            ]
+                        anchor_people_for_module(
+                            i, person, key, file_config, directory, submodule
+                        )
                 if "machine_name" not in submodule:
                     submodule["machine_name"] = generate_machine_readable_name(
                         submodule["name"]

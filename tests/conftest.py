@@ -51,7 +51,7 @@ def repo(tmp_path, config):
     file_config = FileConfig(test_repo / "mots.yml")
     file_config.config = config
     hashes = {
-        "config": "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1",
+        "config": "76997b8d70e561c7ec8a21e1cefbc3c658c6d91a",
         "export": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     }
     file_config.write(hashes)
@@ -87,6 +87,7 @@ def config():
                 "excludes": ["canines/red_fox"],
                 "owners": [people[0]],
                 "peers": [people[1]],
+                "meta": {"peers_emeritus": [people[2]]},
                 "submodules": [
                     {
                         "machine_name": "predators",
@@ -100,6 +101,7 @@ def config():
                             "birds/parrot",
                         ],
                         "owners": [people[1]],
+                        "meta": {"owners_emeritus": [people[2]]},
                     }
                 ],
             },

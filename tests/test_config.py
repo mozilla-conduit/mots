@@ -4,14 +4,14 @@
 
 """Test config module."""
 
-from mots.config import calculate_hashes, FileConfig
+from mots.config import calculate_hashes, FileConfig, check_nested_keys_for_value
 
 
 def test_calculate_hashes(config):
     export = b""
     hashes = calculate_hashes(config, export)[1]
 
-    assert hashes["config"] == "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1"
+    assert hashes["config"] == "76997b8d70e561c7ec8a21e1cefbc3c658c6d91a"
     assert hashes["export"] == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
 
@@ -26,9 +26,19 @@ def test_FileConfig__check_hashes(repo):
     errors = file_config.check_hashes()
     assert errors == [
         "Mismatch in config hash detected.",
-        "6ef5f3ed90c5d9aa2eec7b91ed65a78b886e8fa1 does not match asdf",
+        "76997b8d70e561c7ec8a21e1cefbc3c658c6d91a does not match asdf",
         "config file is out of date.",
         "Mismatch in export hash detected.",
         "da39a3ee5e6b4b0d3255bfef95601890afd80709 does not match ghjk",
         "export file is out of date.",
     ]
+
+
+def test_check_nested_keys_for_value():
+    test = {"a": {"b": {"c": 1, "d": None}, "e": 2}}
+
+    assert check_nested_keys_for_value(test, ("x", "y", "z")) is False
+    assert check_nested_keys_for_value(test, ("a", "b", "c")) is True
+    assert check_nested_keys_for_value(test, ("a", "b", "c", "d")) is False
+    assert check_nested_keys_for_value(test, ("a", "b", "d")) is False
+    assert check_nested_keys_for_value(test, ("a", "b", "d"), boolean=False) is True

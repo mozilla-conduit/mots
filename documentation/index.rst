@@ -9,14 +9,27 @@ mots - Module Ownership in Tree System
 
 Installation
 ============
-Mots can be installed using pip:
+mots can be installed using pip:
 
 .. code-block:: shell
 
     $ pip install mots
 
 
-You can check for pre-releases by passing ``--pre`` to the ``pip install`` command.
+To install the latest version, make sure to pass the ``--upgrade`` flag:
+
+.. code-block:: shell
+
+    $ pip install mots --upgrade
+
+
+You can check for pre-releases by passing ``--pre`` to the ``pip install`` command:
+
+.. code-block:: shell
+
+    $ pip install mots --pre --upgrade
+
+Installing pre-releases gives you early access to features or bug fixes, and helps with testing.
 
 
 Command Line Usage
@@ -158,6 +171,19 @@ This will result in a file that looks like this:
             peers:
               - *zeid
             meta:
+
+
+Adding a new person
+~~~~~~~~~~~~~~~~~~~
+
+Currently, adding a new person to the list of people in ``mots.yaml`` is a manual process. Follow these steps to add a new person:
+
+- Make sure the person does not exist under ``people``
+- Add a new entry to ``people`` and provide the ``bmo_id`` under that entry
+- run ``mots clean``
+
+There is currently a known issue where the first pass of ``mots clean`` will fail if the other keys are missing from the new entry. If you run into a ``KeyError``, just run ``mots clean`` again. This issue is being tracked in `bug 1797083 <https://bugzilla.mozilla.org/show_bug.cgi?id=1797083>`_.
+
 
 Cleaning ``mots.yaml``
 ~~~~~~~~~~~~~~~~~~~~~~

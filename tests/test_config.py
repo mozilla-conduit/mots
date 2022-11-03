@@ -17,7 +17,9 @@ def test_calculate_hashes(config):
     export = b""
     hashes = calculate_hashes(config, export)[1]
 
-    assert hashes["config"] == "76997b8d70e561c7ec8a21e1cefbc3c658c6d91a"
+    assert (
+        hashes["config"] == "76997b8d70e561c7ec8a21e1cefbc3c658c6d91a"
+    ), "Was `conftest.config` changed?"
     assert hashes["export"] == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
 

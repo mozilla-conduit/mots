@@ -8,4 +8,11 @@ Mots is the in-tree module ownership system.
 This library helps you track who owns what parts of the source code!
 """
 
-__version__ = "0.3.3"
+from sys import version_info
+
+if version_info >= (3, 8):
+    from importlib.metadata import version
+else:
+    from importlib_metadata import version
+
+__version__ = version("mots")

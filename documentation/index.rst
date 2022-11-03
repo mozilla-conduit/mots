@@ -178,7 +178,7 @@ Adding a new person
 
 Currently, adding a new person to the list of people in ``mots.yaml`` is a manual process. Follow these steps to add a new person:
 
-- Make the person does not exist under ``people``
+- Make sure the person does not exist under ``people``
 - Add a new entry to ``people`` and provide the ``bmo_id`` under that entry
 - run ``mots clean``
 

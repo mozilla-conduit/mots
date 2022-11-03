@@ -107,32 +107,6 @@ class FileConfig:
             yaml.dump(self.config, f)
 
 
-def check_nested_keys_for_value(
-    dictionary: dict, keys: list | tuple, boolean=True
-) -> bool:
-    """Check a nested key for a value. If boolean is False, checks if the key exists.
-
-    For example:
-        >>> test = {"a": {"b": {"c": 1, "d": None}}}
-        >>> check_nested_keys_for_value(test, ["a", "b", "c"])
-        True
-        >>> check_nested_keys_for_value(test, ["a", "b", "e"])
-        False
-        >>> check_nested_keys_for_value(test, ["a", "b", "c", "d"])
-        False
-    """
-    value = dictionary
-    for key in keys:
-        if value and isinstance(value, dict):
-            value = value.get(key)
-        else:
-            return False
-    if boolean:
-        return bool(value)
-    else:
-        return True
-
-
 def reference_anchor_for_module(
     index: int,
     person: dict,
@@ -219,7 +193,11 @@ def clean(file_config: FileConfig, write: bool = True):
             module["machine_name"] = generate_machine_readable_name(module["name"])
 
         for emeritus_key in emeritus_keys:
-            if not check_nested_keys_for_value(module, ("meta", emeritus_key)):
+            if not (
+                "meta" in module
+                and emeritus_key in module["meta"]
+                and module["meta"][emeritus_key]
+            ):
                 continue
             for i, person in enumerate(module["meta"][emeritus_key]):
                 if not isinstance(person, dict):
@@ -242,8 +220,10 @@ def clean(file_config: FileConfig, write: bool = True):
             for submodule in module["submodules"]:
 
                 for emeritus_key in emeritus_keys:
-                    if not check_nested_keys_for_value(
-                        submodule, ("meta", emeritus_key)
+                    if not (
+                        "meta" in submodule
+                        and emeritus_key in submodule["meta"]
+                        and submodule["meta"][emeritus_key]
                     ):
                         continue
                     for i, person in enumerate(submodule["meta"][emeritus_key]):

@@ -7,7 +7,6 @@
 from mots.config import (
     calculate_hashes,
     FileConfig,
-    check_nested_keys_for_value,
     reference_anchor_for_module,
 )
 from mots.directory import Directory
@@ -40,16 +39,6 @@ def test_FileConfig__check_hashes(repo):
         "da39a3ee5e6b4b0d3255bfef95601890afd80709 does not match ghjk",
         "export file is out of date.",
     ]
-
-
-def test_check_nested_keys_for_value():
-    test = {"a": {"b": {"c": 1, "d": None}, "e": 2}}
-
-    assert check_nested_keys_for_value(test, ("x", "y", "z")) is False
-    assert check_nested_keys_for_value(test, ("a", "b", "c")) is True
-    assert check_nested_keys_for_value(test, ("a", "b", "c", "d")) is False
-    assert check_nested_keys_for_value(test, ("a", "b", "d")) is False
-    assert check_nested_keys_for_value(test, ("a", "b", "d"), boolean=False) is True
 
 
 def test_reference_anchor_for_module(repo):

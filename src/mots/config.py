@@ -107,6 +107,41 @@ class FileConfig:
             yaml.dump(self.config, f)
 
 
+def reference_anchor_for_module(
+    index: int,
+    person: dict,
+    key: str,
+    file_config: FileConfig,
+    directory: Directory,
+    module: dict,
+) -> None:
+    """Associate person with a reference to a directory entry if possible.
+
+    :param index: the position of the person in the referrer field
+    :param person: a dictionary with information about the person to be added
+    :param key: the key (e.g, "peers" or "owners_emeritus") that defines context
+    :param file_config: config context being modified
+    :param module: dictionary of the module in the config being modified
+
+
+    This is needed so that ruamel.yaml can correctly reference anchors to people.
+    """
+    logger.debug(f"Setting reference to {person} as {key} in {module['machine_name']}")
+
+    referrer = module["meta"][key] if key.endswith("_emeritus") else module[key]
+
+    if person["bmo_id"] not in directory.people.by_bmo_id:
+        # Person has to be added to directory before adding the reference.
+        file_config.config["people"].append(person)
+        directory.people.refresh_by_bmo_id()
+        referrer[index] = person
+    else:
+        # Associate the directory entry with the referrer.
+        referrer[index] = file_config.config["people"][
+            directory.people.by_bmo_id[person["bmo_id"]]
+        ]
+
+
 def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
     """Calculate a hash of the yaml config file."""
     config = config.copy()
@@ -141,6 +176,7 @@ def clean(file_config: FileConfig, write: bool = True):
     :param write: if set to `True`, writes changes to disk.
     """
     people_keys = ("owners", "peers")
+    emeritus_keys = [f"{k}_emeritus" for k in people_keys]
     file_config.load()
     directory = Directory(file_config)
     directory.load()
@@ -156,35 +192,59 @@ def clean(file_config: FileConfig, write: bool = True):
         if "machine_name" not in module:
             module["machine_name"] = generate_machine_readable_name(module["name"])
 
+        for emeritus_key in emeritus_keys:
+            if not (
+                "meta" in module
+                and emeritus_key in module["meta"]
+                and module["meta"][emeritus_key]
+            ):
+                continue
+            for i, person in enumerate(module["meta"][emeritus_key]):
+                if not isinstance(person, dict):
+                    continue
+                reference_anchor_for_module(
+                    i, person, emeritus_key, file_config, directory, module
+                )
+
         for key in people_keys:
             if key not in module or not module[key]:
                 continue
             for i, person in enumerate(module[key]):
-                if person["bmo_id"] not in directory.people.by_bmo_id:
-                    file_config.config["people"].append(person)
-                    module[key][i] = person
-                    directory.people.refresh_by_bmo_id()
-                else:
-                    module[key][i] = file_config.config["people"][
-                        directory.people.by_bmo_id[person["bmo_id"]]
-                    ]
+                reference_anchor_for_module(
+                    i, person, key, file_config, directory, module
+                )
 
         # Do the same for submodules.
         if "submodules" in module and module["submodules"]:
             module["submodules"].sort(key=lambda x: x["name"])
             for submodule in module["submodules"]:
+
+                for emeritus_key in emeritus_keys:
+                    if not (
+                        "meta" in submodule
+                        and emeritus_key in submodule["meta"]
+                        and submodule["meta"][emeritus_key]
+                    ):
+                        continue
+                    for i, person in enumerate(submodule["meta"][emeritus_key]):
+                        if not isinstance(person, dict):
+                            continue
+                        reference_anchor_for_module(
+                            i,
+                            person,
+                            emeritus_key,
+                            file_config,
+                            directory,
+                            submodule,
+                        )
+
                 for key in people_keys:
                     if key not in submodule or not submodule[key]:
                         continue
                     for i, person in enumerate(submodule[key]):
-                        if person["bmo_id"] not in directory.people.by_bmo_id:
-                            file_config.config["people"].append(person)
-                            submodule[key][i] = person
-                            directory.people.refresh_by_bmo_id()
-                        else:
-                            submodule[key][i] = file_config.config["people"][
-                                directory.people.by_bmo_id[person["bmo_id"]]
-                            ]
+                        reference_anchor_for_module(
+                            i, person, key, file_config, directory, submodule
+                        )
                 if "machine_name" not in submodule:
                     submodule["machine_name"] = generate_machine_readable_name(
                         submodule["name"]

@@ -117,11 +117,11 @@ def reference_anchor_for_module(
 ) -> None:
     """Associate person with a reference to a directory entry if possible.
 
-        :param index: the position of the person in the referrer field
-        :param person: a dictionary with information about the person to be added
-        :param key: the key (e.g, "peers" or "owners_emeritus") that defines context
-        :param file_config: config context being modified
-        :param module: dictionary of the module in the config being modified
+    :param index: the position of the person in the referrer field
+    :param person: a dictionary with information about the person to be added
+    :param key: the key (e.g, "peers" or "owners_emeritus") that defines context
+    :param file_config: config context being modified
+    :param module: dictionary of the module in the config being modified
 
 
     This is needed so that ruamel.yaml can correctly reference anchors to people.

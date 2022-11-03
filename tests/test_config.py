@@ -4,7 +4,13 @@
 
 """Test config module."""
 
-from mots.config import calculate_hashes, FileConfig, check_nested_keys_for_value
+from mots.config import (
+    calculate_hashes,
+    FileConfig,
+    check_nested_keys_for_value,
+    reference_anchor_for_module,
+)
+from mots.directory import Directory
 
 
 def test_calculate_hashes(config):
@@ -42,3 +48,37 @@ def test_check_nested_keys_for_value():
     assert check_nested_keys_for_value(test, ("a", "b", "c", "d")) is False
     assert check_nested_keys_for_value(test, ("a", "b", "d")) is False
     assert check_nested_keys_for_value(test, ("a", "b", "d"), boolean=False) is True
+
+
+def test_reference_anchor_for_module(repo):
+    """Test that a reference to an existing person is correctly updated.
+
+    When a reference to a person references the same person but a different dictionary,
+    reference_anchor_for_module should update that reference to reflect the existing
+    person.
+    """
+    file_config = FileConfig(repo / "mots.yml")
+    file_config.load()
+    directory = Directory(file_config)
+    directory.load(full_paths=True)
+
+    module = file_config.config["modules"][0]["submodules"][0]
+    owner_emeritus_field = module["meta"]["owners_emeritus"]
+    # Check that existing owner emeritus references the person in the roster.
+    assert len(owner_emeritus_field) == 1
+    assert id(owner_emeritus_field[0]) == id(file_config.config["people"][2])
+
+    # Change owner emeritus to be the first person in the roster.
+    new_person = {"name": "jane", "nick": "jane", "bmo_id": 0}
+    owner_emeritus_field[0] = new_person
+
+    assert new_person == file_config.config["people"][0]
+    assert id(owner_emeritus_field[0]) != id(file_config.config["people"][0])
+
+    key = "owners_emeritus"
+    index = 0
+    reference_anchor_for_module(
+        index, file_config.config["people"][0], key, file_config, directory, module
+    )
+
+    assert id(owner_emeritus_field[0]) == id(file_config.config["people"][0])

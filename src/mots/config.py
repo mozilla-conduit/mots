@@ -195,6 +195,7 @@ def clean(file_config: FileConfig, write: bool = True):
         for emeritus_key in emeritus_keys:
             if not (
                 "meta" in module
+                and module["meta"]
                 and emeritus_key in module["meta"]
                 and module["meta"][emeritus_key]
             ):
@@ -222,6 +223,7 @@ def clean(file_config: FileConfig, write: bool = True):
                 for emeritus_key in emeritus_keys:
                     if not (
                         "meta" in submodule
+                        and submodule["meta"]
                         and emeritus_key in submodule["meta"]
                         and submodule["meta"][emeritus_key]
                     ):

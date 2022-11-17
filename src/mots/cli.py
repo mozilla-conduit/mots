@@ -66,7 +66,7 @@ def clean(args: argparse.Namespace) -> None:
     except MissingBugzillaAPIKey:
         logger.error("Could not detect a Bugzilla API Key.")
         messages = (
-            "Either set it in your environment (MOTS_BUGZILLA_API KEY) or add it to ",
+            "Either set it in your environment (MOTS_BUGZILLA_API_KEY) or add it to ",
             "your settings file by running: ",
             "`mots settings write BUGZILLA_API_KEY`.",
             "You will be prompted to enter the API key after running this command.",

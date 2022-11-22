@@ -31,6 +31,16 @@ You can check for pre-releases by passing ``--pre`` to the ``pip install`` comma
 
 Installing pre-releases gives you early access to features or bug fixes, and helps with testing.
 
+Quick Start
+===========
+
+After installing ``mots``, follow these instructions to make changes to module information:
+
+- Update mots.yaml as needed (for example, by adding a new person, modifying information, deleting old modules, etc.)
+- Run ``mots export-and-clean``
+- Commit changes and push
+
+See additional sections below for more information on :ref:`adding a module<Adding a Module>`, :ref:`adding a submodule<Adding a Submodule>`, :ref:`adding a new person<Adding a new Person>`, :ref:`cleaning<Cleaning>`, and :ref:`exporting<Exporting>`.
 
 Command Line Usage
 ==================
@@ -187,6 +197,8 @@ There is currently a known issue where the first pass of ``mots clean`` will fai
 
 Cleaning ``mots.yaml``
 ~~~~~~~~~~~~~~~~~~~~~~
+
+Before changes to module information is merged into the repo, those changes should be cleaned and exported. Both the validated and cleaned ``mots.yaml`` as well as any exported documentation files need to be checked in and updated. A convenience command, ``mots export-and-clean`` is provided that will do both things.
 
 Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml`` configuration file. This command requires a ``MOTS_BUGZILLA_API_KEY`` environment variable to be set, or the key to be defined in your settings. You can do this by running the following commands, replacing the redacted key with an actual Bugzilla API key:
 

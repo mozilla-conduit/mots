@@ -40,7 +40,7 @@ After installing ``mots``, follow these instructions to make changes to module i
 - Run ``mots export-and-clean``
 - Commit changes and push
 
-See additional sections below for more information on :ref:`adding a module<Adding a Module>`, :ref:`adding a submodule<Adding a Submodule>`, :ref:`adding a new person<Adding a new Person>`, :ref:`cleaning<Cleaning>`, and :ref:`exporting<Exporting>`.
+See additional sections below for more information on :ref:`initializing a new repo<Initializing a repo>`, :ref:`adding a module<Adding a Module>`, :ref:`adding a submodule<Adding a Submodule>`, :ref:`adding a new person<Adding a new Person>`, :ref:`cleaning<Cleaning>`, and :ref:`exporting<Exporting>`.
 
 Command Line Usage
 ==================

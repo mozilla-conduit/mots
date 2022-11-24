@@ -61,7 +61,7 @@ class BMOClient:
         result = response.json()
         return {u["id"]: u for u in result["users"]}
 
-    def get_match(self, match: str):
+    def get_match(self, match: str, multiple=False):
         """Get user data based on provided info."""
         fields = ["real_name", "nick", "email", "name", "id"]
         response = self._get(
@@ -73,4 +73,7 @@ class BMOClient:
 
         result = response.json()
         if result["users"]:
-            return result["users"][0]
+            if multiple:
+                return result["users"]
+            else:
+                return result["users"][0]

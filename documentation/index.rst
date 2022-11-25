@@ -82,7 +82,7 @@ If the user is not in the list of people
    You can find the Bugzilla ID of a user by running ``mots user search <email>``.
 
 .. note::
-   Step 4 will fetch additional user information from the Bugzilla API and update the
+   Running ``mots export-and-clean`` will fetch additional user information from the Bugzilla API and update the
    anchor and references to the user.
 
 Moving an Owner or Peer

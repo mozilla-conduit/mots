@@ -292,7 +292,11 @@ def main():
     if hasattr(args, "func"):
         if settings.CHECK_FOR_UPDATES:
             args.include_dev_releases = settings.CHECK_DEV_RELEASES
-            check_for_updates(args)
+            try:
+                check_for_updates(args)
+            except Exception as e:
+                logger.warning("Could not check for updates.")
+                logger.debug(e)
         logger.debug(f"Calling {args.func} with {args}...")
         st = datetime.now()
         try:

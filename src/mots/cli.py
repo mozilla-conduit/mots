@@ -243,7 +243,7 @@ def read(args: argparse.Namespace):
 def search(args: argparse.Namespace):
     """Search Bugzilla API for users, given an email address."""
     bmo_client = BMOClient()
-    result = bmo_client.get_match(args.match, multiple=True)
+    result = bmo_client.get_matches(args.match)
     logger.info(f"Found {len(result)} users.")
 
     for user in result:

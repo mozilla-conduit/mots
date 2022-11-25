@@ -122,7 +122,7 @@ You can get command line usage help by typing ``mots --help`` at the command lin
 
 Initializing a repo
 -------------------
-To create an initial ``mots.yaml`` file in the current repo, run the following command:
+To create an initial **mots.yaml** file in the current repo, run the following command:
 
 .. code-block:: shell
 
@@ -155,7 +155,7 @@ To add a new module to your mots configuration, you can either add it directly t
     Enter a comma separated list of paths to exclude:
     Enter a machine name of the parent module (optional):
 
-The above code will create a new module in ``mots.yaml`` so that the file will look like this:
+The above code will create a new module in **mots.yaml** so that the file will look like this:
 
 .. code-block:: yaml
 
@@ -260,7 +260,7 @@ This will result in a file that looks like this:
 Adding a new person
 -------------------
 
-Currently, adding a new person to the list of people in ``mots.yaml`` is a manual process. Follow these steps to add a new person:
+Currently, adding a new person to the list of people in **mots.yaml** is a manual process. Follow these steps to add a new person:
 
 - Make sure the person does not exist under ``people``
 - Add a new entry to ``people`` and provide the ``bmo_id`` under that entry
@@ -269,12 +269,12 @@ Currently, adding a new person to the list of people in ``mots.yaml`` is a manua
 There is currently a known issue where the first pass of ``mots clean`` will fail if the other keys are missing from the new entry. If you run into a ``KeyError``, just run ``mots clean`` again. This issue is being tracked in `bug 1797083 <https://bugzilla.mozilla.org/show_bug.cgi?id=1797083>`_.
 
 
-Cleaning ``mots.yaml``
+Cleaning **mots.yaml**
 ----------------------
 
-Before changes to module information is merged into the repo, those changes should be cleaned and exported. Both the validated and cleaned ``mots.yaml`` as well as any exported documentation files need to be checked in and updated. A convenience command, ``mots export-and-clean`` is provided that will do both things.
+Before changes to module information is merged into the repo, those changes should be cleaned and exported. Both the validated and cleaned **mots.yaml** as well as any exported documentation files need to be checked in and updated. A convenience command, ``mots export-and-clean`` is provided that will do both things.
 
-Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml`` configuration file. This command requires a ``MOTS_BUGZILLA_API_KEY`` environment variable to be set, or the key to be defined in your settings. You can do this by running the following commands, replacing the redacted key with an actual Bugzilla API key:
+Use ``mots clean`` to automatically sort and synchronize data in the **mots.yaml** configuration file. This command requires a ``MOTS_BUGZILLA_API_KEY`` environment variable to be set, or the key to be defined in your settings. You can do this by running the following commands, replacing the redacted key with an actual Bugzilla API key:
 
 .. code-block:: shell
 
@@ -292,7 +292,7 @@ Use ``mots clean`` to automatically sort and synchronize data in the ``mots.yaml
     A Bugzilla API key is required to allow mots to query Bugzilla for user information.
 
 
-Validating ``mots.yaml``
+Validating **mots.yaml**
 ------------------------
 Validating your modules ensures that you have all the required keys in your configuration file, and that you have unique machine names for all your modules and submodules. Run the following command to do automatic validation:
 

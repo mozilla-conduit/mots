@@ -13,7 +13,7 @@ import sys
 
 from mots import module
 from mots import config
-from mots.bmo import MissingBugzillaAPIKey
+from mots.bmo import MissingBugzillaAPIKey, BMOClient
 from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
@@ -240,6 +240,19 @@ def read(args: argparse.Namespace):
     print(out_template(key, value))
 
 
+def search(args: argparse.Namespace):
+    """Search Bugzilla API for users, given an email address."""
+    bmo_client = BMOClient()
+    result = bmo_client.get_matches(args.match)
+    logger.info(f"Found {len(result)} users.")
+    logger.info("Tip: you can copy and paste a dictionary entry into a field.")
+
+    for user in result:
+        person = {"bmo_id": user["id"], "name": user["real_name"], "nick": user["nick"]}
+        out = f"{person} -> {user['email']}"
+        print(out)
+
+
 def main():
     """Run startup commands and redirect to appropriate function."""
     parser = create_parser()
@@ -288,6 +301,9 @@ def create_parser():
     settings_parser = main_cli.add_parser("settings", help="settings operations")
     settings_cli = settings_parser.add_subparsers(title="settings")
 
+    user_parser = main_cli.add_parser("user", help="user operations")
+    user_cli = user_parser.add_subparsers(title="user")
+
     # Create path argument template.
     path_flags = ("--path", "-p")
     path_args = {
@@ -310,6 +326,7 @@ def create_parser():
         (module_cli, show, "show module details"),
         (settings_cli, write, "update settings variable and save to disk"),
         (settings_cli, read, "get settings variable, or all if no key is provided"),
+        (user_cli, search, "search Bugzilla user database"),
     ):
         name = func.__name__.replace("_", "-")
         parsers[name] = _cli.add_parser(name, help=help_text)
@@ -344,6 +361,8 @@ def create_parser():
         nargs="?",
         help="fetch the value of key if provided, or all keys otherwise",
     )
+
+    parsers["search"].add_argument("match", nargs=1, help="a search string")
 
     parsers["init"].add_argument(*path_flags, **path_args)
     parsers["validate"].add_argument(*path_flags, **path_args)

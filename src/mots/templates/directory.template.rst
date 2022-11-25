@@ -3,6 +3,11 @@
 {# file, You can obtain one at https://mozilla.org/MPL/2.0/.           #}
 ..
     This file was automatically generated using `mots export`.
+
+..
+    See https://mots.readthedocs.io/en/latest/#quick-start for quick start
+    documentation and how to modify this file.
+
 {% macro module_entry(module, is_submodule=False) -%}
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}

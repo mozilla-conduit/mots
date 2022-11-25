@@ -42,6 +42,8 @@ class Settings:
         "SEARCHFOX_BASE_URL": "https://searchfox.org",
         "RESOURCE_DIRECTORY": RESOURCE_DIRECTORY,
         "USER_AGENT": f"mots/{__version__}",
+        "CHECK_DEV_RELEASES": 0,
+        "CHECK_FOR_UPDATES": 1,
         "VERSION": __version__,
     }
 

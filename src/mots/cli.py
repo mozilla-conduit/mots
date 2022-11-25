@@ -257,7 +257,7 @@ def search(args: argparse.Namespace):
         print(out)
 
 
-def check_for_updates(args: argparse.Namespace) -> None:
+def _check_for_updates(include_dev_releases):
     """
     Show a message if there is a newer version available.
 
@@ -269,7 +269,7 @@ def check_for_updates(args: argparse.Namespace) -> None:
     items = result[0].findall("item")
     versions = [Version(item[0].text) for item in items]
 
-    if args and not args.include_dev_releases:
+    if not include_dev_releases:
         versions = [v for v in versions if not v.is_devrelease]
 
     newest_version = max(versions)
@@ -278,6 +278,11 @@ def check_for_updates(args: argparse.Namespace) -> None:
         logger.warning(f"You are running {__version__}")
     else:
         logger.debug(f"You are running the latest version of mots ({__version__})")
+
+
+def check_for_updates(args: argparse.Namespace) -> None:
+    """CLI wrapper around _check_for_udpdates."""
+    _check_for_updates(args.include_dev_releases)
 
 
 def main():
@@ -290,10 +295,9 @@ def main():
     init_logging(debug=args.debug)
 
     if hasattr(args, "func"):
-        if settings.CHECK_FOR_UPDATES:
-            args.include_dev_releases = settings.CHECK_DEV_RELEASES
+        if args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
             try:
-                check_for_updates(args)
+                _check_for_updates(settings.CHECK_DEV_RELEASES)
             except Exception as e:
                 logger.warning("Could not check for updates.")
                 logger.debug(e)

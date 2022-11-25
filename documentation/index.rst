@@ -52,31 +52,31 @@ Quick Start
 Adding a New Module Owner or Peer
 *********************************
 
-- Open **mots.yaml** in your favourite text editor
-- Look for the user in the list of people under "people"
+- Open **mots.yaml** in your favourite text editor.
+- Look for the user in the list of people under "people".
 
 If the user is already in the list of people
 --------------------------------------------
 
-#. Make note of their nickname (which will be an anchor in the form of **&nickname**)
-#. Find the module or submodule in the list of modules
-#. Add a reference to the anchor under the correct field*
-#. Save and exit
-#. Run **mots export-and-clean** to process the new changes
-#. Commit your changes and submit your revision for review
+#. Make note of their nickname (which will be an anchor in the form of **&nickname**).
+#. Find the module or submodule in the list of modules.
+#. Add a reference to the anchor under the correct field*.
+#. Save and exit.
+#. Run **mots export-and-clean** to process the new changes.
+#. Commit your changes and submit your revision for review.
 
 .. note::
     References to anchors can be used in the following fields: **peers**, **owners**
-    **peers_emeritus**, **owners_emeritus**
+    **peers_emeritus**, **owners_emeritus**.
 
 If the user is not in the list of people
 ----------------------------------------
 
-#. Find the user's Bugzilla ID on bugzilla.mozilla.com
-#. Add a new entry with ``bmo_id`` as the key, and the ID as the value
-#. Save and exit
-#. Run ``mots export-and-clean`` to process the new changes
-#. Commit your changes and submit your revision for review
+#. Find the user's Bugzilla ID on bugzilla.mozilla.com.
+#. Add a new entry with ``bmo_id`` as the key, and the ID as the value.
+#. Save and exit.
+#. Run ``mots export-and-clean`` to process the new changes.
+#. Commit your changes and submit your revision for review.
 
 .. tip::
    You can find the Bugzilla ID of a user by running ``mots user search <email>``.
@@ -88,22 +88,22 @@ If the user is not in the list of people
 Moving an Owner or Peer
 ***********************
 
-#. Open ``mots.yaml`` in your favourite text editor
-#. Find the user in the particular module you are modifying
-#. Move the anchor to the destination field
-#. Save and exit
-#. Run ``mots export-and-clean`` to process the new changes
-#. Commit your changes and submit your revision for review
+#. Open ``mots.yaml`` in your favourite text editor.
+#. Find the user in the particular module you are modifying.
+#. Move the anchor to the destination field.
+#. Save and exit.
+#. Run ``mots export-and-clean`` to process the new changes.
+#. Commit your changes and submit your revision for review.
 
 Removing a Module
 *****************
 
-#. Open ``mots.yaml`` in your favourite text editor
-#. Find the module that you want to remove
-#. Delete the entry for the module
-#. Save and exit
-#. Run ``mots export-and-clean`` to process the new changes
-#. Commit your changes and submit your revision for review
+#. Open ``mots.yaml`` in your favourite text editor.
+#. Find the module that you want to remove.
+#. Delete the entry for the module.
+#. Save and exit.
+#. Run ``mots export-and-clean`` to process the new changes.
+#. Commit your changes and submit your revision for review.
 
 Adding a new Module
 *******************

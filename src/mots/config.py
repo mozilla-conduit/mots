@@ -34,6 +34,12 @@ QUICK_START_BLURB = "\n".join(
     )
 )
 
+MPL2 = "\n".join((
+    "This Source Code Form is subject to the terms of the Mozilla Public",
+    "License, v. 2.0. If a copy of the MPL was not distributed with this",
+    "file, You can obtain one at https://mozilla.org/MPL/2.0/.",
+))
+
 
 class ValidationError(TypeError):
     """Thrown when a particular module is not valid."""
@@ -260,7 +266,7 @@ def clean(file_config: FileConfig, write: bool = True):
                     )
 
     file_config.config["modules"].sort(key=lambda x: x["machine_name"])
-    file_config.config.yaml_set_start_comment(QUICK_START_BLURB)
+    file_config.config.yaml_set_start_comment(f"{MPL2}\n\n{QUICK_START_BLURB}")
     if write:
         # Write all changes.
         file_config.write()

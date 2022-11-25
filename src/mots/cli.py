@@ -245,12 +245,11 @@ def search(args: argparse.Namespace):
     bmo_client = BMOClient()
     result = bmo_client.get_matches(args.match)
     logger.info(f"Found {len(result)} users.")
+    logger.info("Tip: you can copy and paste a dictionary entry into a field.")
 
     for user in result:
-        out = (
-            f"id: {user['id'] or 'N/A'} "
-            f"email: {user['name']} name: {user['real_name']}"
-        )
+        person = {"bmo_id": user["id"], "name": user["real_name"], "nick": user["nick"]}
+        out = f"{person} -> {user['email']}"
         print(out)
 
 

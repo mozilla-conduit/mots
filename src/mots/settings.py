@@ -28,6 +28,8 @@ class Settings:
     DEFAULTS = {
         "BUGZILLA_API_KEY": "",
         "BUGZILLA_URL": "https://bugzilla.mozilla.org/rest",
+        "CHECK_DEV_RELEASES": 0,
+        "CHECK_FOR_UPDATES": 1,
         "CIRCLECI_TAG_KEY": "CIRCLE_TAG",
         "DEBUG": 0,
         "DEFAULT_CONFIG_FILEPATH": Path("./mots.yaml"),
@@ -39,8 +41,8 @@ class Settings:
         "PMO_COOKIE": "",
         "PMO_SEARCH_URL": "https://people.mozilla.org/s?query=",
         "PMO_URL": "https://people.mozilla.org/api/v4",
-        "SEARCHFOX_BASE_URL": "https://searchfox.org",
         "RESOURCE_DIRECTORY": RESOURCE_DIRECTORY,
+        "SEARCHFOX_BASE_URL": "https://searchfox.org",
         "USER_AGENT": f"mots/{__version__}",
         "VERSION": __version__,
     }

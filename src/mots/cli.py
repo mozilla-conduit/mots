@@ -4,12 +4,16 @@
 
 """This module sets up parsers and maps cli commands to methods."""
 
-import argparse
 from datetime import datetime
+from packaging.version import Version
+from pathlib import Path
+from xml.etree import ElementTree
+import argparse
 import getpass
 import logging
-from pathlib import Path
 import sys
+
+import requests
 
 from mots import module
 from mots import config
@@ -253,6 +257,34 @@ def search(args: argparse.Namespace):
         print(out)
 
 
+def _check_for_updates(include_dev_releases):
+    """
+    Show a message if there is a newer version available.
+
+    This method checks the RSS feed on PyPI.
+    """
+    URL = "https://pypi.org/rss/project/mots/releases.xml"
+    response = requests.get(URL)
+    result = ElementTree.fromstring(response.content)
+    items = result[0].findall("item")
+    versions = [Version(item[0].text) for item in items]
+
+    if not include_dev_releases:
+        versions = [v for v in versions if not v.is_devrelease]
+
+    newest_version = max(versions)
+    if Version(__version__) < newest_version:
+        logger.warning(f"A new version of mots is available ({newest_version})")
+        logger.warning(f"You are running {__version__}")
+    else:
+        logger.debug(f"You are running the latest version of mots ({__version__})")
+
+
+def check_for_updates(args: argparse.Namespace) -> None:
+    """CLI wrapper around _check_for_udpdates."""
+    _check_for_updates(args.include_dev_releases)
+
+
 def main():
     """Run startup commands and redirect to appropriate function."""
     parser = create_parser()
@@ -263,6 +295,12 @@ def main():
     init_logging(debug=args.debug)
 
     if hasattr(args, "func"):
+        if args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
+            try:
+                _check_for_updates(settings.CHECK_DEV_RELEASES)
+            except Exception as e:
+                logger.warning("Could not check for updates.")
+                logger.debug(e)
         logger.debug(f"Calling {args.func} with {args}...")
         st = datetime.now()
         try:
@@ -321,6 +359,7 @@ def create_parser():
         (main_cli, export, "export the module directory"),
         (main_cli, export_and_clean, "perform automatic cleaning and exporting"),
         (main_cli, validate, "validate mots config"),
+        (main_cli, check_for_updates, "check for new versions of mots"),
         (module_cli, add, "add a new module"),
         (module_cli, ls, "list all modules"),
         (module_cli, show, "show module details"),
@@ -363,6 +402,13 @@ def create_parser():
     )
 
     parsers["search"].add_argument("match", nargs=1, help="a search string")
+    parsers["check-for-updates"].add_argument(
+        "--include-dev-releases",
+        "-d",
+        action="store_true",
+        help="include dev releases in check",
+        default=settings.CHECK_DEV_RELEASES,
+    )
 
     parsers["init"].add_argument(*path_flags, **path_args)
     parsers["validate"].add_argument(*path_flags, **path_args)

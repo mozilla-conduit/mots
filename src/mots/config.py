@@ -27,6 +27,13 @@ logger = logging.getLogger(__name__)
 yaml = YAML()
 yaml.indent(mapping=2, sequence=4, offset=2)
 
+QUICK_START_BLURB = "\n".join(
+    (
+        "See https://mots.readthedocs.io/en/latest/#quick-start for quick start",
+        "documentation and how to modify this file.",
+    )
+)
+
 
 class ValidationError(TypeError):
     """Thrown when a particular module is not valid."""
@@ -253,6 +260,7 @@ def clean(file_config: FileConfig, write: bool = True):
                     )
 
     file_config.config["modules"].sort(key=lambda x: x["machine_name"])
+    file_config.config.yaml_set_start_comment(QUICK_START_BLURB)
     if write:
         # Write all changes.
         file_config.write()

@@ -22,4 +22,4 @@ make dev-env PY=python3.9
 make dev
 ```
 
-The above commands will set up a local development environment using the provided python version available on your machine, and subsequently install all required packages in that environment.
+The above commands will set up a virtual environment using the provided Python version available on your machine, and subsequently install all required packages in that environment, which can be found in the `.mots-env` directory.

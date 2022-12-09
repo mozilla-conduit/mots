@@ -3,7 +3,8 @@
 max-line-length = 88
 
 extend-ignore =
-    D107,  # Missing docstring in __init__
+    # D107 Missing docstring in __init__
+    D107
 
 per-file-ignores = 
     # D100 Missing docstring in public module

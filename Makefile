@@ -105,9 +105,8 @@ endif
 .ONESHELL:
 .PHONY: dev
 dev:
-	deactivate
 	set -e
-	source ./.mots-env/bin/activate
+	. ./.mots-env/bin/activate
 	python -m pip install --upgrade pip
 	python -m pip install pip-tools
 	python -m pip install -r requirements/$$(./requirements/get_filename)

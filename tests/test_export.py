@@ -81,6 +81,7 @@ def test_export_format_people_for_rst(config):
         "\n        | `jane (jane) <https://people.mozilla.org/s?query=jane>`__"
         "\n        | `jill (jill) <https://people.mozilla.org/s?query=jill>`__"
         "\n        | `otis (otis) <https://people.mozilla.org/s?query=otis>`__"
+        "\n        | `angel (angel) <https://people.mozilla.org/s?query=angel>`__"
         "\n        | `unnamed <https://people.mozilla.org/s?query=unnamed>`__"
     )
 

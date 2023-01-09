@@ -5,6 +5,7 @@
 """Directory classes for mots."""
 from __future__ import annotations
 
+import copy
 from collections import defaultdict
 from dataclasses import asdict
 from dataclasses import dataclass
@@ -92,7 +93,10 @@ class Directory:
                 self.index[path] = [m for m in modules if not m.exclude_module_paths]
         self.index = dict(self.index)
 
-        # Load people directory
+        self.load_people()
+
+    def load_people(self):
+        """Load people directory from config handle."""
         people = list(self.config_handle.config["people"])
         self.people = People(people, {})
 
@@ -185,13 +189,14 @@ class Person:
 class People:
     """A people directory searchable by name, email, or BMO ID."""
 
-    def __init__(self, people, bmo_data: dict):
+    def __init__(self, people: list, bmo_data: dict):
         logger.debug(f"Initializing people directory with {len(people)} people...")
 
         self.people = []
         self.by_bmo_id = {}
 
-        people = list(people)
+        people = copy.deepcopy(people)
+
         for i, person in enumerate(people):
             logger.debug(f"Adding person {person} to roster...")
 

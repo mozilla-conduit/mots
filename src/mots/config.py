@@ -148,6 +148,7 @@ def reference_anchor_for_module(
     if person["bmo_id"] not in directory.people.by_bmo_id:
         # Person has to be added to directory before adding the reference.
         file_config.config["people"].append(person)
+        directory.load_people()
         directory.people.refresh_by_bmo_id()
         referrer[index] = person
     else:
@@ -180,7 +181,7 @@ def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
     return original_hashes, hashes
 
 
-def clean(file_config: FileConfig, write: bool = True):
+def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
     """Clean and re-sort configuration file.
 
     Load configuration from disk, sort modules and submodules by `machine_name`. If
@@ -201,7 +202,23 @@ def clean(file_config: FileConfig, write: bool = True):
     bmo_data = get_bmo_data(people)
     updated_people = People(people, bmo_data)
     logger.debug("Updating people configuration based on BMO data...")
-    file_config.config["people"] = updated_people.serialized
+
+    # If refresh is True, then we should do this. Otherwise, we should pick out
+    # pre-existing users and not touch those.
+    if refresh:
+        logger.debug("Refreshing all people...")
+        file_config.config["people"] = updated_people.serialized
+    else:
+        logger.warning("Only synchronizing new people with Bugzilla.")
+        updated_people_dict = {p["bmo_id"]: p for p in updated_people.serialized}
+        people_dict = {p["bmo_id"]: p for p in people}
+
+        additions = {
+            p: v for p, v in updated_people_dict.items() if "nick" not in people_dict[p]
+        }
+        parsed_people = [p for p in people if p["bmo_id"] not in additions]
+        parsed_people += additions.values()
+        file_config.config["people"] = parsed_people
 
     for i, module in enumerate(file_config.config["modules"]):
         if "machine_name" not in module:
@@ -277,7 +294,7 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.load()
 
         nicks = []
-        file_config.config["people"].sort(key=lambda p: p["nick"].lower())
+        file_config.config["people"].sort(key=lambda p: p.get("nick", "").lower())
         for person in file_config.config["people"]:
             machine_readable_nick = generate_machine_readable_name(
                 person.get("nick", ""), keep_case=True

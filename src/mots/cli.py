@@ -67,7 +67,7 @@ def clean(args: argparse.Namespace) -> None:
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
     try:
-        config.clean(file_config)
+        config.clean(file_config, refresh=args.refresh)
     except MissingBugzillaAPIKey:
         logger.error("Could not detect a Bugzilla API Key.")
         messages = (
@@ -407,6 +407,10 @@ def create_parser(subcommand=None):
     parsers["validate"].add_argument(*path_flags, **path_args)
     parsers["clean"].add_argument(*path_flags, **path_args)
     parsers["check-hashes"].add_argument(*path_flags, **path_args)
+
+    parsers["clean"].add_argument(
+        "--refresh", action="store_true", help="refresh person data from Bugzilla"
+    )
 
     if not subcommand:
         return parser

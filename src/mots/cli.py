@@ -5,15 +5,11 @@
 """This module sets up parsers and maps cli commands to methods."""
 
 from datetime import datetime
-from packaging.version import Version
 from pathlib import Path
-from xml.etree import ElementTree
 import argparse
 import getpass
 import logging
 import sys
-
-import requests
 
 from mots import module
 from mots import config
@@ -23,7 +19,12 @@ from mots.directory import Directory
 from mots.export import export_to_format
 from mots.logging import init_logging
 from mots.settings import settings
-from mots.utils import get_list_input, mkdir_if_not_exists, touch_if_not_exists
+from mots.utils import (
+    get_list_input,
+    mkdir_if_not_exists,
+    touch_if_not_exists,
+    check_for_updates as _check_for_updates,
+)
 from mots.yaml import yaml
 from mots import __version__
 
@@ -257,45 +258,36 @@ def search(args: argparse.Namespace):
         print(out)
 
 
-def _check_for_updates(include_dev_releases):
-    """
-    Show a message if there is a newer version available.
-
-    This method checks the RSS feed on PyPI.
-    """
-    URL = "https://pypi.org/rss/project/mots/releases.xml"
-    response = requests.get(URL)
-    result = ElementTree.fromstring(response.content)
-    items = result[0].findall("item")
-    versions = [Version(item[0].text) for item in items]
-
-    if not include_dev_releases:
-        versions = [v for v in versions if not v.is_devrelease]
-
-    newest_version = max(versions)
-    if Version(__version__) < newest_version:
-        logger.warning(f"A new version of mots is available ({newest_version})")
-        logger.warning(f"You are running {__version__}")
-    else:
-        logger.debug(f"You are running the latest version of mots ({__version__})")
-
-
 def check_for_updates(args: argparse.Namespace) -> None:
     """CLI wrapper around _check_for_udpdates."""
     _check_for_updates(args.include_dev_releases)
 
 
-def main():
-    """Run startup commands and redirect to appropriate function."""
+def call_main_with_args():
+    """Call `main` after creating a parser and parsing arguments.
+
+    This method is used when running mots directly via the CLI. When mots is run via
+    an integration (e.g., mach), then the integration must call `main` directly with
+    the arguments.
+    """
     parser = create_parser()
     args = parser.parse_args()
+    main(args)
 
+
+def main(
+    args: argparse.Namespace,
+    skip_update_check: bool = False,
+) -> None:
+    """Run startup commands and redirect to appropriate function."""
     mkdir_if_not_exists(settings.RESOURCE_DIRECTORY)
     touch_if_not_exists(settings.OVERRIDES_FILE)
     init_logging(debug=args.debug)
 
     if hasattr(args, "func"):
-        if args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
+        if skip_update_check:
+            logger.debug("Skipping update check.")
+        elif args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
             try:
                 _check_for_updates(settings.CHECK_DEV_RELEASES)
             except Exception as e:
@@ -312,7 +304,8 @@ def main():
         et = datetime.now()
         logger.debug(f"{args.func} took {(et - st).total_seconds()} seconds.")
     else:
-        parser.print_help()
+        # By default, print help to screen.
+        create_parser().print_help()
 
 
 def _add_path_argument(_parser):
@@ -325,7 +318,7 @@ def _add_path_argument(_parser):
     )
 
 
-def create_parser():
+def create_parser(subcommand=None):
     """Create parser, subparsers, and arguments."""
     parsers = {}
     parser = argparse.ArgumentParser(description="main command line interface for mots")
@@ -415,4 +408,8 @@ def create_parser():
     parsers["clean"].add_argument(*path_flags, **path_args)
     parsers["check-hashes"].add_argument(*path_flags, **path_args)
 
-    return parser
+    if not subcommand:
+        return parser
+    if subcommand not in parsers:
+        raise ValueError(f"{subcommand} not found.")
+    return parsers[subcommand]

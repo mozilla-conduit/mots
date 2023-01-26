@@ -4,9 +4,17 @@
 
 """Utility helper functions."""
 
-import logging
+from __future__ import annotations
+
+from packaging.version import Version
 from pathlib import Path
+from xml.etree import ElementTree
+import logging
 import re
+
+import requests
+
+from mots import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -57,3 +65,27 @@ def touch_if_not_exists(path: Path):
         path.touch()
     elif path.exists() and not path.is_file():
         logger.warning(f"{path} exists but is not a file.")
+
+
+def check_for_updates(include_dev_releases: bool = False) -> Version | None:
+    """
+    Show a message if there is a newer version available.
+
+    This method checks the RSS feed on PyPI.
+    """
+    URL = "https://pypi.org/rss/project/mots/releases.xml"
+    response = requests.get(URL)
+    result = ElementTree.fromstring(response.content)
+    items = result[0].findall("item")
+    versions = [Version(item[0].text) for item in items]
+
+    if not include_dev_releases:
+        versions = [v for v in versions if not v.is_devrelease]
+
+    newest_version = max(versions)
+    if Version(__version__) < newest_version:
+        logger.warning(f"A new version of mots is available ({newest_version})")
+        logger.warning(f"You are running {__version__}")
+        return newest_version
+    else:
+        logger.debug(f"You are running the latest version of mots ({__version__})")

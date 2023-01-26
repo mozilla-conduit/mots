@@ -287,7 +287,7 @@ def main(
     if hasattr(args, "func"):
         if skip_update_check:
             logger.debug("Skipping update check.")
-        if args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
+        elif args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
             try:
                 _check_for_updates(settings.CHECK_DEV_RELEASES)
             except Exception as e:
@@ -408,8 +408,8 @@ def create_parser(subcommand=None):
     parsers["clean"].add_argument(*path_flags, **path_args)
     parsers["check-hashes"].add_argument(*path_flags, **path_args)
 
-    if subcommand:
-        if subcommand not in parsers:
-            raise ValueError(f"{subcommand} not found.")
-        return parsers[subcommand]
-    return parser
+    if not subcommand:
+        return parser
+    if subcommand not in parsers:
+        raise ValueError(f"{subcommand} not found.")
+    return parsers[subcommand]

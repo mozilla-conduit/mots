@@ -282,7 +282,7 @@ def main(
     """Run startup commands and redirect to appropriate function."""
     mkdir_if_not_exists(settings.RESOURCE_DIRECTORY)
     touch_if_not_exists(settings.OVERRIDES_FILE)
-    init_logging(debug=args.debug)
+    init_logging(debug=getattr(args, "debug", False))
 
     if hasattr(args, "func"):
         if skip_update_check:

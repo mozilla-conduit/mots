@@ -34,6 +34,15 @@ def escape_for_rst(value: str) -> str:
     return value
 
 
+def escape_for_md(value: str) -> str:
+    """Escape rst special characters."""
+    # First we must escape backslashes, then everything else.
+    characters = "\\`*_{}[]<>()#+-.!|"
+    for character in characters:
+        value = value.replace(character, f"\\{character}")
+    return value
+
+
 def format_paths_for_rst(
     value: list[str], indent: int, directory: Directory = None
 ) -> str:
@@ -56,6 +65,28 @@ def format_paths_for_rst(
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_paths)
 
 
+def format_paths_for_md(
+    value: list[str], indent: int, directory: Directory = None
+) -> str:
+    """Escape and format a path string (e.g. for includes or excludes)."""
+    config = directory.config_handle.config
+    try:
+        searchfox_enabled = config["export"]["searchfox_enabled"]
+    except KeyError:
+        searchfox_enabled = False
+
+    parsed_paths = []
+    for path in value:
+        path = path.replace("*", "\\*")
+        if searchfox_enabled:
+            path = (
+                f"[{path}]({settings.SEARCHFOX_BASE_URL}"
+                f"/{config['repo']}/search?q=&path={path})"
+            )
+        parsed_paths.append(path)
+    return f"\n{' ' * indent}* " + f"\n{' ' * indent}* ".join(parsed_paths)
+
+
 def format_people_for_rst(value: list[dict], indent: int) -> str:
     """Escape and format a list of people."""
     people_base_url = settings.PMO_SEARCH_URL
@@ -71,6 +102,23 @@ def format_people_for_rst(value: list[dict], indent: int) -> str:
 
         parsed_people.append(parsed_person)
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_people)
+
+
+def format_people_for_md(value: list[dict], indent: int) -> str:
+    """Escape and format a list of people."""
+    people_base_url = settings.PMO_SEARCH_URL
+    parsed_people = []
+    for person in value:
+        if "name" in person and person["name"]:
+            parsed_person = (
+                f"[{person['name']} ({person['nick']})]"
+                f"({people_base_url}{person['nick']})"
+            )
+        else:
+            parsed_person = f"[{person['nick']}]({people_base_url}{person['nick']})"
+
+        parsed_people.append(parsed_person)
+    return f"\n{' ' * indent}* " + f"\n{' ' * indent}* ".join(parsed_people)
 
 
 def format_emeritus(value: list[dict | str]) -> str:
@@ -100,6 +148,9 @@ class Exporter:
         env.filters["escape_for_rst"] = escape_for_rst
         env.filters["format_paths_for_rst"] = format_paths_for_rst
         env.filters["format_people_for_rst"] = format_people_for_rst
+        env.filters["escape_for_md"] = escape_for_md
+        env.filters["format_paths_for_md"] = format_paths_for_md
+        env.filters["format_people_for_md"] = format_people_for_md
         env.filters["format_emeritus"] = format_emeritus
         return env
 
@@ -118,10 +169,16 @@ class Exporter:
         out = template.render(directory=self.directory)
         return f"{out.strip()}\n"
 
+    def _export_to_md(self) -> str:
+        """Render the template with this instance's directory context and return it."""
+        template = self._get_template("md")
+        out = template.render(directory=self.directory)
+        return f"{out.strip()}\n"
+
 
 def export_to_format(directory: Directory, frmt="rst"):
     """Export directory in a specified format."""
-    supported_formats = ["rst"]
+    supported_formats = ["rst", "md"]
     if frmt not in supported_formats:
         raise ValueError(f"{frmt} not one of {supported_formats}.")
 

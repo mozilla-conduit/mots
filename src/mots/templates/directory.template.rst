@@ -12,7 +12,7 @@
 {{ module.name }}
 {{ "~" * module.name|length if not is_submodule else "=" * module.name|length }}
 {% if module.description %}
-{{ module.description|escape_for_rst|trim }}
+{{ module.description|escape_for_rst|trim|wordwrap }}
 {% endif %}
 
 {% if not module.owners %}
@@ -58,7 +58,7 @@
 {% endif %}
 {% if module.meta.components %}
     * - Bugzilla Components
-      - {{ module.meta.components|join(", ") }}
+      - {{ module.meta.components|join(", ")|wordwrap|indent(width=8) }}
 {% endif %}
 {% endmacro %}
 
@@ -71,7 +71,7 @@ Overview
 --------
 To add, remove, or update module information, see the `mots documentation <https://mots.readthedocs.io/en/latest/#adding-a-module>`_.
 
-{{ directory.description }}
+{{ directory.description|wordwrap }}
 
 
 -------

@@ -409,7 +409,7 @@ def create_parser(subcommand=None):
     parsers["check-hashes"].add_argument(*path_flags, **path_args)
 
     parsers["clean"].add_argument(
-        "--refresh", action="store_true", help="refresh person data from Bugzilla"
+        "--refresh", action="store_true", help="refresh user data from Bugzilla"
     )
 
     if not subcommand:

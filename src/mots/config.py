@@ -213,7 +213,10 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
     else:
         # Use the original people list, and update entries only where needed.
         logger.warning("Only synchronizing new people with Bugzilla.")
-        updated_people_dict = {p["bmo_id"]: p for p in updated_people.serialized}
+        updated_people_dict = {
+            updated_person["bmo_id"]: updated_person
+            for updated_person in updated_people.serialized
+        }   
         for person in people:
             if "sync" in person and person["sync"]:
                 logger.info(f"Updated {person['bmo_id']} with new data.")

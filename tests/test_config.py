@@ -190,7 +190,7 @@ def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_bmo_user_d
     for person in file_config.config["people"]:
         if person["bmo_id"] == 3:
             # Ensure only the bmo_id key is there.
-            assert len(person) == 1
+            assert len(person) == 1, "Only the bmo_id key should be present."```
 
     # Compare the old and new people lists without the new entry, they should match.
     new = sorted(

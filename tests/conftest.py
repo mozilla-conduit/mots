@@ -93,7 +93,7 @@ def config():
                 "submodules": [
                     {
                         "machine_name": "predators",
-                        "name": "Predatord",
+                        "name": "Predators",
                         "includes": [
                             "canines/hyena",
                             "felines/tiger",

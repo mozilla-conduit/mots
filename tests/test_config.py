@@ -194,10 +194,14 @@ def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_bmo_user_d
 
     # Compare the old and new people lists without the new entry, they should match.
     new = sorted(
-        [dict(p) for p in file_config.config["people"] if p["bmo_id"] != 3],
+        [
+            dict(person)
+            for person in file_config.config["people"]
+            if person["bmo_id"] != 3
+        ],
         key=itemgetter("bmo_id"),
     )
-    original = sorted([p for p in config["people"]], key=itemgetter("bmo_id"))
+    original = sorted([person for person in config["people"]], key=itemgetter("bmo_id"))
     assert new == original
 
     # Run clean without refresh.
@@ -240,10 +244,14 @@ def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_bmo_user
 
     # Compare the old and new people lists without the new entry, they should match.
     new = sorted(
-        [dict(p) for p in file_config.config["people"] if p["bmo_id"] != 3],
+        [
+            dict(person)
+            for person in file_config.config["people"]
+            if person["bmo_id"] != 3
+        ],
         key=itemgetter("bmo_id"),
     )
-    original = sorted([p for p in config["people"]], key=itemgetter("bmo_id"))
+    original = sorted([person for person in config["people"]], key=itemgetter("bmo_id"))
     assert new == original
 
     # Run clean with refresh.

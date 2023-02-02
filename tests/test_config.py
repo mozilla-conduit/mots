@@ -19,7 +19,7 @@ from mots.directory import Directory
 
 
 @pytest.fixture
-def test_data():
+def test_bmo_user_data():
     return {
         0: {"real_name": "janeway", "nick": "captain", "bmo_id": 0},
         1: {"real_name": "tuvok", "nick": "2vk", "bmo_id": 1},
@@ -93,9 +93,9 @@ def test_reference_anchor_for_module(repo):
 
 
 @mock.patch("mots.config.get_bmo_data")
-def test_clean_removed_user_no_refresh(get_bmo_data, repo, config, test_data):
+def test_clean_removed_user_no_refresh(get_bmo_data, repo, config, test_bmo_user_data):
     """Test that removing a user without a refresh has no effect."""
-    get_bmo_data.return_value = test_data
+    get_bmo_data.return_value = test_bmo_user_data
 
     file_config = FileConfig(repo / "mots.yml")
     file_config.load()
@@ -114,9 +114,11 @@ def test_clean_removed_user_no_refresh(get_bmo_data, repo, config, test_data):
 
 
 @mock.patch("mots.config.get_bmo_data")
-def test_clean_removed_user_with_refresh(get_bmo_data, repo, config, test_data):
+def test_clean_removed_user_with_refresh(
+    get_bmo_data, repo, config, test_bmo_user_data
+):
     """Test that removing a user with a refresh updates from BMO."""
-    get_bmo_data.return_value = test_data
+    get_bmo_data.return_value = test_bmo_user_data
 
     file_config = FileConfig(repo / "mots.yml")
     file_config.load()
@@ -131,14 +133,14 @@ def test_clean_removed_user_with_refresh(get_bmo_data, repo, config, test_data):
     cleaned_and_sorted = sorted(file_config.config["people"], key=itemgetter("bmo_id"))
     assert len(cleaned_and_sorted) == 3
     for i, person in enumerate(cleaned_and_sorted):
-        assert person["name"] == test_data[i]["real_name"]
-        assert person["nick"] == test_data[i]["nick"]
+        assert person["name"] == test_bmo_user_data[i]["real_name"]
+        assert person["nick"] == test_bmo_user_data[i]["nick"]
 
 
 @mock.patch("mots.config.get_bmo_data")
-def test_clean_changed_names(get_bmo_data, repo, config, test_data):
+def test_clean_changed_names(get_bmo_data, repo, config, test_bmo_user_data):
     """Test that updated BMO data will be reflected when cleaning."""
-    get_bmo_data.return_value = test_data
+    get_bmo_data.return_value = test_bmo_user_data
 
     file_config = FileConfig(repo / "mots.yml")
     file_config.load()
@@ -148,14 +150,14 @@ def test_clean_changed_names(get_bmo_data, repo, config, test_data):
     clean(file_config)
 
     for person in file_config.config["people"]:
-        assert person["name"] == test_data[person["bmo_id"]]["real_name"]
-        assert person["nick"] == test_data[person["bmo_id"]]["nick"]
+        assert person["name"] == test_bmo_user_data[person["bmo_id"]]["real_name"]
+        assert person["nick"] == test_bmo_user_data[person["bmo_id"]]["nick"]
 
 
 @mock.patch("mots.config.get_bmo_data")
-def test_clean_changed_names_no_refresh(get_bmo_data, repo, config, test_data):
+def test_clean_changed_names_no_refresh(get_bmo_data, repo, config, test_bmo_user_data):
     """Test that updated BMO data has no effect when cleaning without refresh."""
-    get_bmo_data.return_value = test_data
+    get_bmo_data.return_value = test_bmo_user_data
 
     file_config = FileConfig(repo / "mots.yml")
     file_config.load()
@@ -170,9 +172,9 @@ def test_clean_changed_names_no_refresh(get_bmo_data, repo, config, test_data):
 
 
 @mock.patch("mots.config.get_bmo_data")
-def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_data):
+def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_bmo_user_data):
     """Test that updated BMO data has no effect when cleaning without refresh."""
-    get_bmo_data.return_value = test_data
+    get_bmo_data.return_value = test_bmo_user_data
 
     file_config = FileConfig(repo / "mots.yml")
     file_config.load()
@@ -211,9 +213,9 @@ def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_data):
 
 
 @mock.patch("mots.config.get_bmo_data")
-def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_data):
+def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_bmo_user_data):
     """Test that updated BMO data is reflected when cleaning with a refresh."""
-    get_bmo_data.return_value = test_data
+    get_bmo_data.return_value = test_bmo_user_data
 
     file_config = FileConfig(repo / "mots.yml")
     file_config.load()
@@ -249,3 +251,4 @@ def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_data):
     assert cleaned[1] == {"bmo_id": 1, "name": "tuvok", "nick": "2vk"}
     assert cleaned[2] == {"bmo_id": 2, "name": "neelix", "nick": "cooks4u"}
     assert cleaned[3] == {"bmo_id": 3, "name": "seven", "nick": "nanotubes"}
+    assert cleaned[4] == {"bmo_id": 4, "name": "tom paris", "nick": "paris"}

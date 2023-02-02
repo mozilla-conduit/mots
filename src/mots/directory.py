@@ -189,7 +189,7 @@ class Person:
 class People:
     """A people directory searchable by name, email, or BMO ID."""
 
-    def __init__(self, people: list, bmo_data: dict):
+    def __init__(self, people: list[dict], bmo_data: dict):
         logger.debug(f"Initializing people directory with {len(people)} people...")
 
         self.people = []

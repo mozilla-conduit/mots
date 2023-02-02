@@ -34,7 +34,7 @@ def test_calculate_hashes(config):
     hashes = calculate_hashes(config, export)[1]
 
     assert (
-        hashes["config"] == "983f96583e8ba0e6cc86c72e04d5c6d40cdc151b"
+        hashes["config"] == "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54"
     ), "Was `conftest.config` changed?"
     assert hashes["export"] == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
@@ -50,7 +50,7 @@ def test_FileConfig__check_hashes(repo):
     errors = file_config.check_hashes()
     assert errors == [
         "Mismatch in config hash detected.",
-        "983f96583e8ba0e6cc86c72e04d5c6d40cdc151b does not match asdf",
+        "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54 does not match asdf",
         "config file is out of date.",
         "Mismatch in export hash detected.",
         "da39a3ee5e6b4b0d3255bfef95601890afd80709 does not match ghjk",
@@ -190,7 +190,7 @@ def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_bmo_user_d
     for person in file_config.config["people"]:
         if person["bmo_id"] == 3:
             # Ensure only the bmo_id key is there.
-            assert len(person) == 1, "Only the bmo_id key should be present."```
+            assert len(person) == 1, "Only the bmo_id key should be present."
 
     # Compare the old and new people lists without the new entry, they should match.
     new = sorted(

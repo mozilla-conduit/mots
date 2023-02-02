@@ -51,7 +51,7 @@ def repo(tmp_path, config):
     file_config = FileConfig(test_repo / "mots.yml")
     file_config.config = config
     hashes = {
-        "config": "983f96583e8ba0e6cc86c72e04d5c6d40cdc151b",
+        "config": "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54",
         "export": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     }
     file_config.write(hashes)

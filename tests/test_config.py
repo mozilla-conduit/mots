@@ -251,7 +251,7 @@ def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_bmo_user
         ],
         key=itemgetter("bmo_id"),
     )
-    original = sorted([person for person in config["people"]], key=itemgetter("bmo_id"))
+    original = sorted(config["people"], key=itemgetter("bmo_id"))
     assert new == original
 
     # Run clean with refresh.

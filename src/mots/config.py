@@ -201,24 +201,25 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
 
     bmo_data = get_bmo_data(people)
     updated_people = People(people, bmo_data)
-    logger.debug("Updating people configuration based on BMO data...")
 
-    # If refresh is True, then we should do this. Otherwise, we should pick out
-    # pre-existing users and not touch those.
+    for person in people:
+        if "nick" not in person:
+            person["sync"] = True
+
     if refresh:
-        logger.debug("Refreshing all people...")
+        # Use the updated list that was synchronized with Bugzilla.
+        logger.info("Refreshing all people entries from Bugzilla.")
         file_config.config["people"] = updated_people.serialized
     else:
+        # Use the original people list, and update entries only where needed.
         logger.warning("Only synchronizing new people with Bugzilla.")
         updated_people_dict = {p["bmo_id"]: p for p in updated_people.serialized}
-        people_dict = {p["bmo_id"]: p for p in people}
-
-        additions = {
-            p: v for p, v in updated_people_dict.items() if "nick" not in people_dict[p]
-        }
-        parsed_people = [p for p in people if p["bmo_id"] not in additions]
-        parsed_people += additions.values()
-        file_config.config["people"] = parsed_people
+        for person in people:
+            if "sync" in person and person["sync"]:
+                logger.info(f"Updated {person['bmo_id']} with new data.")
+                person.pop("sync")
+                person.update(updated_people_dict[person["bmo_id"]])
+        file_config.config["people"] = people
 
     for i, module in enumerate(file_config.config["modules"]):
         if "machine_name" not in module:

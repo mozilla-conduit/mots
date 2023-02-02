@@ -179,7 +179,7 @@ def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_data):
 
     assert file_config.config["people"] == config["people"]
 
-    file_config.config["people"].append({"bmo_id": 3})
+    file_config.config["people"].insert(1, {"bmo_id": 3})
     file_config.write()
 
     assert len(file_config.config["people"]) == 5

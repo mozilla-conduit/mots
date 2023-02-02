@@ -148,6 +148,7 @@ def reference_anchor_for_module(
     if person["bmo_id"] not in directory.people.by_bmo_id:
         # Person has to be added to directory before adding the reference.
         file_config.config["people"].append(person)
+        directory.load_people()
         directory.people.refresh_by_bmo_id()
         referrer[index] = person
     else:
@@ -180,7 +181,7 @@ def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
     return original_hashes, hashes
 
 
-def clean(file_config: FileConfig, write: bool = True):
+def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
     """Clean and re-sort configuration file.
 
     Load configuration from disk, sort modules and submodules by `machine_name`. If
@@ -200,8 +201,25 @@ def clean(file_config: FileConfig, write: bool = True):
 
     bmo_data = get_bmo_data(people)
     updated_people = People(people, bmo_data)
-    logger.debug("Updating people configuration based on BMO data...")
-    file_config.config["people"] = updated_people.serialized
+
+    people_to_sync = set(person["bmo_id"] for person in people if "nick" not in person)
+
+    if refresh:
+        # Use the updated list that was synchronized with Bugzilla.
+        logger.info("Refreshing all people entries from Bugzilla.")
+        file_config.config["people"] = updated_people.serialized
+    else:
+        # Use the original people list, and update entries only where needed.
+        logger.warning("Only synchronizing new people with Bugzilla.")
+        updated_people_dict = {
+            updated_person["bmo_id"]: updated_person
+            for updated_person in updated_people.serialized
+        }
+        for person in people:
+            if person["bmo_id"] in people_to_sync:
+                logger.info(f"Updated {person['bmo_id']} with new data.")
+                person.update(updated_people_dict[person["bmo_id"]])
+        file_config.config["people"] = people
 
     for i, module in enumerate(file_config.config["modules"]):
         if "machine_name" not in module:
@@ -277,7 +295,9 @@ def clean(file_config: FileConfig, write: bool = True):
         file_config.load()
 
         nicks = []
-        file_config.config["people"].sort(key=lambda p: p["nick"].lower())
+        file_config.config["people"].sort(
+            key=lambda person: person.get("nick", "").lower()
+        )
         for person in file_config.config["people"]:
             machine_readable_nick = generate_machine_readable_name(
                 person.get("nick", ""), keep_case=True

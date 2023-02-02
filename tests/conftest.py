@@ -51,7 +51,7 @@ def repo(tmp_path, config):
     file_config = FileConfig(test_repo / "mots.yml")
     file_config.config = config
     hashes = {
-        "config": "76997b8d70e561c7ec8a21e1cefbc3c658c6d91a",
+        "config": "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54",
         "export": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     }
     file_config.write(hashes)
@@ -65,6 +65,7 @@ def config():
         {"name": "jane", "nick": "jane", "bmo_id": 0},
         {"name": "jill", "nick": "jill", "bmo_id": 1},
         {"name": "otis", "nick": "otis", "bmo_id": 2},
+        {"name": "angel", "nick": "angel", "bmo_id": 4},
     ]
     return {
         "repo": "test_repo",
@@ -75,6 +76,7 @@ def config():
         "modules": [
             {
                 "machine_name": "domesticated_animals",
+                "name": "Domesticated Animals",
                 "exclude_submodule_paths": True,
                 "exclude_module_paths": True,
                 "includes": [
@@ -91,6 +93,7 @@ def config():
                 "submodules": [
                     {
                         "machine_name": "predators",
+                        "name": "Predators",
                         "includes": [
                             "canines/hyena",
                             "felines/tiger",
@@ -107,6 +110,7 @@ def config():
             },
             {
                 "machine_name": "pets",
+                "name": "Pets",
                 "includes": [
                     "canines/**/*",
                     "felines/**/*",

@@ -204,12 +204,17 @@ def test_clean_added_user_no_refresh(get_bmo_data, repo, config, test_bmo_user_d
     clean(file_config, refresh=False)
 
     # It is expected that only the new entry is updated, and the rest are intact.
+    explain_assert_existing = "Existing records should not be updated after clean."
     cleaned = sorted(file_config.config["people"], key=itemgetter("bmo_id"))
     assert len(cleaned) == 5
-    assert cleaned[0] == original[0]
-    assert cleaned[1] == original[1]
-    assert cleaned[2] == original[2]
-    assert cleaned[3] == {"bmo_id": 3, "name": "seven", "nick": "nanotubes"}
+    assert cleaned[0] == original[0], explain_assert_existing
+    assert cleaned[1] == original[1], explain_assert_existing
+    assert cleaned[2] == original[2], explain_assert_existing
+    assert cleaned[3] == {
+        "bmo_id": 3,
+        "name": "seven",
+        "nick": "nanotubes",
+    }, "New entry should have been updated after clean."
 
 
 @mock.patch("mots.config.get_bmo_data")
@@ -245,10 +250,31 @@ def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_bmo_user
     clean(file_config, refresh=True)
 
     # It is expected that all people will have been updated via BMO.
+    explain_assert_all = "Record should have been updated after clean."
     cleaned = sorted(file_config.config["people"], key=itemgetter("bmo_id"))
     assert len(cleaned) == 5
-    assert cleaned[0] == {"bmo_id": 0, "name": "janeway", "nick": "captain"}
-    assert cleaned[1] == {"bmo_id": 1, "name": "tuvok", "nick": "2vk"}
-    assert cleaned[2] == {"bmo_id": 2, "name": "neelix", "nick": "cooks4u"}
-    assert cleaned[3] == {"bmo_id": 3, "name": "seven", "nick": "nanotubes"}
-    assert cleaned[4] == {"bmo_id": 4, "name": "tom paris", "nick": "paris"}
+    assert cleaned[0] == {
+        "bmo_id": 0,
+        "name": "janeway",
+        "nick": "captain",
+    }, explain_assert_all
+    assert cleaned[1] == {
+        "bmo_id": 1,
+        "name": "tuvok",
+        "nick": "2vk",
+    }, explain_assert_all
+    assert cleaned[2] == {
+        "bmo_id": 2,
+        "name": "neelix",
+        "nick": "cooks4u",
+    }, explain_assert_all
+    assert cleaned[3] == {
+        "bmo_id": 3,
+        "name": "seven",
+        "nick": "nanotubes",
+    }, explain_assert_all
+    assert cleaned[4] == {
+        "bmo_id": 4,
+        "name": "tom paris",
+        "nick": "paris",
+    }, explain_assert_all

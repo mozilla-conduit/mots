@@ -202,9 +202,7 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
     bmo_data = get_bmo_data(people)
     updated_people = People(people, bmo_data)
 
-    for person in people:
-        if "nick" not in person:
-            person["sync"] = True
+    people_to_sync = set(person["bmo_id"] for person in people if "nick" not in person)
 
     if refresh:
         # Use the updated list that was synchronized with Bugzilla.
@@ -218,9 +216,8 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
             for updated_person in updated_people.serialized
         }
         for person in people:
-            if "sync" in person and person["sync"]:
+            if person["bmo_id"] in people_to_sync:
                 logger.info(f"Updated {person['bmo_id']} with new data.")
-                person.pop("sync")
                 person.update(updated_people_dict[person["bmo_id"]])
         file_config.config["people"] = people
 

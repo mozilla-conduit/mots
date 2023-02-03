@@ -408,9 +408,11 @@ def create_parser(subcommand=None):
     parsers["clean"].add_argument(*path_flags, **path_args)
     parsers["check-hashes"].add_argument(*path_flags, **path_args)
 
-    parsers["clean"].add_argument(
-        "--refresh", action="store_true", help="refresh user data from Bugzilla"
-    )
+    for _parser in (parsers["clean"], parsers["export-and-clean"]):
+        # Add common --refresh argument to both parsers.
+        _parser.add_argument(
+            "--refresh", action="store_true", help="refresh user data from Bugzilla"
+        )
 
     if not subcommand:
         return parser

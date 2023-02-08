@@ -397,7 +397,6 @@ def create_parser(subcommand=None):
     parsers["search"].add_argument("match", nargs=1, help="a search string")
     parsers["check-for-updates"].add_argument(
         "--include-pre-releases",
-        "-d",
         action="store_true",
         help="include pre releases in check",
         default=settings.CHECK_PRE_RELEASES,

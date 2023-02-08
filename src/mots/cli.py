@@ -260,7 +260,7 @@ def search(args: argparse.Namespace):
 
 def check_for_updates(args: argparse.Namespace) -> None:
     """CLI wrapper around _check_for_udpdates."""
-    _check_for_updates(args.include_dev_releases)
+    _check_for_updates(args.include_pre_releases)
 
 
 def call_main_with_args():
@@ -289,7 +289,7 @@ def main(
             logger.debug("Skipping update check.")
         elif args.func != check_for_updates and settings.CHECK_FOR_UPDATES:
             try:
-                _check_for_updates(settings.CHECK_DEV_RELEASES)
+                _check_for_updates(settings.CHECK_PRE_RELEASES)
             except Exception as e:
                 logger.warning("Could not check for updates.")
                 logger.debug(e)
@@ -396,11 +396,10 @@ def create_parser(subcommand=None):
 
     parsers["search"].add_argument("match", nargs=1, help="a search string")
     parsers["check-for-updates"].add_argument(
-        "--include-dev-releases",
-        "-d",
+        "--include-pre-releases",
         action="store_true",
-        help="include dev releases in check",
-        default=settings.CHECK_DEV_RELEASES,
+        help="include pre releases in check",
+        default=settings.CHECK_PRE_RELEASES,
     )
 
     parsers["init"].add_argument(*path_flags, **path_args)

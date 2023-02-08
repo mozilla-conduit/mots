@@ -67,7 +67,7 @@ def touch_if_not_exists(path: Path):
         logger.warning(f"{path} exists but is not a file.")
 
 
-def check_for_updates(include_dev_releases: bool = False) -> Version | None:
+def check_for_updates(include_pre_releases: bool = False) -> Version | None:
     """
     Show a message if there is a newer version available.
 
@@ -79,8 +79,8 @@ def check_for_updates(include_dev_releases: bool = False) -> Version | None:
     items = result[0].findall("item")
     versions = [Version(item[0].text) for item in items]
 
-    if not include_dev_releases:
-        versions = [v for v in versions if not v.is_devrelease]
+    if not include_pre_releases:
+        versions = [v for v in versions if not v.is_prerelease]
 
     newest_version = max(versions)
     if Version(__version__) < newest_version:

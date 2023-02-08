@@ -28,7 +28,7 @@ class Settings:
     DEFAULTS = {
         "BUGZILLA_API_KEY": "",
         "BUGZILLA_URL": "https://bugzilla.mozilla.org/rest",
-        "CHECK_DEV_RELEASES": 0,
+        "CHECK_PRE_RELEASES": 0,
         "CHECK_FOR_UPDATES": 1,
         "CIRCLECI_TAG_KEY": "CIRCLE_TAG",
         "DEBUG": 0,

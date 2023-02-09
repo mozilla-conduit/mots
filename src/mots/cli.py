@@ -321,10 +321,13 @@ def _add_path_argument(_parser):
 def create_parser(subcommand=None):
     """Create parser, subparsers, and arguments."""
     parsers = {}
+
     parser = argparse.ArgumentParser(description="main command line interface for mots")
     parser.add_argument("--debug", action="store_true", help="enable debug output")
     parser.add_argument("--version", action="version", version=version())
+
     main_cli = parser.add_subparsers(title="commands")
+
     module_parser = main_cli.add_parser("module", help="module operations")
     _add_path_argument(module_parser)
     module_cli = module_parser.add_subparsers(title="module")
@@ -413,8 +416,16 @@ def create_parser(subcommand=None):
             "--refresh", action="store_true", help="refresh user data from Bugzilla"
         )
 
+    subcommand_parsers = {
+        "user": user_parser,
+        "module": module_parser,
+        "settings": settings_parser,
+    }
+
     if not subcommand:
         return parser
+    if subcommand in subcommand_parsers:
+        return subcommand_parsers[subcommand]
     if subcommand not in parsers:
         raise ValueError(f"{subcommand} not found.")
     return parsers[subcommand]

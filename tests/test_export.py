@@ -150,6 +150,7 @@ def test_export_format_people_for_md(config):
         "\n    * [jane (jane)](https://people.mozilla.org/s?query=jane)"
         "\n    * [jill (jill)](https://people.mozilla.org/s?query=jill)"
         "\n    * [otis (otis)](https://people.mozilla.org/s?query=otis)"
+        "\n    * [angel (angel)](https://people.mozilla.org/s?query=angel)"
         "\n    * [unnamed](https://people.mozilla.org/s?query=unnamed)"
     )
 

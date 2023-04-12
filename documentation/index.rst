@@ -272,7 +272,7 @@ There is currently a known issue where the first pass of ``mots clean`` will fai
 Cleaning **mots.yaml**
 ----------------------
 
-Before changes to module information is merged into the repo, those changes should be cleaned and exported. Both the validated and cleaned **mots.yaml** as well as any exported documentation files need to be checked in and updated. A convenience command, ``mots export-and-clean`` is provided that will do both things.
+Before changes to module information is merged into the repo, those changes should be cleaned using the ``mots clean`` command.
 
 Use ``mots clean`` to automatically sort and synchronize data in the **mots.yaml** configuration file. This command requires a ``MOTS_BUGZILLA_API_KEY`` environment variable to be set, or the key to be defined in your settings. You can do this by running the following commands, replacing the redacted key with an actual Bugzilla API key:
 
@@ -315,7 +315,11 @@ You can determine which module a file path belongs to by using the ``mots query`
 
 Exporting
 ---------
-Using the ``mots export`` command, the configuration can be exported in a different format. Currently only `reStructuredText` is supported. This command will output the result to standard output, or export it to the specified path in `mots.yaml`. The export paths and formats should be defined under `export.path` and `export.format`. E.g.,
+.. note::
+    Depending on your repo, the generated exported file may or may not be checked-in (tracked). For example, in mozilla-central, the exported file is automatically generated when running ``mach doc`` and is ignored by source control.
+
+
+Using the ``mots export`` command, the configuration can be exported in a different format. Currently `reStructuredText` and `Markdown` are supported. This command will output the result to standard output, or export it to the specified path in `mots.yaml`. The export paths and formats should be defined under `export.path` and `export.format`. E.g.,
 
 .. code-block:: yaml
 

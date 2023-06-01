@@ -9,6 +9,7 @@ import copy
 from collections import defaultdict
 from dataclasses import asdict
 from dataclasses import dataclass
+from itertools import chain
 import logging
 from mots.module import Module
 from mots.utils import parse_real_name
@@ -117,6 +118,20 @@ class Directory:
         logger.debug(f"Query {paths} resolved to {result}.")
 
         return QueryResult(result, rejected)
+
+    @property
+    def peers_and_owners(self):
+        """Return a sorted list of all peers and owners."""
+        all_modules = self.modules
+        all_submodules = list(chain(*[module.submodules for module in all_modules]))
+        modules_and_submodules = all_modules + all_submodules
+
+        peers_and_owners = set()
+        for module in modules_and_submodules:
+            peers_and_owners.update(
+                [person["bmo_id"] for person in module.peers + module.owners]
+            )
+        return sorted(list(peers_and_owners))
 
 
 class QueryResult:

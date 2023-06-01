@@ -184,3 +184,9 @@ def test_directory__QueryResult_empty_addition():
     empty_result = QueryResult()
     other_empty_result = QueryResult()
     assert not (empty_result + other_empty_result)
+
+
+def test_directory__peers_and_owners(repo):
+    file_config = FileConfig(repo / "mots.yml")
+    directory = Directory(file_config)
+    assert directory.peers_and_owners == [0, 1, 2]

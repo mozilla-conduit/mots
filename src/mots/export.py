@@ -145,6 +145,18 @@ def format_emeritus(value: list[dict | str]) -> str:
     return ", ".join(parsed)
 
 
+def format_review_group_for_rst(group: str) -> str:
+    """Format a review group."""
+    base_url = settings.PHABRICATOR_BASE_URL
+    return format_link_for_rst(f"#{group}", f"{base_url}/tag/{group}/")
+
+
+def format_review_group_for_md(group: str) -> str:
+    """Format a review group."""
+    base_url = settings.PHABRICATOR_BASE_URL
+    return format_link_for_md(f"#{group}", f"{base_url}/tag/{group}/")
+
+
 class Exporter:
     """A helper class that exports to various formats."""
 
@@ -158,9 +170,11 @@ class Exporter:
         env.filters["escape_for_rst"] = escape_for_rst
         env.filters["format_paths_for_rst"] = format_paths_for_rst
         env.filters["format_people_for_rst"] = format_people_for_rst
+        env.filters["format_review_group_for_rst"] = format_review_group_for_rst
         env.filters["escape_for_md"] = escape_for_md
         env.filters["format_paths_for_md"] = format_paths_for_md
         env.filters["format_people_for_md"] = format_people_for_md
+        env.filters["format_review_group_for_md"] = format_review_group_for_md
         env.filters["format_emeritus"] = format_emeritus
         return env
 

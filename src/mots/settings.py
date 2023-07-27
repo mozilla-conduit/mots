@@ -43,6 +43,7 @@ class Settings:
         "PMO_URL": "https://people.mozilla.org/api/v4",
         "RESOURCE_DIRECTORY": RESOURCE_DIRECTORY,
         "SEARCHFOX_BASE_URL": "https://searchfox.org",
+        "PHABRICATOR_BASE_URL": "https://phabricator.services.mozilla.com",
         "USER_AGENT": f"mots/{__version__}",
         "VERSION": __version__,
     }

@@ -60,6 +60,10 @@
     * - Bugzilla Components
       - {{ module.meta.components|join(", ")|wordwrap|indent(width=8) }}
 {% endif %}
+{% if module.meta.review_group %}
+    * - Review Group
+      - {{ module.meta.review_group|format_review_group_for_rst }}
+{% endif %}
 {% endmacro %}
 
 ==========

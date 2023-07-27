@@ -118,7 +118,7 @@ class FileConfig:
         logger.debug(f"Writing configuration to {self.path}")
         self.config["updated_at"] = datetime.now().isoformat()
         self.config["hashes"] = hashes or {}
-        with self.path.open("w") as f:
+        with self.path.open("w", encoding="utf-8", newline="\n") as f:
             yaml.dump(self.config, f)
 
 

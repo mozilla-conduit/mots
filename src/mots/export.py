@@ -43,6 +43,16 @@ def escape_for_md(value: str) -> str:
     return value
 
 
+def format_link_for_rst(text: str, url: str) -> str:
+    """Format a link."""
+    return f"`{text} <{url}>`__"
+
+
+def format_link_for_md(text: str, url: str) -> str:
+    """Format a link."""
+    return f"[{text}]({url})"
+
+
 def format_paths_for_rst(
     value: list[str], indent: int, directory: Directory = None
 ) -> str:
@@ -57,9 +67,9 @@ def format_paths_for_rst(
     for path in value:
         path = path.replace("*", "\\*")
         if searchfox_enabled:
-            path = (
-                f"`{path} <{settings.SEARCHFOX_BASE_URL}"
-                f"/{config['repo']}/search?q=&path={path}>`__"
+            path = format_link_for_rst(
+                path,
+                f"{settings.SEARCHFOX_BASE_URL}/{config['repo']}/search?q=&path={path}",
             )
         parsed_paths.append(path)
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_paths)
@@ -79,9 +89,9 @@ def format_paths_for_md(
     for path in value:
         path = path.replace("*", "\\*")
         if searchfox_enabled:
-            path = (
-                f"[{path}]({settings.SEARCHFOX_BASE_URL}"
-                f"/{config['repo']}/search?q=&path={path})"
+            path = format_link_for_md(
+                path,
+                f"{settings.SEARCHFOX_BASE_URL}/{config['repo']}/search?q=&path={path}",
             )
         parsed_paths.append(path)
     return f"\n{' ' * indent}* " + f"\n{' ' * indent}* ".join(parsed_paths)
@@ -92,13 +102,13 @@ def format_people_for_rst(value: list[dict], indent: int) -> str:
     people_base_url = settings.PMO_SEARCH_URL
     parsed_people = []
     for person in value:
+        url = f"{people_base_url}{person['nick']}"
         if "name" in person and person["name"]:
-            parsed_person = (
-                f"`{person['name']} ({person['nick']}) "
-                f"<{people_base_url}{person['nick']}>`__"
+            parsed_person = format_link_for_rst(
+                f"{person['name']} ({person['nick']})", url
             )
         else:
-            parsed_person = f"`{person['nick']} <{people_base_url}{person['nick']}>`__"
+            parsed_person = format_link_for_rst(person["nick"], url)
 
         parsed_people.append(parsed_person)
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_people)
@@ -109,13 +119,13 @@ def format_people_for_md(value: list[dict], indent: int) -> str:
     people_base_url = settings.PMO_SEARCH_URL
     parsed_people = []
     for person in value:
+        url = f"{people_base_url}{person['nick']}"
         if "name" in person and person["name"]:
-            parsed_person = (
-                f"[{person['name']} ({person['nick']})]"
-                f"({people_base_url}{person['nick']})"
+            parsed_person = format_link_for_md(
+                f"{person['name']} ({person['nick']})", url
             )
         else:
-            parsed_person = f"[{person['nick']}]({people_base_url}{person['nick']})"
+            parsed_person = format_link_for_md(person["nick"], url)
 
         parsed_people.append(parsed_person)
     return f"\n{' ' * indent}* " + f"\n{' ' * indent}* ".join(parsed_people)
@@ -135,6 +145,18 @@ def format_emeritus(value: list[dict | str]) -> str:
     return ", ".join(parsed)
 
 
+def format_review_group_for_rst(group: str) -> str:
+    """Format a review group."""
+    base_url = settings.PHABRICATOR_BASE_URL
+    return format_link_for_rst(f"#{group}", f"{base_url}/tag/{group}/")
+
+
+def format_review_group_for_md(group: str) -> str:
+    """Format a review group."""
+    base_url = settings.PHABRICATOR_BASE_URL
+    return format_link_for_md(f"#{group}", f"{base_url}/tag/{group}/")
+
+
 class Exporter:
     """A helper class that exports to various formats."""
 
@@ -148,9 +170,11 @@ class Exporter:
         env.filters["escape_for_rst"] = escape_for_rst
         env.filters["format_paths_for_rst"] = format_paths_for_rst
         env.filters["format_people_for_rst"] = format_people_for_rst
+        env.filters["format_review_group_for_rst"] = format_review_group_for_rst
         env.filters["escape_for_md"] = escape_for_md
         env.filters["format_paths_for_md"] = format_paths_for_md
         env.filters["format_people_for_md"] = format_people_for_md
+        env.filters["format_review_group_for_md"] = format_review_group_for_md
         env.filters["format_emeritus"] = format_emeritus
         return env
 

@@ -16,6 +16,8 @@ from mots.export import (
     format_paths_for_md,
     format_people_for_rst,
     format_people_for_md,
+    format_review_group_for_rst,
+    format_review_group_for_md,
     format_emeritus,
 )
 
@@ -159,3 +161,15 @@ def test_export_format_emeritus(config):
     emeritus = ["maggie", config["people"][0]]
     test = format_emeritus(emeritus)
     assert test == "maggie, jane"
+
+
+def test_export_format_review_group_for_rst():
+    """Ensure outputted strings are correct when formatting review group."""
+    test = format_review_group_for_rst("foo")
+    assert test == "`#foo <https://phabricator.services.mozilla.com/tag/foo/>`__"
+
+
+def test_export_format_review_group_for_md():
+    """Ensure outputted strings are correct when formatting review group."""
+    test = format_review_group_for_md("foo")
+    assert test == "[#foo](https://phabricator.services.mozilla.com/tag/foo/)"

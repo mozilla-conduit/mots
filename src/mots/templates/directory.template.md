@@ -60,6 +60,10 @@ widths: 30 70
 * - Bugzilla Components
   - {{ module.meta.components|join(", ")|wordwrap|indent(width=4) }}
 {% endif %}
+{% if module.meta.review_group %}
+* - Review Group
+  - {{ module.meta.review_group|trim|format_review_group_for_md }}
+{% endif %}
 ```
 {% endmacro %}
 

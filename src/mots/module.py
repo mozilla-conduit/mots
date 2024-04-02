@@ -86,12 +86,6 @@ class Module:
         if not self.excludes and self.parent:
             self.excludes = self.parent.excludes
 
-        if not self.owners and self.parent:
-            self.owners = self.parent.owners
-
-        if not self.peers and self.parent:
-            self.peers = self.parent.peers
-
         self.owner_names = [owner.get("nick", "") for owner in self.owners]
         self.peer_names = [peer.get("nick", "") for peer in self.peers]
 

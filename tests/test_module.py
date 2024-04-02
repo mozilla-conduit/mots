@@ -76,6 +76,27 @@ def test_module__Module__validate__error_no_paths_in_submodule(repo):
     ]
 
 
+def test_module__Module__submodule_with_no_peers_or_owners(repo):
+    """Ensure a submodule with no peers or owners is parsed correctly."""
+    m = dict(
+        name="Some Module",
+        machine_name="some_module",
+        owners=[{"nick": "otis", "bmo_id": 2}],
+        peers=[{"nick": "jill", "bmo_id": 1}],
+        includes="*",
+        submodules=[
+            dict(
+                name="Submodule",
+                machine_name="submodule",
+                excludes="some_path",
+            ),
+        ],
+    )
+    m = Module(**m, repo_path=str(repo))
+    assert len(m.submodules[0].peers) == 0
+    assert len(m.submodules[0].owners) == 0
+
+
 def test_module__Module__validate__invalid_machine_name(repo):
     """Ensure an error is thrown when a submodule has an invalid machine name."""
     m = dict(

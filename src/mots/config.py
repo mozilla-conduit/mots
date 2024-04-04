@@ -11,7 +11,7 @@ import io
 import hashlib
 import logging
 
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from ruamel.yaml import YAML
 
@@ -64,7 +64,7 @@ class FileConfig:
         """Initialize a repo with a config file, if it does not contain it."""
         if not self.path.is_file():
             # File does not exist, create it.
-            now = datetime.now().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             self.config = {
                 "repo": str(Path(self.path).resolve().parent.name),
                 "created_at": now,
@@ -116,7 +116,7 @@ class FileConfig:
     def write(self, hashes: dict | None = None):
         """Write configuration to file, and update the timestamp and hashes."""
         logger.debug(f"Writing configuration to {self.path}")
-        self.config["updated_at"] = datetime.now().isoformat()
+        self.config["updated_at"] = datetime.now(timezone.utc).isoformat()
         self.config["hashes"] = hashes or {}
         with self.path.open("w", encoding="utf-8", newline="\n") as f:
             yaml.dump(self.config, f)

@@ -66,20 +66,7 @@ def clean(args: argparse.Namespace) -> None:
     """Run clean methods for configuration file and write to disk."""
     file_config = config.FileConfig(Path(args.path))
     file_config.load()
-    try:
-        config.clean(file_config, refresh=args.refresh)
-    except MissingBugzillaAPIKey:
-        logger.error("Could not detect a Bugzilla API Key.")
-        messages = (
-            "Either set it in your environment (MOTS_BUGZILLA_API_KEY) or add it to ",
-            "your settings file by running: ",
-            "`mots settings write BUGZILLA_API_KEY`.",
-            "You will be prompted to enter the API key after running this command.",
-            "You can generate a Bugzilla API key in your User Preferences page under",
-            "the API Keys tab.",
-        )
-        print("\n".join(messages))
-        sys.exit(1)
+    config.clean(file_config, refresh=args.refresh)
 
 
 def check_hashes(args: argparse.Namespace) -> None:
@@ -297,6 +284,18 @@ def main(
         st = datetime.now()
         try:
             args.func(args)
+        except MissingBugzillaAPIKey:
+            logger.error("Could not detect a Bugzilla API Key.")
+            messages = (
+                "Either set it in your environment (MOTS_BUGZILLA_API_KEY) or add it "
+                "to your settings file by running: ",
+                "`mots settings write BUGZILLA_API_KEY`.",
+                "You will be prompted to enter the API key after running this command.",
+                "You can generate a Bugzilla API key in your User Preferences page "
+                "under the API Keys tab.",
+            )
+            print("\n".join(messages))
+            sys.exit(1)
         except Exception as e:
             logger.exception(e)
         else:

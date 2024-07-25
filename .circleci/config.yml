@@ -11,18 +11,15 @@ workflows:
   version: 2
   test:
     jobs:
-      - test_3_7
       - test_3_8
       - test_3_9
       - test_3_10
+      - test_3_11
+      - test_3_12
   test-build-publish:
     jobs:
       - verify:
           <<: *tags-only-filter
-      - test_3_7:
-          <<: *tags-only-filter
-          requires:
-            - verify
       - test_3_8:
           <<: *tags-only-filter
           requires:
@@ -35,18 +32,27 @@ workflows:
           <<: *tags-only-filter
           requires:
             - verify
+      - test_3_11:
+          <<: *tags-only-filter
+          requires:
+            - verify
+      - test_3_12:
+          <<: *tags-only-filter
+          requires:
+            - verify
       - build-and-publish:
           <<: *tags-only-filter
           requires:
-            - test_3_7
             - test_3_8
             - test_3_9
             - test_3_10
+            - test_3_11
+            - test_3_12
 
 jobs:
-  test_3_7: &test_template
+  test_3_8: &test_template
     docker:
-      - image: cimg/python:3.7
+      - image: cimg/python:3.8
     steps:
       - checkout
       - run:
@@ -72,10 +78,6 @@ jobs:
           path: /tmp/test-reports
       - store_artifacts:
           path: /tmo/test-reports
-  test_3_8:
-    <<: *test_template
-    docker:
-        - image: cimg/python:3.8
   test_3_9:
     <<: *test_template
     docker:
@@ -84,6 +86,14 @@ jobs:
     <<: *test_template
     docker:
         - image: cimg/python:3.10
+  test_3_11:
+    <<: *test_template
+    docker:
+        - image: cimg/python:3.11
+  test_3_12:
+    <<: *test_template
+    docker:
+        - image: cimg/python:3.12
   verify:
     docker:
       - image: cimg/python:3.10

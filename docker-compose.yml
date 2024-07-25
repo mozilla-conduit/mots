@@ -1,16 +1,6 @@
 version: '2'
 
 services:
-    generate-python3.6-requirements:
-        image: python:3.6
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.6.txt"
-        volumes:
-            - .:/mots
-    generate-python3.7-requirements:
-        image: python:3.7
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.7.txt"
-        volumes:
-            - .:/mots
     generate-python3.8-requirements:
         image: python:3.8
         command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.8.txt"
@@ -24,5 +14,15 @@ services:
     generate-python3.10-requirements:
         image: python:3.10
         command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.10.txt"
+        volumes:
+            - .:/mots
+    generate-python3.11-requirements:
+        image: python:3.11
+        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.11.txt"
+        volumes:
+            - .:/mots
+    generate-python3.12-requirements:
+        image: python:3.12
+        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.12.txt"
         volumes:
             - .:/mots

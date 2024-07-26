@@ -84,10 +84,11 @@ endif
 .PHONY: requirements
 requirements:
 	rm requirements/*.txt
-	docker-compose run generate-python3.7-requirements
 	docker-compose run generate-python3.8-requirements
 	docker-compose run generate-python3.9-requirements
 	docker-compose run generate-python3.10-requirements
+	docker-compose run generate-python3.11-requirements
+	docker-compose run generate-python3.12-requirements
 
 .ONESHELL:
 .PHONY: dev-env

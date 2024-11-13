@@ -140,7 +140,7 @@ def test_export_format_people_for_rst(config):
         "\n        | `jill (jill) <https://people.mozilla.org/s?query=jill>`__"
         "\n        | `otis (otis) <https://people.mozilla.org/s?query=otis>`__"
         "\n        | `angel (angel) <https://people.mozilla.org/s?query=angel>`__"
-        "\n        | `unnamed <https://people.mozilla.org/s?query=unnamed>`__"
+        "\n        | unnamed"
     )
 
 
@@ -153,7 +153,7 @@ def test_export_format_people_for_md(config):
         "\n    * [jill (jill)](https://people.mozilla.org/s?query=jill)"
         "\n    * [otis (otis)](https://people.mozilla.org/s?query=otis)"
         "\n    * [angel (angel)](https://people.mozilla.org/s?query=angel)"
-        "\n    * [unnamed](https://people.mozilla.org/s?query=unnamed)"
+        "\n    * unnamed"
     )
 
 

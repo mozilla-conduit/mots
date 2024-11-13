@@ -286,3 +286,79 @@ def test_clean_added_user_with_refresh(get_bmo_data, repo, config, test_bmo_user
         "name": "tom paris",
         "nick": "paris",
     }, explain_assert_all
+
+
+@mock.patch("mots.config.get_bmo_data")
+def test_clean_added_user_no_bmo_id_with_refresh(
+    get_bmo_data, repo, config, test_bmo_user_data
+):
+    get_bmo_data.return_value = test_bmo_user_data
+
+    file_config = FileConfig(repo / "mots.yml")
+    file_config.load()
+
+    assert file_config.config["people"] == config["people"]
+    file_config.config["modules"][0]["owners"].append({"nick": "TLMC"})
+    file_config.write()
+
+    assert len(file_config.config["people"]) == 4
+
+    # Compare the old and new people lists without the new entry, they should match.
+    new = sorted(
+        [dict(person) for person in file_config.config["people"]],
+        key=itemgetter("bmo_id"),
+    )
+    original = sorted(config["people"], key=itemgetter("bmo_id"))
+    assert new == original
+
+    # Run clean with refresh.
+    clean(file_config, refresh=True)
+
+    # It is expected that all people will have been updated via BMO, except the ones
+    # without a bmo_id.
+    explain_assert_all = "Record should have been updated after clean."
+    people = file_config.config["people"]
+    assert len(people) == 4
+    assert people[0] == {
+        "bmo_id": 1,
+        "name": "tuvok",
+        "nick": "2vk",
+    }, explain_assert_all
+    assert people[1] == {
+        "bmo_id": 0,
+        "name": "janeway",
+        "nick": "captain",
+    }, explain_assert_all
+    assert people[2] == {
+        "bmo_id": 2,
+        "name": "neelix",
+        "nick": "cooks4u",
+    }, explain_assert_all
+    assert people[3] == {
+        "bmo_id": 4,
+        "name": "tom paris",
+        "nick": "paris",
+    }, explain_assert_all
+
+    modules = file_config.config["modules"]
+    assert modules[0]["owners"][0] == people[1]
+    assert modules[0]["owners"][1] == {"nick": "TLMC"}
+    assert modules[1]["owners"][0] == people[2]
+
+
+@mock.patch("mots.config.get_bmo_data")
+def test_clean_added_user_no_bmo_id_with_refresh_invalid_nick(
+    get_bmo_data, repo, config, test_bmo_user_data
+):
+    get_bmo_data.return_value = test_bmo_user_data
+
+    file_config = FileConfig(repo / "mots.yml")
+    file_config.load()
+
+    assert file_config.config["people"] == config["people"]
+    file_config.config["modules"][0]["owners"].append({"nick": "ABCD"})
+    file_config.write()
+
+    # Run clean with refresh.
+    with pytest.raises(ValueError):
+        clean(file_config, refresh=True)

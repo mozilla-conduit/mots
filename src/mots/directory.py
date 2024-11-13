@@ -14,7 +14,7 @@ import logging
 from mots.module import Module
 from mots.utils import parse_real_name
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from mots.config import FileConfig
@@ -192,13 +192,13 @@ class QueryResult:
 class Person:
     """A class representing a person."""
 
-    bmo_id: int
-    name: str
-    nick: str
+    bmo_id: Optional[int] = None
+    name: Optional[str] = ""
+    nick: Optional[str] = ""
 
     def __hash__(self):
         """Return a unique identifier for this person."""
-        return self.bmo_id
+        return self.bmo_id or hash(self.nick)
 
 
 class People:
@@ -215,7 +215,9 @@ class People:
         for i, person in enumerate(people):
             logger.debug(f"Adding person {person} to roster...")
 
-            bmo_id = person["bmo_id"] = int(person["bmo_id"])
+            bmo_id = person["bmo_id"] = (
+                int(person["bmo_id"]) if "bmo_id" in person else None
+            )
             if bmo_id in bmo_data and bmo_data[bmo_id]:
                 # Update person's data base on BMO data.
                 bmo_datum = bmo_data[person["bmo_id"]]

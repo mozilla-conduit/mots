@@ -107,8 +107,10 @@ def format_people_for_rst(value: list[dict], indent: int) -> str:
             parsed_person = format_link_for_rst(
                 f"{person['name']} ({person['nick']})", url
             )
-        else:
+        elif "bmo_id" in person:
             parsed_person = format_link_for_rst(person["nick"], url)
+        else:
+            parsed_person = person["nick"]
 
         parsed_people.append(parsed_person)
     return f"\n{' ' * indent}| " + f"\n{' ' * indent}| ".join(parsed_people)
@@ -124,8 +126,10 @@ def format_people_for_md(value: list[dict], indent: int) -> str:
             parsed_person = format_link_for_md(
                 f"{person['name']} ({person['nick']})", url
             )
-        else:
+        elif "bmo_id" in person:
             parsed_person = format_link_for_md(person["nick"], url)
+        else:
+            parsed_person = person["nick"]
 
         parsed_people.append(parsed_person)
     return f"\n{' ' * indent}* " + f"\n{' ' * indent}* ".join(parsed_people)

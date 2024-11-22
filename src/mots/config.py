@@ -42,6 +42,11 @@ MPL2 = "\n".join(
     )
 )
 
+# A list of nicks allowed to be used without a bugzilla ID.
+ALLOWED_NICK_ONLY = [
+    "TLMC",
+]
+
 
 class ValidationError(TypeError):
     """Thrown when a particular module is not valid."""
@@ -244,6 +249,13 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
             if key not in module or not module[key]:
                 continue
             for i, person in enumerate(module[key]):
+                if "bmo_id" not in person:
+                    if person.get("nick") not in ALLOWED_NICK_ONLY:
+                        raise ValueError(
+                            f"Nick must be one of {', '.join(ALLOWED_NICK_ONLY)} when "
+                            "provided without bmo_id."
+                        )
+                    continue
                 reference_anchor_for_module(
                     i, person, key, file_config, directory, module
                 )

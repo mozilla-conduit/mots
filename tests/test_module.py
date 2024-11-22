@@ -97,6 +97,35 @@ def test_module__Module__submodule_with_no_peers_or_owners(repo):
     assert len(m.submodules[0].owners) == 0
 
 
+def test_module__Module__with_peers_and_owners_without_bmo_id(repo):
+    """Ensure a module's string peers/owners are ignored.
+
+    Only references to people listed in the directory should be stored
+    in the module itself. However, the export should include the plain
+    text references.
+    """
+    m = dict(
+        name="Some Module",
+        machine_name="some_module",
+        owners=[{"nick": "otis", "bmo_id": 2}, {"nick": "owner string"}],
+        peers=[{"nick": "jill", "bmo_id": 1}, {"nick": "peer string"}],
+        includes="*",
+        submodules=[
+            dict(
+                name="Submodule",
+                machine_name="submodule",
+                peers=[{"nick": "submodule peer string"}],
+                excludes="some_path",
+            ),
+        ],
+    )
+    m = Module(**m, repo_path=str(repo))
+    assert len(m.peers) == 2
+    assert len(m.owners) == 2
+    assert len(m.submodules[0].peers) == 1
+    assert len(m.submodules[0].owners) == 0
+
+
 def test_module__Module__validate__invalid_machine_name(repo):
     """Ensure an error is thrown when a submodule has an invalid machine name."""
     m = dict(

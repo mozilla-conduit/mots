@@ -26,3 +26,8 @@ services:
         command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.12.txt"
         volumes:
             - .:/mots
+    generate-python3.13-requirements:
+        image: python:3.13
+        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.13.txt"
+        volumes:
+            - .:/mots

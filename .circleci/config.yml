@@ -16,6 +16,7 @@ workflows:
       - test_3_10
       - test_3_11
       - test_3_12
+      - test_3_13
   test-build-publish:
     jobs:
       - verify:
@@ -40,6 +41,10 @@ workflows:
           <<: *tags-only-filter
           requires:
             - verify
+      - test_3_13:
+          <<: *tags-only-filter
+          requires:
+            - verify
       - build-and-publish:
           <<: *tags-only-filter
           requires:
@@ -48,6 +53,7 @@ workflows:
             - test_3_10
             - test_3_11
             - test_3_12
+            - test_3_13
 
 jobs:
   test_3_8: &test_template
@@ -94,6 +100,10 @@ jobs:
     <<: *test_template
     docker:
         - image: cimg/python:3.12
+  test_3_13:
+    <<: *test_template
+    docker:
+        - image: cimg/python:3.13
   verify:
     docker:
       - image: cimg/python:3.10

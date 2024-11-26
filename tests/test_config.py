@@ -299,6 +299,9 @@ def test_clean_added_user_no_bmo_id_with_refresh(
 
     assert file_config.config["people"] == config["people"]
     file_config.config["modules"][0]["owners"].append({"nick": "TLMC"})
+    file_config.config["modules"][0]["submodules"][0]["owners"].append(
+        {"nick": "TLMC"}
+    )
     file_config.write()
 
     assert len(file_config.config["people"]) == 4
@@ -345,6 +348,8 @@ def test_clean_added_user_no_bmo_id_with_refresh(
     assert modules[0]["owners"][1] == {"nick": "TLMC"}
     assert modules[1]["owners"][0] == people[2]
 
+    assert modules[0]["submodules"][0]["owners"][1] == {"nick": "TLMC"}
+
 
 @mock.patch("mots.config.get_bmo_data")
 def test_clean_added_user_no_bmo_id_with_refresh_invalid_nick(
@@ -360,5 +365,19 @@ def test_clean_added_user_no_bmo_id_with_refresh_invalid_nick(
     file_config.write()
 
     # Run clean with refresh.
+    with pytest.raises(ValueError):
+        clean(file_config, refresh=True)
+
+    file_config.config["modules"][0]["owners"].pop()
+    file_config.write()
+
+    clean(file_config, refresh=True)
+
+    file_config.config["modules"][0]["submodules"][0]["owners"].append(
+        {"nick": "ABCD"}
+    )
+    file_config.write()
+
+    # Run clean with refresh, this time after changing a submodule.
     with pytest.raises(ValueError):
         clean(file_config, refresh=True)

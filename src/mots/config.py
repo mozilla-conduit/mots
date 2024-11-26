@@ -186,6 +186,16 @@ def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
     return original_hashes, hashes
 
 
+def raise_if_nick_is_invalid(person):
+    """Check if provided person dictionary is valid."""
+    if "bmo_id" not in person:
+        if person.get("nick") not in ALLOWED_NICK_ONLY:
+            raise ValueError(
+                f"Nick must be one of {', '.join(ALLOWED_NICK_ONLY)} when "
+                "provided without bmo_id."
+            )
+
+
 def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
     """Clean and re-sort configuration file.
 
@@ -250,11 +260,7 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
                 continue
             for i, person in enumerate(module[key]):
                 if "bmo_id" not in person:
-                    if person.get("nick") not in ALLOWED_NICK_ONLY:
-                        raise ValueError(
-                            f"Nick must be one of {', '.join(ALLOWED_NICK_ONLY)} when "
-                            "provided without bmo_id."
-                        )
+                    raise_if_nick_is_invalid(person)
                     continue
                 reference_anchor_for_module(
                     i, person, key, file_config, directory, module
@@ -289,6 +295,9 @@ def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):
                     if key not in submodule or not submodule[key]:
                         continue
                     for i, person in enumerate(submodule[key]):
+                        if "bmo_id" not in person:
+                            raise_if_nick_is_invalid(person)
+                            continue
                         reference_anchor_for_module(
                             i, person, key, file_config, directory, submodule
                         )

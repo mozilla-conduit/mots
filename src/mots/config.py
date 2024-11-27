@@ -188,12 +188,11 @@ def calculate_hashes(config: dict, export: bytes) -> tuple[dict, dict]:
 
 def raise_if_nick_is_invalid(person):
     """Check if provided person dictionary is valid."""
-    if "bmo_id" not in person:
-        if person.get("nick") not in ALLOWED_NICK_ONLY:
-            raise ValueError(
-                f"Nick must be one of {', '.join(ALLOWED_NICK_ONLY)} when "
-                "provided without bmo_id."
-            )
+    if "bmo_id" not in person and person.get("nick") not in ALLOWED_NICK_ONLY:
+        raise ValueError(
+            f"Nick must be one of {', '.join(ALLOWED_NICK_ONLY)} when "
+            "provided without bmo_id."
+        )
 
 
 def clean(file_config: FileConfig, write: bool = True, refresh: bool = True):

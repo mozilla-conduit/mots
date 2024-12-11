@@ -129,7 +129,11 @@ class Directory:
         peers_and_owners = set()
         for module in modules_and_submodules:
             peers_and_owners.update(
-                [person["bmo_id"] for person in module.peers + module.owners]
+                [
+                    person["bmo_id"]
+                    for person in module.peers + module.owners
+                    if "bmo_id" in person
+                ]
             )
         return sorted(list(peers_and_owners))
 

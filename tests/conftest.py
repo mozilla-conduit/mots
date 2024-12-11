@@ -51,7 +51,7 @@ def repo(tmp_path, config):
     file_config = FileConfig(test_repo / "mots.yml")
     file_config.config = config
     hashes = {
-        "config": "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54",
+        "config": "b69f7e77313ac6b47e90d4f3298f32bbd668b3f5",
         "export": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
     }
     file_config.write(hashes)
@@ -67,10 +67,12 @@ def config():
         {"name": "otis", "nick": "otis", "bmo_id": 2},
         {"name": "angel", "nick": "angel", "bmo_id": 4},
     ]
+    aliases = [{"nick": "TLMC"}]
     return {
         "repo": "test_repo",
         "created_at": "2021-09-10 12:53:22.383393",
         "updated_at": "2021-09-10 12:53:22.383393",
+        "aliases": aliases,
         "people": people,
         "export": {"format": "rst", "path": "mots.rst"},
         "modules": [
@@ -87,7 +89,7 @@ def config():
                     "pigs/**/*",
                 ],
                 "excludes": ["canines/red_fox"],
-                "owners": [people[0]],
+                "owners": [people[0], aliases[0]],
                 "peers": [people[1]],
                 "meta": {"peers_emeritus": [people[2]]},
                 "submodules": [

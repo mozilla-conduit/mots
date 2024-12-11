@@ -121,15 +121,23 @@ class Directory:
 
     @property
     def peers_and_owners(self):
-        """Return a sorted list of all peers and owners."""
+        """Return a sorted list of all peers and owners, excluding aliases."""
         all_modules = self.modules
         all_submodules = list(chain(*[module.submodules for module in all_modules]))
         modules_and_submodules = all_modules + all_submodules
 
         peers_and_owners = set()
+
+        # NOTE: aliases are free-form text entires that do not link back to a Bugzilla
+        # ID. Records without a bmo_id key are treated as such.
+
         for module in modules_and_submodules:
             peers_and_owners.update(
-                [person["bmo_id"] for person in module.peers + module.owners]
+                [
+                    person["bmo_id"]
+                    for person in module.peers + module.owners
+                    if "bmo_id" in person
+                ]
             )
         return sorted(list(peers_and_owners))
 

@@ -20,7 +20,7 @@ def test_module__Module(repo):
     assert len(m.includes) == 5
     assert len(m.excludes) == 1
     assert len(m.submodules) == 1
-    assert len(m.owners) == 1
+    assert len(m.owners) == 2
 
     assert m.submodules[0].machine_name == "predators"
     assert len(m.submodules[0].includes) == 4

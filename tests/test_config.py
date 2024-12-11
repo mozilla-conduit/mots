@@ -34,7 +34,7 @@ def test_calculate_hashes(config):
     hashes = calculate_hashes(config, export)[1]
 
     assert (
-        hashes["config"] == "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54"
+        hashes["config"] == "b69f7e77313ac6b47e90d4f3298f32bbd668b3f5"
     ), "Was `conftest.config` changed?"
     assert hashes["export"] == "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
@@ -50,7 +50,7 @@ def test_FileConfig__check_hashes(repo):
     errors = file_config.check_hashes()
     assert errors == [
         "Mismatch in config hash detected.",
-        "f14a84e9e7a9f39ece7ac7232e2f55dda4da6e54 does not match asdf",
+        "b69f7e77313ac6b47e90d4f3298f32bbd668b3f5 does not match asdf",
         "config file is out of date.",
         "Mismatch in export hash detected.",
         "da39a3ee5e6b4b0d3255bfef95601890afd80709 does not match ghjk",
@@ -299,9 +299,7 @@ def test_clean_added_user_no_bmo_id_with_refresh(
 
     assert file_config.config["people"] == config["people"]
     file_config.config["modules"][0]["owners"].append({"nick": "TLMC"})
-    file_config.config["modules"][0]["submodules"][0]["owners"].append(
-        {"nick": "TLMC"}
-    )
+    file_config.config["modules"][0]["submodules"][0]["owners"].append({"nick": "TLMC"})
     file_config.write()
 
     assert len(file_config.config["people"]) == 4
@@ -373,9 +371,7 @@ def test_clean_added_user_no_bmo_id_with_refresh_invalid_nick(
 
     clean(file_config, refresh=True)
 
-    file_config.config["modules"][0]["submodules"][0]["owners"].append(
-        {"nick": "ABCD"}
-    )
+    file_config.config["modules"][0]["submodules"][0]["owners"].append({"nick": "ABCD"})
     file_config.write()
 
     # Run clean with refresh, this time after changing a submodule.

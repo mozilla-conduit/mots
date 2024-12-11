@@ -23,3 +23,10 @@ make dev
 ```
 
 The above commands will set up a virtual environment using the provided Python version available on your machine, and subsequently install all required packages in that environment, which can be found in the `.mots-env` directory.
+
+Impact on other applications
+============================
+When making a significant or breaking change to mots, the pinned version of mots should be updated in the following:
+- [mach doc](https://searchfox.org/mozilla-central/source/python/sites/docs.txt)
+- [Lando](https://github.com/mozilla-conduit/lando-api/blob/main/requirements.in) (legacy)
+- [Lando](https://github.com/mozilla-conduit/lando/blob/main/requirements.txt)

@@ -4,7 +4,7 @@ flake8
 flake8-docstrings
 pytest
 pytest-cov
-ruamel.yaml>=0.17.20
+ruamel.yaml==0.17.21
 sphinx
 sphinx-rtd-theme
 twine

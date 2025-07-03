@@ -3,31 +3,31 @@ version: '2'
 services:
     generate-python3.8-requirements:
         image: python:3.8
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.8.txt"
+        command: sh -c "cd /mots && pip install 'pip < 25.1' --upgrade && pip install pip-tools --upgrade && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.8.txt"
         volumes:
             - .:/mots
     generate-python3.9-requirements:
         image: python:3.9
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.9.txt"
+        command: sh -c "cd /mots && pip install 'pip < 25.1' --upgrade && pip install pip-tools --upgrade && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.9.txt"
         volumes:
             - .:/mots
     generate-python3.10-requirements:
         image: python:3.10
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.10.txt"
+        command: sh -c "cd /mots && pip install 'pip < 25.1' --upgrade && pip install pip-tools --upgrade && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.10.txt"
         volumes:
             - .:/mots
     generate-python3.11-requirements:
         image: python:3.11
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.11.txt"
+        command: sh -c "cd /mots && pip install 'pip < 25.1' --upgrade && pip install pip-tools --upgrade && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.11.txt"
         volumes:
             - .:/mots
     generate-python3.12-requirements:
         image: python:3.12
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.12.txt"
+        command: sh -c "cd /mots && pip install 'pip < 25.1' --upgrade && pip install pip-tools --upgrade && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.12.txt"
         volumes:
             - .:/mots
     generate-python3.13-requirements:
         image: python:3.13
-        command: sh -c "cd /mots && pip install pip-tools && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.13.txt"
+        command: sh -c "cd /mots && pip install 'pip < 25.1' --upgrade && pip install pip-tools --upgrade && python -m piptools compile --resolver=backtracking requirements/base.in --generate-hashes -o requirements/python3.13.txt"
         volumes:
             - .:/mots

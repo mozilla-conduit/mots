@@ -294,7 +294,7 @@ Use ``mots clean`` to automatically sort and synchronize data in the **mots.yaml
 
 Validating **mots.yaml**
 ------------------------
-Validating your modules ensures that you have all the required keys in your configuration file, and that you have unique machine names for all your modules and submodules. Run the following command to do automatic validation:
+Validating your modules ensures that you have all the required keys in your configuration file, that you have unique machine names for all your modules and submodules, and that every path included by a module still exists in the repository. The latter catches stale definitions, for example when a directory owned by a module is renamed or removed without updating **mots.yaml**. Run the following command to do automatic validation:
 
 .. code-block:: shell
 

@@ -144,12 +144,28 @@ class Module:
 
         return serialized
 
+    def stale_includes(self):
+        """Return included patterns that do not match anything in the repository.
+
+        A pattern matches nothing when the directory or file it points to is renamed or
+        removed from the repository without updating the module definition, but also
+        when the pattern itself is wrong, for example a typo in the path. Patterns
+        pointing at an external repository (i.e. a URL) are not checked.
+
+        :rtype: list
+        """
+        return [
+            pattern
+            for pattern in self.includes
+            if "://" not in pattern and not next(self.repo_path.glob(pattern), None)
+        ]
+
     def validate(self):
         """Perform validation on module and submodules recursively.
 
         Starting with the current module, ensure that this module includes at least one
-        valid path and a valid name and machine name,  and then run the same validation
-        on all submodules.
+        valid path, that all of its included paths exist, and that it has a valid name
+        and machine name, and then run the same validation on all submodules.
 
         :param errors: a list of errors to append to
         :rtype: list
@@ -161,6 +177,11 @@ class Module:
 
         if " " in self.machine_name:
             errors.append(f"Machine name {self.machine_name} contains white space.")
+
+        for pattern in self.stale_includes():
+            errors.append(
+                f"Included path {pattern} in {self.machine_name} does not exist."
+            )
 
         if not self.calculate_paths():
             errors.append(f"No valid paths were found in {self.machine_name}.")

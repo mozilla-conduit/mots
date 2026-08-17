@@ -35,7 +35,7 @@ def test_module__Module__calculate_paths(repo):
     modules = file_config.config["modules"]
     m = Module(repo_path=repo, **modules[0])
     assert len(m.calculate_paths()) == 10
-    assert len(m.submodules[0].calculate_paths()) == 3
+    assert len(m.submodules[0].calculate_paths()) == 4
 
 
 def test_module__Module__validate(repo):
@@ -210,7 +210,46 @@ def test_module__validate__error_no_paths(repo):
     }
 
     messages = validate(config, repo)
-    assert messages == ["No valid paths were found in m1."]
+    assert messages == [
+        "Included path does_not_exist in m1 does not exist.",
+        "No valid paths were found in m1.",
+    ]
+
+
+def test_module__validate__error_stale_include(repo):
+    """Ensure an error is thrown when an included path no longer exists."""
+    config = {
+        "repo": "test_repo",
+        "created_at": "2021-09-10 12:53:22.383393",
+        "updated_at": "2021-09-10 12:53:22.383393",
+        "modules": [
+            {
+                "name": "m1",
+                "machine_name": "m1",
+                "includes": ["canines/**/*", "reptiles/**/*"],
+            },
+        ],
+    }
+
+    messages = validate(config, repo)
+    assert messages == ["Included path reptiles/**/* in m1 does not exist."]
+
+
+def test_module__Module__stale_includes(repo):
+    """Ensure only patterns that match nothing are reported as stale."""
+    m = Module(
+        name="Some Module",
+        machine_name="some_module",
+        repo_path=str(repo),
+        includes=[
+            "canines/beagle",
+            "canines/wolf",
+            "felines/**/*",
+            "reptiles",
+            "https://github.com/mozilla-conduit/mots",
+        ],
+    )
+    assert m.stale_includes() == ["canines/wolf", "reptiles"]
 
 
 def test_module__add(repo):

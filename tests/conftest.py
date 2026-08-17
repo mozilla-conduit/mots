@@ -33,6 +33,7 @@ def repo(tmp_path, config):
         (test_repo / "felines").mkdir(),
         (test_repo / "felines" / "persian").touch(),
         (test_repo / "felines" / "cheetah").touch(),
+        (test_repo / "felines" / "tiger").touch(),
         (test_repo / "bovines").mkdir(),
         (test_repo / "bovines" / "cow").touch(),
         (test_repo / "bovines" / "sheep").touch(),

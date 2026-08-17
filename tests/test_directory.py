@@ -17,7 +17,7 @@ def test_directory__Directory(repo):
     rp = directory.repo_path
     di = directory.index
 
-    assert len(di) == 24
+    assert len(di) == 25
 
     assert [m.machine_name for m in di[rp / "birds"]] == []
     assert [m.machine_name for m in di[rp / "birds/eagle"]] == ["predators"]
@@ -39,6 +39,7 @@ def test_directory__Directory(repo):
     assert [m.machine_name for m in di[rp / "felines"]] == []
     assert [m.machine_name for m in di[rp / "felines/cheetah"]] == ["predators"]
     assert [m.machine_name for m in di[rp / "felines/persian"]] == ["pets"]
+    assert [m.machine_name for m in di[rp / "felines/tiger"]] == ["predators", "pets"]
     assert [m.machine_name for m in di[rp / "marsupials"]] == []
     assert [m.machine_name for m in di[rp / "marsupials/kangaroo"]] == []
     assert [m.machine_name for m in di[rp / "marsupials/koala"]] == []

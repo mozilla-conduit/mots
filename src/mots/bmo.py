@@ -21,6 +21,12 @@ class MissingBugzillaAPIKey(Exception):
     pass
 
 
+class BugzillaAPIError(Exception):
+    """Raised when the Bugzilla API returns a non-200 response."""
+
+    pass
+
+
 def get_bmo_data(people: list) -> dict:
     """Fetch an updated dictionary from Bugzilla with user data.
 
@@ -55,8 +61,9 @@ class BMOClient:
         fields = ["real_name", "nick", "name", "id", "email"]
         response = self._get("user", {"ids": ids, "include_fields": ",".join(fields)})
         if response.status_code != 200:
-            logger.error(f"Error searching {ids}: {response.status_code}")
-            return
+            raise BugzillaAPIError(
+                f"Error searching {ids}: {response.status_code} {response.text}"
+            )
 
         result = response.json()
         return {u["id"]: u for u in result["users"]}
@@ -68,8 +75,9 @@ class BMOClient:
             "user", {"match": match, "include_fields": ",".join(fields)}
         )
         if response.status_code != 200:
-            logger.error(f"Error searching {match}: {response.status_code}")
-            return
+            raise BugzillaAPIError(
+                f"Error searching {match}: {response.status_code} {response.text}"
+            )
 
         result = response.json()
         return result["users"]

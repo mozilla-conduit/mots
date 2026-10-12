@@ -13,7 +13,7 @@ import sys
 
 from mots import module
 from mots import config
-from mots.bmo import MissingBugzillaAPIKey, BMOClient
+from mots.bmo import BugzillaAPIError, MissingBugzillaAPIKey, BMOClient
 from mots.ci import validate_version_tag
 from mots.directory import Directory
 from mots.export import export_to_format
@@ -295,6 +295,9 @@ def main(
                 "under the API Keys tab.",
             )
             print("\n".join(messages))
+            sys.exit(1)
+        except BugzillaAPIError as e:
+            logger.error(e)
             sys.exit(1)
         except Exception as e:
             logger.exception(e)
